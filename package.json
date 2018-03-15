@@ -1,0 +1,31 @@
+{
+  "name": "luxjs",
+  "version": "1.0.0",
+  "description": "lux.js is a 3D rendering library.",
+  "main": "lux.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "gl-matrix": "^2.4.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.1.1"
+  },
+  "scripts": {
+    "build": "webpack",
+    "build-min": "webpack --config webpack.config.min.js",
+    "build-all": "webpack && webpack --config webpack.config.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iMaximuz/luxjs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iMaximuz/luxjs/issues"
+  },
+  "homepage": "https://github.com/iMaximuz/luxjs#readme"
+}
