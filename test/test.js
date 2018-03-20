@@ -1,1 +1,1 @@
-console.log(lux.vec3.create());
+console.log(lux);

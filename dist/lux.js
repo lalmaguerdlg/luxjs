@@ -392,6 +392,201 @@ __webpack_require__.d(vec2_namespaceObject, "sqrDist", function() { return vec2_
 __webpack_require__.d(vec2_namespaceObject, "sqrLen", function() { return vec2_sqrLen; });
 __webpack_require__.d(vec2_namespaceObject, "forEach", function() { return vec2_forEach; });
 
+// CONCATENATED MODULE: ./src/Geometry/attributePointer.js
+class AttributePointer{
+    constructor(location, size, type, normalized, stride, offset){
+        this.location = location;
+        this.size = size;
+        this.type = type;
+        this.normalized = normalized;
+        this.stride = stride;
+        this.offset = offset;
+    }
+}
+// CONCATENATED MODULE: ./src/Geometry/vertex.js
+class Vertex{
+    constructor(vertex, color){
+        this.pos = vertex || [0.0, 0.0, 0.0];
+        this.color = color || [1.0, 1.0, 1.0, 1.0];
+    }
+    toArray(){
+        let result = this.pos.concat(this.color);
+        return result;
+    }
+}
+// CONCATENATED MODULE: ./src/Geometry/vertexArray.js
+class VertexArray{
+    constructor(vertices, layout){
+        this.vertices = vertices;
+        this.array = this._toSingleArray();
+        this.count = vertices.length;
+        this.layout = layout;
+    }
+
+    _toSingleArray(){
+        let result = [];
+        for(let vertex of this.vertices){
+            let v = vertex.toArray();
+            result = result.concat(v);
+        }
+        return new Float32Array(result);
+    }
+}
+// CONCATENATED MODULE: ./src/Geometry/mesh.js
+class Mesh{
+    constructor(vertexArray, indices, usage){
+        this.vertices = vertexArray;
+        //    [ new AttribPointer(0, 3, gl.FLOAT, false, this.vertices.count * Float32Array.BYTES_PER_ELEMENT, 0) ];
+        this.indices = indices;
+        this.isIndexed = indices ? true : false;
+        this.usage = usage || gl.STATIC_DRAW;
+        this.binded = false;
+        this._initBuffers();
+    }
+
+    render(mode){
+        this.bind();
+        if(this.isIndexed){
+            gl.drawElements(mode, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        }else{
+            gl.drawArrays(mode, 0, this.vertices.count);
+        }
+        this.unbind();
+    }
+
+    bind(){
+        if(!this.binded){
+            gl.bindVertexArray(this.buffers.VAO);
+            this.binded = true;    
+        }
+    }
+
+    unbind(){
+        if(this.binded){
+            gl.bindVertexArray(null);
+            this.binded = false;
+        }
+    }
+
+    _initBuffers(){
+        this.buffers = {};
+        // VAO = Vertex array buffer
+        // VBO = Vertex buffer object
+        // EBO = Element buffer object (indices)
+        this.buffers.VAO = gl.createVertexArray();
+        this.buffers.VBO = gl.createBuffer();
+        this.buffers.EBO = this.isIndexed ? gl.createBuffer() : undefined;
+        gl.bindVertexArray(this.buffers.VAO);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.VBO);
+        gl.bufferData(gl.ARRAY_BUFFER, this.vertices.array, this.usage);
+        if(this.isIndexed){
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.EBO);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.usage);
+        }
+        for(let iter of this.vertices.layout){
+            let attr = iter.attribute;
+            gl.vertexAttribPointer(
+                attr.location, // Attribute location
+                attr.size, // Number of elements per attribute
+                attr.type, // Type of element
+                attr.normalized, // Normalized
+                attr.stride, // Size of an individual vertex
+                attr.offset // Offset from the begining of a  single vertex to this attribute
+            );
+            gl.enableVertexAttribArray(attr.location);
+        }
+        gl.bindVertexArray(null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
+}
+// CONCATENATED MODULE: ./src/Geometry/geometry.js
+
+
+
+
+var geometry_Geometry = {
+    Triangle: function(size){
+        const halfS = size * 0.5 || 0.5;
+        let vertices = [
+            //position                      color
+            new Vertex([0.0, halfS, 0.0],     [1.0, 0.0, 0.0, 1.0]),
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 1.0, 0.0, 1.0]),
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0, 1.0])
+        ];
+        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        return new Mesh(vertexArray);
+    },
+    Square: function(size){
+        const halfS = size * 0.5 || 0.5
+        let vertices = [
+            //position                       color
+            new Vertex([halfS, halfS, 0.0],     [1.0, 0.5, 0.2, 1.0]), // top right
+            new Vertex([halfS, -halfS, 0.0],    [1.0, 0.5, 0.2, 1.0]), // bottom right
+            new Vertex([-halfS, -halfS, 0.0],   [1.0, 0.5, 0.2, 1.0]), // bottom left
+            new Vertex([-halfS, halfS, 0.0],    [1.0, 0.5, 0.2, 1.0]) // top left
+        ];
+        let indices = [
+            0, 3, 1,
+            1, 3, 2
+        ]
+        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        return new Mesh(vertexArray, indices);
+    },
+    
+    Box: function(sizeX, sizeY, sizeZ){
+        const halfX = sizeX * 0.5 || 0.5;
+        const halfY = sizeY * 0.5 || 0.5;
+        const halfZ = sizeZ * 0.5 || 0.5;
+        let vertices = [
+            new Vertex([-halfX, -halfY, -halfZ]), 
+            new Vertex([ halfX, -halfY, -halfZ]),  
+            new Vertex([ halfX,  halfY, -halfZ]),
+            new Vertex([ halfX,  halfY, -halfZ]),  
+            new Vertex([-halfX,  halfY, -halfZ]), 
+            new Vertex([-halfX, -halfY, -halfZ]), 
+
+            new Vertex([-halfX, -halfY,  halfZ]),
+            new Vertex([ halfX, -halfY,  halfZ]),  
+            new Vertex([ halfX,  halfY,  halfZ]),  
+            new Vertex([ halfX,  halfY,  halfZ]),  
+            new Vertex([-halfX,  halfY,  halfZ]), 
+            new Vertex([-halfX, -halfY,  halfZ]),
+
+            new Vertex([-halfX,  halfY,  halfZ]), 
+            new Vertex([-halfX,  halfY, -halfZ]), 
+            new Vertex([-halfX, -halfY, -halfZ]), 
+            new Vertex([-halfX, -halfY, -halfZ]), 
+            new Vertex([-halfX, -halfY,  halfZ]), 
+            new Vertex([-halfX,  halfY,  halfZ]), 
+
+            new Vertex([ halfX,  halfY,  halfZ]),  
+            new Vertex([ halfX,  halfY, -halfZ]),  
+            new Vertex([ halfX, -halfY, -halfZ]),  
+            new Vertex([ halfX, -halfY, -halfZ]),  
+            new Vertex([ halfX, -halfY,  halfZ]),  
+            new Vertex([ halfX,  halfY,  halfZ]),  
+
+            new Vertex([-halfX, -halfY, -halfZ]), 
+            new Vertex([ halfX, -halfY, -halfZ]),  
+            new Vertex([ halfX, -halfY,  halfZ]),  
+            new Vertex([ halfX, -halfY,  halfZ]),  
+            new Vertex([-halfX, -halfY,  halfZ]), 
+            new Vertex([-halfX, -halfY, -halfZ]), 
+
+            new Vertex([-halfX,  halfY, -halfZ]), 
+            new Vertex([ halfX,  halfY, -halfZ]),  
+            new Vertex([ halfX,  halfY,  halfZ]),  
+            new Vertex([ halfX,  halfY,  halfZ]),  
+            new Vertex([-halfX,  halfY,  halfZ]), 
+            new Vertex([-halfX,  halfY, -halfZ]), 
+        ];
+
+        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        return new Mesh(vertexArray);
+    }
+    
+}
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
@@ -6450,33 +6645,27 @@ THE SOFTWARE. */
 
 
 // CONCATENATED MODULE: ./src/lux.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return lux_glMatrix; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return lux_vec2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return lux_vec3; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return lux_vec4; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return lux_quat; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return lux_mat2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return lux_mat2d; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return lux_mat3; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return lux_mat4; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Vertex", function() { return lux_Vertex; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return AttributePointer; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return Vertex; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return VertexArray; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return Mesh; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glMatrix", function() { return common_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec2", function() { return vec2_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec3", function() { return vec3_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec4", function() { return vec4_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "quat", function() { return quat_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2", function() { return mat2_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
 
 
-const lux_glMatrix = common_namespaceObject;
-const lux_vec2 = vec2_namespaceObject;
-const lux_vec3 = vec3_namespaceObject;
-const lux_vec4 = vec4_namespaceObject;
-const lux_quat = quat_namespaceObject;
-const lux_mat2 = mat2_namespaceObject;
-const lux_mat2d = mat2d_namespaceObject;
-const lux_mat3 = mat3_namespaceObject;
-const lux_mat4 = mat4_namespaceObject;
 
-class lux_Vertex{
-    constructor(){
-        
-    }
-}
+
+
+
+
 
 /***/ })
 /******/ ]);
