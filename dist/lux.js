@@ -415,12 +415,20 @@ class Vertex{
     }
 }
 // CONCATENATED MODULE: ./src/Geometry/vertexArray.js
-class VertexArray{
+
+
+class vertexArray_VertexArray{
     constructor(vertices, layout){
         this.vertices = vertices;
         this.array = this._toSingleArray();
         this.count = vertices.length;
         this.layout = layout;
+    }
+
+    push(vertex) {
+        if(vertex instanceof Vertex){
+            this.vertices.push(vertex);
+        }
     }
 
     _toSingleArray(){
@@ -432,8 +440,57 @@ class VertexArray{
         return new Float32Array(result);
     }
 }
+// CONCATENATED MODULE: ./src/webgl.js
+
+class WebGLRenderer{
+    constructor(canvas){
+        this.domElement = canvas;
+        
+    }
+}
+
+let gl = new WebGLRenderer();
+
+function glInit(canvas){
+    context = canvas.getContext("webgl2");
+    if(!context){
+        context = canvas.getContext("experimental-webgl2");
+    }
+
+    if(!context){
+        console.error('Your browser does not support webgl 2.')
+    }
+    context.resize = function(){
+        var displayWidth = this.canvas.clientWidth;
+        var displayHeight = this.canvas.clientHeight;
+    
+        if (this.canvas.width != displayWidth || this.canvas.height != displayHeight){
+            this.canvas.width = displayWidth;
+            this.canvas.height = displayHeight;
+            this.viewport(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+    context.viewport(0, 0, context.canvas.width, context.canvas.height);
+    return context;
+}
+
+function glLoop(callback){
+    let lastTime = 0;
+    function _glLoop(nowTime){
+        nowTime *= 0.001; // Convert time to seconds
+        let deltaTime = nowTime - lastTime;
+        callback(deltaTime);
+        lastTime = nowTime;
+        requestAnimationFrame(_glLoop);
+    }
+    requestAnimationFrame(_glLoop);
+}
+
+
 // CONCATENATED MODULE: ./src/Geometry/mesh.js
-class Mesh{
+
+
+class mesh_Mesh{
     constructor(vertexArray, indices, usage){
         this.vertices = vertexArray;
         //    [ new AttribPointer(0, 3, gl.FLOAT, false, this.vertices.count * Float32Array.BYTES_PER_ELEMENT, 0) ];
@@ -441,10 +498,10 @@ class Mesh{
         this.isIndexed = indices ? true : false;
         this.usage = usage || gl.STATIC_DRAW;
         this.binded = false;
-        this._initBuffers();
+        this.buffers = undefined;
     }
 
-    render(mode){
+    render(mode) {
         this.bind();
         if(this.isIndexed){
             gl.drawElements(mode, this.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -456,6 +513,8 @@ class Mesh{
 
     bind(){
         if(!this.binded){
+            if(!this.buffers)
+                this._initBuffers();
             gl.bindVertexArray(this.buffers.VAO);
             this.binded = true;    
         }
@@ -505,6 +564,19 @@ class Mesh{
 
 
 
+
+
+let geometry_VERTEX_LAYOUT = [
+    { 
+        name: 'position', 
+        attribute: new AttributePointer (0, 3, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 0)
+    },
+    { 
+        name: 'color',
+        attribute: new AttributePointer (1, 4, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT)
+    }
+];
+
 var geometry_Geometry = {
     Triangle: function(size){
         const halfS = size * 0.5 || 0.5;
@@ -514,8 +586,8 @@ var geometry_Geometry = {
             new Vertex([-halfS, -halfS, 0.0],   [0.0, 1.0, 0.0, 1.0]),
             new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0, 1.0])
         ];
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
-        return new Mesh(vertexArray);
+        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray);
     },
     Square: function(size){
         const halfS = size * 0.5 || 0.5
@@ -530,8 +602,8 @@ var geometry_Geometry = {
             0, 3, 1,
             1, 3, 2
         ]
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
-        return new Mesh(vertexArray, indices);
+        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray, indices);
     },
     
     Box: function(sizeX, sizeY, sizeZ){
@@ -547,10 +619,10 @@ var geometry_Geometry = {
             new Vertex([-halfX, -halfY, -halfZ]), 
 
             new Vertex([-halfX, -halfY,  halfZ]),
-            new Vertex([ halfX, -halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([-halfX,  halfY,  halfZ]), 
+            new Vertex([ halfX, -halfY,  halfZ]),
+            new Vertex([ halfX,  halfY,  halfZ]),
+            new Vertex([ halfX,  halfY,  halfZ]),
+            new Vertex([-halfX,  halfY,  halfZ]),
             new Vertex([-halfX, -halfY,  halfZ]),
 
             new Vertex([-halfX,  halfY,  halfZ]), 
@@ -582,8 +654,8 @@ var geometry_Geometry = {
             new Vertex([-halfX,  halfY, -halfZ]), 
         ];
 
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
-        return new Mesh(vertexArray);
+        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray);
     }
     
 }
@@ -6647,8 +6719,8 @@ THE SOFTWARE. */
 // CONCATENATED MODULE: ./src/lux.js
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return AttributePointer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return Vertex; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return VertexArray; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return Mesh; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return vertexArray_VertexArray; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glMatrix", function() { return common_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec2", function() { return vec2_namespaceObject; });

@@ -1,8 +1,8 @@
-export { AttributePointer } from './Geometry/attributePointer.js';
-export { Vertex } from './Geometry/vertex.js';
-export { VertexArray } from './Geometry/vertexArray.js'
-export { Mesh } from './Geometry/mesh.js';
-export { Geometry } from './Geometry/geometry.js';
+export { AttributePointer } from './Geometry/attributePointer';
+export { Vertex } from './Geometry/vertex';
+export { VertexArray } from './Geometry/vertexArray'
+export { Mesh } from './Geometry/mesh';
+export { Geometry } from './Geometry/geometry';
 
 export { 
     glMatrix, vec2, vec3,

@@ -1,4 +1,13 @@
 
+class WebGLRenderer{
+    constructor(canvas){
+        this.domElement = canvas;
+        
+    }
+}
+
+export let gl = new WebGLRenderer();
+
 function glInit(canvas){
     context = canvas.getContext("webgl2");
     if(!context){

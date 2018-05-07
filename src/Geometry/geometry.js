@@ -1,6 +1,19 @@
-import { Vertex } from './vertex.js';
-import { VertexArray } from './vertexArray.js';
-import { Mesh}  from './mesh.js';
+import { Vertex } from './vertex';
+import { VertexArray } from './vertexArray';
+import { Mesh }  from './mesh';
+import { AttributePointer } from './attributePointer';
+import { gl } from '../webgl'
+
+let VERTEX_LAYOUT = [
+    { 
+        name: 'position', 
+        attribute: new AttributePointer (0, 3, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 0)
+    },
+    { 
+        name: 'color',
+        attribute: new AttributePointer (1, 4, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT)
+    }
+];
 
 export var Geometry = {
     Triangle: function(size){
@@ -11,7 +24,7 @@ export var Geometry = {
             new Vertex([-halfS, -halfS, 0.0],   [0.0, 1.0, 0.0, 1.0]),
             new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0, 1.0])
         ];
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray);
     },
     Square: function(size){
@@ -27,7 +40,7 @@ export var Geometry = {
             0, 3, 1,
             1, 3, 2
         ]
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray, indices);
     },
     
@@ -44,10 +57,10 @@ export var Geometry = {
             new Vertex([-halfX, -halfY, -halfZ]), 
 
             new Vertex([-halfX, -halfY,  halfZ]),
-            new Vertex([ halfX, -halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([-halfX,  halfY,  halfZ]), 
+            new Vertex([ halfX, -halfY,  halfZ]),
+            new Vertex([ halfX,  halfY,  halfZ]),
+            new Vertex([ halfX,  halfY,  halfZ]),
+            new Vertex([-halfX,  halfY,  halfZ]),
             new Vertex([-halfX, -halfY,  halfZ]),
 
             new Vertex([-halfX,  halfY,  halfZ]), 
@@ -79,7 +92,7 @@ export var Geometry = {
             new Vertex([-halfX,  halfY, -halfZ]), 
         ];
 
-        let vertexArray = new VertexArray(vertices, G_VERTEX_LAYOUT);
+        let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray);
     }
     

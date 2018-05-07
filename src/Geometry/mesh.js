@@ -1,3 +1,5 @@
+import { gl } from '../webgl'
+
 export class Mesh{
     constructor(vertexArray, indices, usage){
         this.vertices = vertexArray;
@@ -6,10 +8,10 @@ export class Mesh{
         this.isIndexed = indices ? true : false;
         this.usage = usage || gl.STATIC_DRAW;
         this.binded = false;
-        this._initBuffers();
+        this.buffers = undefined;
     }
 
-    render(mode){
+    render(mode) {
         this.bind();
         if(this.isIndexed){
             gl.drawElements(mode, this.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -21,6 +23,8 @@ export class Mesh{
 
     bind(){
         if(!this.binded){
+            if(!this.buffers)
+                this._initBuffers();
             gl.bindVertexArray(this.buffers.VAO);
             this.binded = true;    
         }
