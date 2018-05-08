@@ -392,6 +392,70 @@ __webpack_require__.d(vec2_namespaceObject, "sqrDist", function() { return vec2_
 __webpack_require__.d(vec2_namespaceObject, "sqrLen", function() { return vec2_sqrLen; });
 __webpack_require__.d(vec2_namespaceObject, "forEach", function() { return vec2_forEach; });
 
+// CONCATENATED MODULE: ./src/webgl.js
+
+class WebGLRenderer{
+    constructor(canvas){
+        this.domElement = canvas || document.createElement('CANVAS');
+        this.context = this.domElement.getContext("webgl2");
+        if(!this.context){
+            this.context = this.domElement.getContext("experimental-webgl2");
+        }
+        
+        if(!this.context){
+            console.error('Your browser does not support webgl 2.')
+        }
+
+        this.isFullscreen = false;
+
+        this.context.viewport(0, 0, this.context.canvas.width, this.context.canvas.height);
+
+        let self = this;
+        this.onResize = function() {
+            let displayWidth = 0;
+            let displayHeight = 0;
+
+            if(self.isFullscreen) {
+                displayWidth = window.innerWidth;
+                displayHeight = window.innerHeight;
+            }
+            else {
+                displayWidth = self.domElement.clientWidth;
+                displayHeight = self.domElement.clientHeight;
+            }
+            
+            if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
+                self.domElement.width = displayWidth;
+                self.domElement.height = displayHeight;
+                self.context.viewport(0, 0, self.domElement.width, self.domElement.height);
+            }
+        }
+
+        window.addEventListener("resize", this.onResize);
+    }
+
+    fullscreen(isFullscreen){
+        this.isFullscreen = isFullscreen;
+        this.onResize();
+    }
+}
+
+let renderer = new WebGLRenderer();
+let gl = renderer.context;
+
+function glLoop(callback){
+    let lastTime = 0;
+    function _glLoop(nowTime){
+        nowTime *= 0.001; // Convert time to seconds
+        let deltaTime = nowTime - lastTime;
+        callback(deltaTime);
+        lastTime = nowTime;
+        requestAnimationFrame(_glLoop);
+    }
+    requestAnimationFrame(_glLoop);
+}
+
+
 // CONCATENATED MODULE: ./src/Geometry/attributePointer.js
 class AttributePointer{
     constructor(location, size, type, normalized, stride, offset){
@@ -404,13 +468,42 @@ class AttributePointer{
     }
 }
 // CONCATENATED MODULE: ./src/Geometry/vertex.js
-class Vertex{
-    constructor(vertex, color){
+
+
+
+let vertex_elementsPerVertex = 10;
+
+let vertex_bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+
+function vertex_toBytes(value){
+    return value * vertex_bytesPerElement;
+}
+
+let vertex_VERTEX_LAYOUT = [
+    { 
+        name: 'a_position',
+        attribute: new AttributePointer (0, 3, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), 0)
+    },
+    { 
+        name: 'a_normal', 
+        attribute: new AttributePointer (1, 3, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), vertex_toBytes(3))
+    },
+    { 
+        name: 'a_color',
+        attribute: new AttributePointer (2, 4, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), vertex_toBytes(6))
+    },
+];
+
+class vertex_Vertex{
+    constructor(vertex, normal, color){
         this.pos = vertex || [0.0, 0.0, 0.0];
+        this.normal = normal || [0.0, 1.0, 0.0];
         this.color = color || [1.0, 1.0, 1.0, 1.0];
     }
     toArray(){
-        let result = this.pos.concat(this.color);
+        let result = this.pos;
+        result = result.concat(this.normal);
+        result = result.concat(this.color);
         return result;
     }
 }
@@ -426,7 +519,7 @@ class vertexArray_VertexArray{
     }
 
     push(vertex) {
-        if(vertex instanceof Vertex){
+        if(vertex instanceof vertex_Vertex){
             this.vertices.push(vertex);
         }
     }
@@ -440,53 +533,6 @@ class vertexArray_VertexArray{
         return new Float32Array(result);
     }
 }
-// CONCATENATED MODULE: ./src/webgl.js
-
-class WebGLRenderer{
-    constructor(canvas){
-        this.domElement = canvas;
-        
-    }
-}
-
-let gl = new WebGLRenderer();
-
-function glInit(canvas){
-    context = canvas.getContext("webgl2");
-    if(!context){
-        context = canvas.getContext("experimental-webgl2");
-    }
-
-    if(!context){
-        console.error('Your browser does not support webgl 2.')
-    }
-    context.resize = function(){
-        var displayWidth = this.canvas.clientWidth;
-        var displayHeight = this.canvas.clientHeight;
-    
-        if (this.canvas.width != displayWidth || this.canvas.height != displayHeight){
-            this.canvas.width = displayWidth;
-            this.canvas.height = displayHeight;
-            this.viewport(0, 0, this.canvas.width, this.canvas.height);
-        }
-    }
-    context.viewport(0, 0, context.canvas.width, context.canvas.height);
-    return context;
-}
-
-function glLoop(callback){
-    let lastTime = 0;
-    function _glLoop(nowTime){
-        nowTime *= 0.001; // Convert time to seconds
-        let deltaTime = nowTime - lastTime;
-        callback(deltaTime);
-        lastTime = nowTime;
-        requestAnimationFrame(_glLoop);
-    }
-    requestAnimationFrame(_glLoop);
-}
-
-
 // CONCATENATED MODULE: ./src/Geometry/mesh.js
 
 
@@ -565,44 +611,32 @@ class mesh_Mesh{
 
 
 
-
-let geometry_VERTEX_LAYOUT = [
-    { 
-        name: 'position', 
-        attribute: new AttributePointer (0, 3, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 0)
-    },
-    { 
-        name: 'color',
-        attribute: new AttributePointer (1, 4, gl.FLOAT, false, 7 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT)
-    }
-];
-
-var geometry_Geometry = {
+let geometry_Geometry = {
     Triangle: function(size){
         const halfS = size * 0.5 || 0.5;
         let vertices = [
-            //position                      color
-            new Vertex([0.0, halfS, 0.0],     [1.0, 0.0, 0.0, 1.0]),
-            new Vertex([-halfS, -halfS, 0.0],   [0.0, 1.0, 0.0, 1.0]),
-            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0, 1.0])
+            //position                          normal              color
+            new vertex_Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0],    [1.0, 0.0, 0.0, 1.0]),
+            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0],    [0.0, 1.0, 0.0, 1.0]),
+            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0],    [0.0, 0.0, 1.0, 1.0])
         ];
-        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray);
     },
     Square: function(size){
         const halfS = size * 0.5 || 0.5
         let vertices = [
-            //position                       color
-            new Vertex([halfS, halfS, 0.0],     [1.0, 0.5, 0.2, 1.0]), // top right
-            new Vertex([halfS, -halfS, 0.0],    [1.0, 0.5, 0.2, 1.0]), // bottom right
-            new Vertex([-halfS, -halfS, 0.0],   [1.0, 0.5, 0.2, 1.0]), // bottom left
-            new Vertex([-halfS, halfS, 0.0],    [1.0, 0.5, 0.2, 1.0]) // top left
+            //position                           normal             color
+            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // top right
+            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // bottom right
+            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // bottom left
+            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]) // top left
         ];
         let indices = [
             0, 3, 1,
             1, 3, 2
         ]
-        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray, indices);
     },
     
@@ -610,54 +644,260 @@ var geometry_Geometry = {
         const halfX = sizeX * 0.5 || 0.5;
         const halfY = sizeY * 0.5 || 0.5;
         const halfZ = sizeZ * 0.5 || 0.5;
+
         let vertices = [
-            new Vertex([-halfX, -halfY, -halfZ]), 
-            new Vertex([ halfX, -halfY, -halfZ]),  
-            new Vertex([ halfX,  halfY, -halfZ]),
-            new Vertex([ halfX,  halfY, -halfZ]),  
-            new Vertex([-halfX,  halfY, -halfZ]), 
-            new Vertex([-halfX, -halfY, -halfZ]), 
-
-            new Vertex([-halfX, -halfY,  halfZ]),
-            new Vertex([ halfX, -halfY,  halfZ]),
-            new Vertex([ halfX,  halfY,  halfZ]),
-            new Vertex([ halfX,  halfY,  halfZ]),
-            new Vertex([-halfX,  halfY,  halfZ]),
-            new Vertex([-halfX, -halfY,  halfZ]),
-
-            new Vertex([-halfX,  halfY,  halfZ]), 
-            new Vertex([-halfX,  halfY, -halfZ]), 
-            new Vertex([-halfX, -halfY, -halfZ]), 
-            new Vertex([-halfX, -halfY, -halfZ]), 
-            new Vertex([-halfX, -halfY,  halfZ]), 
-            new Vertex([-halfX,  halfY,  halfZ]), 
-
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY, -halfZ]),  
-            new Vertex([ halfX, -halfY, -halfZ]),  
-            new Vertex([ halfX, -halfY, -halfZ]),  
-            new Vertex([ halfX, -halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-
-            new Vertex([-halfX, -halfY, -halfZ]), 
-            new Vertex([ halfX, -halfY, -halfZ]),  
-            new Vertex([ halfX, -halfY,  halfZ]),  
-            new Vertex([ halfX, -halfY,  halfZ]),  
-            new Vertex([-halfX, -halfY,  halfZ]), 
-            new Vertex([-halfX, -halfY, -halfZ]), 
-
-            new Vertex([-halfX,  halfY, -halfZ]), 
-            new Vertex([ halfX,  halfY, -halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([ halfX,  halfY,  halfZ]),  
-            new Vertex([-halfX,  halfY,  halfZ]), 
-            new Vertex([-halfX,  halfY, -halfZ]), 
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
+       
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+       
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
+       
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+       
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+       
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0])
         ];
 
-        let vertexArray = new vertexArray_VertexArray(vertices, geometry_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray);
     }
     
+}
+// CONCATENATED MODULE: ./src/shader.js
+
+
+
+
+class shader_Shader{
+
+    constructor(vertexShaderSource, fragmentShaderSource){
+        this.vsSource = vertexShaderSource;
+        this.fsSource = fragmentShaderSource;
+        
+        let vs = this._createShader(gl.VERTEX_SHADER, this.vsSource);
+        let fs = this._createShader(gl.FRAGMENT_SHADER, this.fsSource);
+        this.program = this._createProgram(vs, fs);
+
+        let attributeNames = [];
+        for(let attr of vertex_VERTEX_LAYOUT) {
+            attributeNames.push( attr.name );
+        }
+
+        this.attributes = Object.assign({}, this._getAttributeLocations(attributeNames));
+        this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
+        this.binded = false;
+    }
+
+    setMatrixUniforms(mModel, mView, mPerspective){
+        this.setMatrix("u_model", mModel);
+        this.setMatrix("u_view", mView);
+        this.setMatrix("u_perspective", mPerspective);
+    }
+
+    setFloat(name, value){
+        let location = this._getOrAddUniform(name);
+        if (location !== null){
+            gl.uniform1f(location, value);
+        }
+    }
+
+    setInt(name, value){
+        let location = this._getOrAddUniform(name);
+        if (location !== null){
+            gl.uniform1f(location, value);
+        }
+    }
+
+    setVecf(name, value){
+        let location = this._getOrAddUniform(name);
+        if (location !== null){
+            switch(value.length){
+                case 1:
+                    gl.uniform1fv(location, value);
+                    break;
+                case 2:
+                    gl.uniform2fv(location, value);
+                    break;
+                case 3:
+                    gl.uniform3fv(location, value);
+                    break;
+                case 4:
+                    gl.uniform4fv(location, value);
+                    break;
+                default:
+                    console.warn(`Vector length ${value.length} is not supported `);
+                    break;
+            }
+        }
+    }
+
+    setVeci(name, value){
+        let location = this._getOrAddUniform(name);
+        if (location !== null){
+            switch(value.length){
+                case 1:
+                    gl.uniform1iv(location, value);
+                    break;
+                case 2:
+                    gl.uniform2iv(location, value);
+                    break;
+                case 3:
+                    gl.uniform3iv(location, value);
+                    break;
+                case 4:
+                    gl.uniform4iv(location, value);
+                    break;
+                default:
+                    console.warn(`Vector length ${value.length} is not supported `);
+                    break;
+            }
+        }
+    }
+
+    setMatrix(name, value){
+        let location = this._getOrAddUniform(name);
+        if (location !== null){
+            switch(value.length){
+                case 4:
+                    gl.uniformMatrix2fv(location, false, value);
+                    break;
+                case 9:
+                    gl.uniformMatrix3fv(location, false, value);
+                    break;
+                case 16:
+                    gl.uniformMatrix4fv(location, false, value);
+                    break;
+                default:
+                    console.warn(`Matrix length ${value.length} is not supported `);
+                    break;
+            }
+        }
+    }
+
+    bind(){
+        if(!this.binded){
+            gl.useProgram(this.program);
+            this.binded = true;
+        }
+    }
+    unbind(){
+        gl.useProgram(null);
+        this.binded = false;
+    }
+
+    _getOrAddUniform(name){
+        if(!this.uniforms[name] && this.uniforms[name] !== null ){
+            let uniform = this._getUniformLocation(name);
+            this.uniforms = Object.assign(this.uniforms, uniform);
+            if (uniform[name] === null){
+                console.warn("No uniform with name " + name + " was found.");
+            }
+        }
+        return this.uniforms[name];
+    }
+
+    _createShader(type, source){
+        let shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+        if(!success){
+            console.error(gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+    }
+
+    _createProgram(vertexShader, fragmentShader){
+        let program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+
+        for(let i = 0; i < vertex_VERTEX_LAYOUT.length; i++){
+            gl.bindAttribLocation(program, i, vertex_VERTEX_LAYOUT[i].name );
+        }
+
+        gl.linkProgram(program);
+        let success = gl.getProgramParameter(program, gl.LINK_STATUS);
+        if(!success){
+            console.error(gl.getPrograInfoLog(program))
+            gl.deleteProgram(program);
+            return null;
+        }
+        return program;
+    }
+
+    _getLocation(type, name){
+        let result = {};
+        let location;
+
+        if(type == 'attribute')
+            location = gl.getAttribLocation(this.program, name);
+        else if(type == 'uniform')
+            location = gl.getUniformLocation(this.program, name);
+
+        result[name] = location;
+        return result;
+    }
+
+    _getAttributeLocation(attribute){
+        return this._getLocation('attribute', attribute);
+    }
+
+    _getAttributeLocations(attributes){
+        let result = {};
+        for(let attribute of attributes){
+            let location = this._getAttributeLocation(attribute);
+            result = Object.assign(result, location);
+        }
+        return result;
+    }
+
+    _getUniformLocation(uniform){
+        return this._getLocation('uniform', uniform);
+    }
+
+    _getUniformLocations(uniforms){
+        let result = {};
+        for(let uniform of uniforms){
+            let location = this._getUniformLocation(uniform);
+            if(location)
+                result = Object.assign(result, location);
+        }
+        return result;
+    }
 }
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -6717,11 +6957,16 @@ THE SOFTWARE. */
 
 
 // CONCATENATED MODULE: ./src/lux.js
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "renderer", function() { return renderer; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glLoop", function() { return glLoop; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return AttributePointer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return Vertex; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return vertex_Vertex; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return vertex_VERTEX_LAYOUT; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return vertexArray_VertexArray; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glMatrix", function() { return common_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec2", function() { return vec2_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec3", function() { return vec3_namespaceObject; });
@@ -6731,6 +6976,13 @@ THE SOFTWARE. */
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,8 @@
-class Shader{
+import { gl } from './webgl'
+import { VERTEX_LAYOUT } from './Geometry/vertex'
+
+
+export class Shader{
 
     constructor(vertexShaderSource, fragmentShaderSource){
         this.vsSource = vertexShaderSource;
@@ -7,7 +11,13 @@ class Shader{
         let vs = this._createShader(gl.VERTEX_SHADER, this.vsSource);
         let fs = this._createShader(gl.FRAGMENT_SHADER, this.fsSource);
         this.program = this._createProgram(vs, fs);
-        this.attributes = Object.assign({}, this._getAttributeLocations(['a_position', 'a_color']));
+
+        let attributeNames = [];
+        for(let attr of VERTEX_LAYOUT) {
+            attributeNames.push( attr.name );
+        }
+
+        this.attributes = Object.assign({}, this._getAttributeLocations(attributeNames));
         this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
         this.binded = false;
     }
@@ -138,8 +148,9 @@ class Shader{
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
 
-        gl.bindAttribLocation(program, 0, "a_position" );
-        gl.bindAttribLocation(program, 1, "a_color" );
+        for(let i = 0; i < VERTEX_LAYOUT.length; i++){
+            gl.bindAttribLocation(program, i, VERTEX_LAYOUT[i].name );
+        }
 
         gl.linkProgram(program);
         let success = gl.getProgramParameter(program, gl.LINK_STATUS);
