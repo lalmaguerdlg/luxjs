@@ -471,42 +471,57 @@ class AttributePointer{
 
 
 
-let vertex_elementsPerVertex = 10;
+class vertex_Vertex{
+    constructor(vertex, normal){
+        this.position = vertex || [0.0, 0.0, 0.0];
+        this.normal = normal || [0.0, 1.0, 0.0];
+    }
+    toArray(){
+        let result = this.position;
+        result = result.concat(this.normal);
+        return result;
+    }
+}
+
+let vertex_attributes = [
+    {name: "a_position", elements: 3 },
+    {name: "a_normal", elements: 3 },
+]
 
 let vertex_bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+
+function vertex_calculateElements(attribs){
+    let result = 0;
+    for(let attrib of attribs) {
+        result += attrib.elements;
+    }
+    return result;
+}
 
 function vertex_toBytes(value){
     return value * vertex_bytesPerElement;
 }
 
-let vertex_VERTEX_LAYOUT = [
-    { 
-        name: 'a_position',
-        attribute: new AttributePointer (0, 3, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), 0)
-    },
-    { 
-        name: 'a_normal', 
-        attribute: new AttributePointer (1, 3, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), vertex_toBytes(3))
-    },
-    { 
-        name: 'a_color',
-        attribute: new AttributePointer (2, 4, gl.FLOAT, false, vertex_toBytes(vertex_elementsPerVertex), vertex_toBytes(6))
-    },
-];
+let vertex_elementsPerVertex = vertex_calculateElements(vertex_attributes);
 
-class vertex_Vertex{
-    constructor(vertex, normal, color){
-        this.pos = vertex || [0.0, 0.0, 0.0];
-        this.normal = normal || [0.0, 1.0, 0.0];
-        this.color = color || [1.0, 1.0, 1.0, 1.0];
+function vertex_createLayout(attribs) {
+    let result = [];
+    let stride = vertex_toBytes(vertex_elementsPerVertex);
+    let offset = 0;
+    for(let i = 0; i < attribs.length ; i++) {
+        let attrib = attribs[i];
+        let location = i;
+        result.push( { 
+            name: attrib.name,
+            attribute: new AttributePointer(location, attrib.elements, gl.FLOAT, false, stride, offset)
+        });
+        offset += vertex_toBytes(attrib.elements);
     }
-    toArray(){
-        let result = this.pos;
-        result = result.concat(this.normal);
-        result = result.concat(this.color);
-        return result;
-    }
+    return result;
 }
+
+
+let vertex_VERTEX_LAYOUT = vertex_createLayout(vertex_attributes);
 // CONCATENATED MODULE: ./src/Geometry/vertexArray.js
 
 

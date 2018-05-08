@@ -1,39 +1,54 @@
 import { gl } from '../webgl'
 import { AttributePointer } from './attributePointer';
 
-let elementsPerVertex = 10;
+export class Vertex{
+    constructor(vertex, normal){
+        this.position = vertex || [0.0, 0.0, 0.0];
+        this.normal = normal || [0.0, 1.0, 0.0];
+    }
+    toArray(){
+        let result = this.position;
+        result = result.concat(this.normal);
+        return result;
+    }
+}
+
+let attributes = [
+    {name: "a_position", elements: 3 },
+    {name: "a_normal", elements: 3 },
+]
 
 let bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+
+function calculateElements(attribs){
+    let result = 0;
+    for(let attrib of attribs) {
+        result += attrib.elements;
+    }
+    return result;
+}
 
 function toBytes(value){
     return value * bytesPerElement;
 }
 
-export let VERTEX_LAYOUT = [
-    { 
-        name: 'a_position',
-        attribute: new AttributePointer (0, 3, gl.FLOAT, false, toBytes(elementsPerVertex), 0)
-    },
-    { 
-        name: 'a_normal', 
-        attribute: new AttributePointer (1, 3, gl.FLOAT, false, toBytes(elementsPerVertex), toBytes(3))
-    },
-    { 
-        name: 'a_color',
-        attribute: new AttributePointer (2, 4, gl.FLOAT, false, toBytes(elementsPerVertex), toBytes(6))
-    },
-];
+let elementsPerVertex = calculateElements(attributes);
 
-export class Vertex{
-    constructor(vertex, normal, color){
-        this.pos = vertex || [0.0, 0.0, 0.0];
-        this.normal = normal || [0.0, 1.0, 0.0];
-        this.color = color || [1.0, 1.0, 1.0, 1.0];
+function createLayout(attribs) {
+    let result = [];
+    let stride = toBytes(elementsPerVertex);
+    let offset = 0;
+    for(let i = 0; i < attribs.length ; i++) {
+        let attrib = attribs[i];
+        let location = i;
+        result.push( { 
+            name: attrib.name,
+            attribute: new AttributePointer(location, attrib.elements, gl.FLOAT, false, stride, offset)
+        });
+        offset += toBytes(attrib.elements);
     }
-    toArray(){
-        let result = this.pos;
-        result = result.concat(this.normal);
-        result = result.concat(this.color);
-        return result;
-    }
+    return result;
 }
+
+
+export let VERTEX_LAYOUT = createLayout(attributes);
