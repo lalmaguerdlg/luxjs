@@ -8,9 +8,9 @@ export let Geometry = {
         const halfS = size * 0.5 || 0.5;
         let vertices = [
             //position                          normal              color
-            new Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0],    [1.0, 0.0, 0.0, 1.0]),
-            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0],    [0.0, 1.0, 0.0, 1.0]),
-            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0],    [0.0, 0.0, 1.0, 1.0])
+            new Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0]),
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]),
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0])
         ];
         let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray);
@@ -19,10 +19,10 @@ export let Geometry = {
         const halfS = size * 0.5 || 0.5
         let vertices = [
             //position                           normal             color
-            new Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // top right
-            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // bottom right
-            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]), // bottom left
-            new Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0],    [1.0, 0.5, 0.2, 1.0]) // top left
+            new Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0]), // top right
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0]), // bottom right
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]), // bottom left
+            new Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0]) // top left
         ];
         let indices = [
             0, 3, 1,
@@ -40,7 +40,7 @@ export let Geometry = {
         let vertices = [
            new Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]),
            new Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]),
            new Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
            new Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
            new Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 

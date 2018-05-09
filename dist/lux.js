@@ -392,7 +392,7 @@ __webpack_require__.d(vec2_namespaceObject, "sqrDist", function() { return vec2_
 __webpack_require__.d(vec2_namespaceObject, "sqrLen", function() { return vec2_sqrLen; });
 __webpack_require__.d(vec2_namespaceObject, "forEach", function() { return vec2_forEach; });
 
-// CONCATENATED MODULE: ./src/webgl.js
+// CONCATENATED MODULE: ./src/Render/webgl.js
 
 class WebGLRenderer{
     constructor(canvas){
@@ -456,7 +456,7 @@ function glLoop(callback){
 }
 
 
-// CONCATENATED MODULE: ./src/Geometry/attributePointer.js
+// CONCATENATED MODULE: ./src/Render/Geometry/attributePointer.js
 class AttributePointer{
     constructor(location, size, type, normalized, stride, offset){
         this.location = location;
@@ -467,7 +467,7 @@ class AttributePointer{
         this.offset = offset;
     }
 }
-// CONCATENATED MODULE: ./src/Geometry/vertex.js
+// CONCATENATED MODULE: ./src/Render/Geometry/vertex.js
 
 
 
@@ -522,7 +522,7 @@ function vertex_createLayout(attribs) {
 
 
 let vertex_VERTEX_LAYOUT = vertex_createLayout(vertex_attributes);
-// CONCATENATED MODULE: ./src/Geometry/vertexArray.js
+// CONCATENATED MODULE: ./src/Render/Geometry/vertexArray.js
 
 
 class vertexArray_VertexArray{
@@ -548,7 +548,7 @@ class vertexArray_VertexArray{
         return new Float32Array(result);
     }
 }
-// CONCATENATED MODULE: ./src/Geometry/mesh.js
+// CONCATENATED MODULE: ./src/Render/Geometry/mesh.js
 
 
 class mesh_Mesh{
@@ -620,7 +620,7 @@ class mesh_Mesh{
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 }
-// CONCATENATED MODULE: ./src/Geometry/geometry.js
+// CONCATENATED MODULE: ./src/Render/Geometry/geometry.js
 
 
 
@@ -709,7 +709,7 @@ let geometry_Geometry = {
     }
     
 }
-// CONCATENATED MODULE: ./src/shader.js
+// CONCATENATED MODULE: ./src/Render/shader.js
 
 
 

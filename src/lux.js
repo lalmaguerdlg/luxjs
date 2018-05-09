@@ -1,13 +1,13 @@
-export { renderer } from './webgl'
-export { gl } from './webgl'
-export { glLoop } from './webgl'
-export { AttributePointer } from './Geometry/attributePointer';
-export { Vertex } from './Geometry/vertex';
-export { VERTEX_LAYOUT } from './Geometry/vertex';
-export { VertexArray } from './Geometry/vertexArray'
-export { Mesh } from './Geometry/mesh';
-export { Geometry } from './Geometry/geometry';
-export { Shader } from './shader'
+export { renderer } from './Render/webgl'
+export { gl } from './Render/webgl'
+export { glLoop } from './Render/webgl'
+export { AttributePointer } from './Render/Geometry/attributePointer';
+export { Vertex } from './Render/Geometry/vertex';
+export { VERTEX_LAYOUT } from './Render/Geometry/vertex';
+export { VertexArray } from './Render/Geometry/vertexArray'
+export { Mesh } from './Render/Geometry/mesh';
+export { Geometry } from './Render/Geometry/geometry';
+export { Shader } from './Render/shader'
 
 export { 
     glMatrix, vec2, vec3,
