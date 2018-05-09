@@ -4,7 +4,8 @@ import { VERTEX_LAYOUT } from './Geometry/vertex'
 
 export class Shader{
 
-    constructor(vertexShaderSource, fragmentShaderSource){
+    constructor(vertexShaderSource, fragmentShaderSource, shaderName){
+        this.name = shaderName || "";
         this.vsSource = vertexShaderSource;
         this.fsSource = fragmentShaderSource;
         
@@ -59,7 +60,7 @@ export class Shader{
                     gl.uniform4fv(location, value);
                     break;
                 default:
-                    console.warn(`Vector length ${value.length} is not supported `);
+                    console.warn(`${this.name}: Vector length ${value.length} is not supported `);
                     break;
             }
         }
@@ -82,7 +83,7 @@ export class Shader{
                     gl.uniform4iv(location, value);
                     break;
                 default:
-                    console.warn(`Vector length ${value.length} is not supported `);
+                    console.warn(`${this.name}: Vector length ${value.length} is not supported `);
                     break;
             }
         }
@@ -102,9 +103,50 @@ export class Shader{
                     gl.uniformMatrix4fv(location, false, value);
                     break;
                 default:
-                    console.warn(`Matrix length ${value.length} is not supported `);
+                    console.warn(`${this.name}: Matrix length ${value.length} is not supported `);
                     break;
             }
+        }
+    }
+
+    setStruct(name, obj, varType){
+
+        let vType = varType || gl.FLOAT;
+        let self = this;
+        let _setStruct = function(name, obj, varType) {
+            for(let prop in obj){
+                let fullname = `${name}.${prop}`;
+                let val = obj[prop];
+                if(Array.isArray(val)){
+                    if(val.length <= 4) { 
+                        if(varType == gl.FLOAT)
+                            self.setVecf(fullname, val);
+                        else if( varType == gl.INT)
+                            self.setVeci(fullname, val);
+                    }
+                    else {
+                        self.setMatrix(fullname, val);
+                    }
+                }
+                else {
+                    if(varType == gl.FLOAT)
+                        self.setFloat(fullname, val);
+                    else if( varType == gl.INT)
+                        self.setInt(fullname, val);
+                    
+                }
+            }
+        }
+
+        if(Array.isArray(obj)) {
+            for(let i = 0; i < obj.length; i++){
+                let element = obj[i];
+                let indexedName = `${name}[${i}]`;
+                _setStruct(indexedName, element, vType);
+            }
+        }
+        else {
+            _setStruct(name, obj, vType);
         }
     }
 
@@ -124,7 +166,7 @@ export class Shader{
             let uniform = this._getUniformLocation(name);
             this.uniforms = Object.assign(this.uniforms, uniform);
             if (uniform[name] === null){
-                console.warn("No uniform with name " + name + " was found.");
+                console.warn(this.name + ": No uniform with name " + name + " was found.");
             }
         }
         return this.uniforms[name];
@@ -155,7 +197,7 @@ export class Shader{
         gl.linkProgram(program);
         let success = gl.getProgramParameter(program, gl.LINK_STATUS);
         if(!success){
-            console.error(gl.getPrograInfoLog(program))
+            console.error(gl.getProgramInfoLog(program))
             gl.deleteProgram(program);
             return null;
         }

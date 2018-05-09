@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL</title>
+    
+    <style>
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0px;
+          border: 0;
+          overflow: hidden; /*  Disable scrollbars */
+          display: block;  /* No floating content on sides */
+        }
+
+        /*canvas {
+            box-sizing: border-box;
+            border-style: none;
+            margin: 0px;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }*/
+    </style>
+    
+</head>
+<body>
+    <div id="canvasContainer"></div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="libs/lux.js"></script>
+    <script type="text/javascript" src="vertex-example.js"></script>
+    <script id="color-vs" type="x-shader/x-vertex">#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+      
+        void main(void) {
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }
+    </script>
+    <script id="color-fs" type="x-shader/x-fragment">#version 300 es
+        precision mediump float;
+        
+        uniform vec3 u_materialColor;
+
+        out vec4 outputColor;
+        void main(void) {
+            outputColor = vec4(u_materialColor, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }
+    </script>
+    <script id="normal-color-vs" type="x-shader/x-vertex">#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+      
+        out vec3 normal;
+        void main(void) {
+            normal = (u_mNormal * vec4(a_normal, 0.0)).xyz;
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }
+    </script>
+    <script id="normal-color-fs" type="x-shader/x-fragment">#version 300 es
+        precision mediump float;
+        
+        uniform vec3 u_materialColor;
+
+        in vec3 normal;
+
+        out vec4 outputColor;
+        void main(void) {
+            
+            outputColor =  vec4(normal, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }
+    </script>
+    <script id="lambert-vs" type="x-shader/x-vertex">#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+
+        out vec3 normal;
+        out vec3 fragPos;
+        void main(void) {
+            normal = vec3(u_mNormal * vec4(a_normal, 0.0));
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }
+    </script>
+    <script id="lambert-fs" type="x-shader/x-fragment">#version 300 es
+        precision mediump float;
+        
+        in vec3 normal;
+        in vec3 fragPos;
+
+        struct Light{
+            vec3 position;
+
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+        
+        struct Material{
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+            float shininess;
+        };
+
+        uniform Light u_light;
+        uniform Material u_material;
+
+        out vec4 outputColor;
+        void main(void) {
+
+            // Ambient color
+            vec3 ambient = u_light.ambient * u_material.ambient;
+
+            // Light direction
+            vec3 norm = normalize(normal);
+            vec3 lightDir = normalize(u_light.position - fragPos);
+
+            // diffuse color
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+
+            vec3 result = ambient + diffuse;
+
+            outputColor = vec4(result, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }
+    </script>
+    <script id="phong-vs" type="x-shader/x-vertex">#version 300 es
+        precision mediump float;
+
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+
+        struct Light{
+            vec3 position;
+
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+
+        uniform Light u_light;
+
+
+        uniform vec3 u_viewPos;
+        uniform float time;
+
+        uniform float u_maxDistance;
+
+        out vec3 normal;
+        out vec3 fragPos;
+
+        vec4 when_gt(vec4 x, vec4 y) {
+            return max(sign(x - y), 0.0);
+        }
+
+        void main(void) {
+
+            vec3 vertex = a_position;
+            vec4 objectPosition = u_model * vec4(vec3(0.0), 1.0);
+            vec4 worldSpaceVertex = u_model * vec4(vertex, 1.0);
+            vec3 dir = (objectPosition.xyz - u_light.position.xyz);
+            float dist = min(length(dir) / u_maxDistance, 1.0);
+            dir = normalize(dir);
+            //float dist = min(length(u_light.position.xyz - worldSpaceVertex.xyz) / u_maxDistance, 1.0);
+            float disp = mix( 1.0, 0.0, dist);
+            vec3 scale = vec3(mix(0.0, 1.0, dist));
+            vec3 translation = vec3(disp * 5.0) * dir;
+            //vertex = vertex.xyz * scale;
+            vertex = (vertex * scale) + translation;
+            gl_Position = u_perspective * u_view * u_model * vec4(vertex, 1.0);
+
+            normal = vec3(u_mNormal * vec4(a_normal, 0.0));
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+            
+        }
+    </script>
+    <script id="phong-fs" type="x-shader/x-fragment">#version 300 es
+        precision mediump float;
+        
+        in vec3 normal;
+        in vec3 fragPos;
+
+        struct Light{
+            vec3 position;
+
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+        
+        struct Material{
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+            float shininess;
+        };
+
+        uniform Light u_light;
+        uniform Material u_material;
+
+        uniform vec3 u_viewPos;
+
+        out vec4 outputColor;
+        void main(void) {
+
+            // Ambient color
+            vec3 ambient = u_light.ambient * u_material.ambient;
+
+            // Light direction
+            vec3 norm = normalize(normal);
+            vec3 lightDir = normalize(u_light.position - fragPos);
+
+            // diffuse color
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+
+            // Specular color
+
+            // Energy conservation for specular shininess
+            const float kPi = 3.14159265;
+            float kShininess = u_material.shininess;
+            float kEnergyConservation = ( 8.0 + kShininess ) / ( 8.0 * kPi );
+
+
+            vec3 viewDir = normalize(u_viewPos - fragPos);
+            vec3 reflectDir = reflect(-lightDir, norm);
+            vec3 halfwayDir = normalize(lightDir + viewDir);
+
+            float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), kShininess);
+
+            //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
+            vec3 specular = u_light.specular * (spec * u_material.diffuse);
+
+            vec3 result = ambient + diffuse + specular;
+            outputColor = vec4(result, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }
+    </script>
+</body>
+</html>

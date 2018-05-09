@@ -29,7 +29,7 @@
 <body>
     <div id="canvasContainer"></div>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../dist/lux.js"></script>
+    <script type="text/javascript" src="../../dist/lux.js"></script>
     <script type="text/javascript" src="test.js"></script>
     <script id="color-vs" type="x-shader/x-vertex">#version 300 es
         in vec3 a_position;
@@ -154,6 +154,8 @@
         }
     </script>
     <script id="phong-vs" type="x-shader/x-vertex">#version 300 es
+        precision mediump float;
+
         in vec3 a_position;
         in vec3 a_normal;
       
@@ -164,9 +166,17 @@
 
         out vec3 normal;
         out vec3 fragPos;
+
+        vec4 when_gt(vec4 x, vec4 y) {
+            return max(sign(x - y), 0.0);
+        }
+
         void main(void) {
+
+
             normal = vec3(u_mNormal * vec4(a_normal, 0.0));
             fragPos = vec3(u_model * vec4(a_position, 1.0));
+
             gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
         }
     </script>
@@ -195,7 +205,6 @@
         uniform Material u_material;
 
         uniform vec3 u_viewPos;
-
 
         out vec4 outputColor;
         void main(void) {
