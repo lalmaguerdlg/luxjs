@@ -195,7 +195,6 @@
             vec3 dir = (objectPosition.xyz - u_light.position.xyz);
             float dist = min(length(dir) / u_maxDistance, 1.0);
             dir = normalize(dir);
-            //float dist = min(length(u_light.position.xyz - worldSpaceVertex.xyz) / u_maxDistance, 1.0);
             float disp = mix( 1.0, 0.0, dist);
             vec3 scale = vec3(mix(0.0, 1.0, dist));
             vec3 translation = vec3(disp * 5.0) * dir;

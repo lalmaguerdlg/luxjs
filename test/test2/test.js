@@ -99,25 +99,21 @@ function render(dt){
     cubeMesh.render(gl.TRIANGLES);
     color_shader.unbind();    
     phong_shader.bind();
-    for(let j = 0; j < 10; j++) {
-        for(let i = 0; i < 10; i++) {
-            lux.mat4.identity(mModel);
-            //lux.mat4.translate(mModel, mModel, [0.0, Math.sin(t), 0.0]);
-            lux.mat4.translate(mModel, mModel, [j, i, 0.0]);
-            //lux.mat4.rotate(mModel, mModel, -t, [0.0, 1.0, 0.0]);
-            lux.mat4.invert(mNormal, mModel);
-            lux.mat4.transpose(mNormal, mNormal);
-            
-            phong_shader.setMatrixUniforms(mModel, mView, mPerspective);
-            phong_shader.setMatrix('u_mNormal', mNormal);
-            phong_shader.setVecf('u_viewPos', cameraPos);
+    lux.mat4.identity(mModel);
+    //lux.mat4.translate(mModel, mModel, [0.0, Math.sin(t), 0.0]);
+    lux.mat4.translate(mModel, mModel, [j, i, 0.0]);
+    //lux.mat4.rotate(mModel, mModel, -t, [0.0, 1.0, 0.0]);
+    lux.mat4.invert(mNormal, mModel);
+    lux.mat4.transpose(mNormal, mNormal);
+    
+    phong_shader.setMatrixUniforms(mModel, mView, mPerspective);
+    phong_shader.setMatrix('u_mNormal', mNormal);
+    phong_shader.setVecf('u_viewPos', cameraPos);
 
-            phong_shader.setStruct("u_light", light);
-            phong_shader.setStruct("u_material", orange_material);
+    phong_shader.setStruct("u_light", light);
+    phong_shader.setStruct("u_material", orange_material);
 
-            cubeMesh.render(gl.TRIANGLES);
-        }
-    }
+    cubeMesh.render(gl.TRIANGLES);
     phong_shader.unbind();
 }
 
