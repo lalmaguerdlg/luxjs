@@ -1,6 +1,7 @@
 import { BaseMaterial } from './baseMaterial'
 import { MaterialTag } from './baseMaterial'
 import { RM } from '../../Core/resourceManager'
+import { mat4 } from 'gl-matrix';
 
 let shaderSource = {
     vs: 
@@ -42,11 +43,18 @@ export class NormalMaterial extends BaseMaterial{
         args['tag'] = args['tag'] || MaterialTag.unlit;
         let shader = RM.createShader('normal-shader', shaderSource.vs, shaderSource.ps);
         super(shader, args);
-        this.mNormal = args['mNormal'] || [];
+        this.mNormal;
     }
 
-    setup(){
+    setup() {
         super.setup();
+    }
+
+    update() {
+        super.update();
+        if(!this.mNormal) this.mNormal = mat4.create();
+        mat4.invert(this.mNormal, this.mModel);
+        mat4.transpose(this.mNormal, this.mNormal);
         this.shader.setMatrix('u_mNormal', this.mNormal);
     }
 } 

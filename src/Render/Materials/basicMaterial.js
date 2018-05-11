@@ -48,6 +48,10 @@ export class BasicMaterial extends BaseMaterial{
 
     setup(){
         super.setup();
+    }
+
+    update() {
+        super.update();
         this.shader.setStruct('u_material', {
             emission: this.color
         });

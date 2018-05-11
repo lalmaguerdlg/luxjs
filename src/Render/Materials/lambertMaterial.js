@@ -86,7 +86,10 @@ export class LambertMaterial extends BaseMaterial{
 
     setup(){
         super.setup();
-        this.shader.setMatrix('u_mNormal', this.mNormal);
+    }
+    
+    update() {
+        super.update();
         this.shader.setStruct('u_light', this.light);
         this.shader.setStruct('u_material', {
             ambient: this.ambient,

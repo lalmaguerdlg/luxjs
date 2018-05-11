@@ -432,13 +432,26 @@ class WebGLRenderer{
         }
 
         window.addEventListener("resize", this.onResize);
+
+        this.setup();
+    }
+
+    setup(){
+        
     }
 
     fullscreen(isFullscreen){
         this.isFullscreen = isFullscreen;
         this.onResize();
     }
+    
+    setClearColor(r, g, b, a){
+        this.context.clearColor(r, g, b, a);
+    }
 }
+
+
+
 
 let renderer = new WebGLRenderer();
 let gl = renderer.context;
@@ -575,12 +588,20 @@ class shader_Shader{
     }
 
     setMatrixUniforms(mModel, mView, mPerspective){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         this.setMatrix("u_model", mModel);
         this.setMatrix("u_view", mView);
         this.setMatrix("u_perspective", mPerspective);
     }
 
     setFloat(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             gl.uniform1f(location, value);
@@ -588,6 +609,10 @@ class shader_Shader{
     }
 
     setInt(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             gl.uniform1f(location, value);
@@ -595,6 +620,10 @@ class shader_Shader{
     }
 
     setVecf(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -618,6 +647,10 @@ class shader_Shader{
     }
 
     setVeci(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -641,6 +674,10 @@ class shader_Shader{
     }
 
     setMatrix(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -661,7 +698,10 @@ class shader_Shader{
     }
 
     setStruct(name, obj, varType){
-
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let vType = varType || gl.FLOAT;
         let self = this;
         let _setStruct = function(name, obj, varType) {
@@ -1007,153 +1047,6 @@ class resourceManager_ResourceManager{
 
 
 let resourceManager_RM = new resourceManager_ResourceManager();
-// CONCATENATED MODULE: ./src/Render/Materials/baseMaterial.js
-//import { Shader } from './shader'
-
-
-
-let baseMaterial_MaterialTag = {
-    'none': 0,
-    'unlit': 1,
-    'lit': 2,
-    'translucent': 3
-}
-
-Object.freeze(baseMaterial_MaterialTag);
-
-class baseMaterial_BaseMaterial {
-    constructor(shader, vargs) {
-        let args = vargs || {};
-        this.shader = shader;
-        this.drawMode = args['drawMode'] || gl.TRIANGLES;
-        this.cullMode = args['cullMode'] || gl.BACK;
-        this.tag = args['tag'] || baseMaterial_MaterialTag.none;
-        this.uniformType = gl.FLOAT;
-    }
-
-    setup(){
-        gl.cullFace(this.cullMode);
-    }
-
-    updateMatrix(mModel, mView, mPerspective){
-        this.shader.setMatrixUniforms(mModel, mView, mPerspective);
-    }
-
-    use(){
-        resourceManager_RM.bindShader(this.shader);
-        //this.setup();
-    }
-}
-
-// CONCATENATED MODULE: ./src/Render/Materials/basicMaterial.js
-
-
-
-
-let basicMaterial_basicShaderSource = {
-    vs: 
-        `#version 300 es
-        in vec3 a_position;
-        in vec3 a_normal;
-    
-        uniform mat4 u_model;
-        uniform mat4 u_view;
-        uniform mat4 u_perspective;
-    
-        void main(void) {
-            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
-        }`,
-    ps: 
-        `#version 300 es
-        precision mediump float;
-        
-        struct Unlit_Material {
-            vec3 emission;
-        };
-
-        uniform Unlit_Material u_material;
-
-        out vec4 outputColor;
-        void main(void) {
-            outputColor = vec4(u_material.emission, 1.0);
-
-            // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
-        }`,
-}
-
-
-class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
-    constructor(vargs){
-        let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
-        let shader = resourceManager_RM.createShader('basic-shader', basicMaterial_basicShaderSource.vs, basicMaterial_basicShaderSource.ps);
-        super(shader, args);
-
-        this.color = args['color'] || [1.0, 1.0, 1.0];
-    }
-
-    setup(){
-        super.setup();
-        this.shader.setStruct('u_material', {
-            emission: this.color
-        });
-    }
-} 
-// CONCATENATED MODULE: ./src/Render/Materials/normalMaterial.js
-
-
-
-
-let normalMaterial_shaderSource = {
-    vs: 
-        `#version 300 es
-        in vec3 a_position;
-        in vec3 a_normal;
-      
-        uniform mat4 u_model;
-        uniform mat4 u_view;
-        uniform mat4 u_perspective;
-        uniform mat4 u_mNormal;
-      
-        out vec3 normal;
-        void main(void) {
-            normal = (u_mNormal * vec4(a_normal, 0.0)).xyz;
-            normal = normalize(normal);
-            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
-        }`,
-    ps: 
-        `#version 300 es
-        precision mediump float;
-
-        in vec3 normal;
-
-        out vec4 outputColor;
-        void main(void) {
-            outputColor =  vec4(abs(normal), 1.0);
-
-            // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
-        }`,
-}
-
-
-class normalMaterial_NormalMaterial extends baseMaterial_BaseMaterial{
-    constructor(vargs){
-        let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
-        let shader = resourceManager_RM.createShader('normal-shader', normalMaterial_shaderSource.vs, normalMaterial_shaderSource.ps);
-        super(shader, args);
-        this.mNormal = args['mNormal'] || [];
-    }
-
-    setup(){
-        super.setup();
-        this.shader.setMatrix('u_mNormal', this.mNormal);
-    }
-} 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
@@ -7211,6 +7104,200 @@ THE SOFTWARE. */
 
 
 
+// CONCATENATED MODULE: ./src/Render/Materials/baseMaterial.js
+//import { Shader } from './shader'
+
+
+
+
+let baseMaterial_MaterialTag = {
+    'none': 0,
+    'unlit': 1,
+    'lit': 2,
+    'translucent': 3
+}
+
+Object.freeze(baseMaterial_MaterialTag);
+
+class baseMaterial_BaseMaterial {
+    constructor(shader, vargs) {
+        let args = vargs || {};
+        this.shader = shader;
+        this.drawMode = args['drawMode'] || gl.TRIANGLES;
+        this.culling = args['culling'] || { enable: false, mode: gl.BACK };
+        this.depthTest = args['depthTest'] || true;
+        this.tag = args['tag'] || baseMaterial_MaterialTag.none;
+        this.uniformType = gl.FLOAT;
+
+        this.mModel;
+        this.mView;
+        this.mPerspective;
+    }
+
+    setup(){
+
+        if(this.depthTest) gl.enable(gl.DEPTH_TEST);
+        else gl.disable(gl.DEPTH_TEST);
+        if(this.culling.enable){
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(this.culling.mode);
+        }else{
+            gl.disable(gl.CULL_FACE);
+        }
+            
+    }
+
+    setMatrices(mModel, mView, mPerspective){
+        this.mModel = mModel;
+        this.mView = mView;
+        this.mPerspective = mPerspective;
+        if(this.tag == baseMaterial_MaterialTag.lit ||
+            this.tag == baseMaterial_MaterialTag.translucent) {
+            if(!this.mNormal) this.mNormal = mat4_namespaceObject.create();
+            lux.mat4.invert(this.mNormal, mModel);
+            lux.mat4.transpose(this.mNormal, this.mNormal);
+        }
+    }
+
+    update(){ 
+        this.shader.setMatrixUniforms(mModel, mView, mPerspective);
+        if(this.tag == baseMaterial_MaterialTag.lit ||
+            this.tag == baseMaterial_MaterialTag.translucent) {
+            if(!this.mNormal) this.mNormal = mat4_namespaceObject.create();
+            this.shader.setMatrix('u_mNormal', this.mNormal);
+        }
+    }
+
+    use(){
+        if(!this.shader.binded){
+            resourceManager_RM.bindShader(this.shader);
+            this.setup();
+        }
+        this.update();
+    }
+}
+
+// CONCATENATED MODULE: ./src/Render/Materials/basicMaterial.js
+
+
+
+
+let basicMaterial_basicShaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+    
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+    
+        void main(void) {
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+        
+        struct Unlit_Material {
+            vec3 emission;
+        };
+
+        uniform Unlit_Material u_material;
+
+        out vec4 outputColor;
+        void main(void) {
+            outputColor = vec4(u_material.emission, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
+        let shader = resourceManager_RM.createShader('basic-shader', basicMaterial_basicShaderSource.vs, basicMaterial_basicShaderSource.ps);
+        super(shader, args);
+
+        this.color = args['color'] || [1.0, 1.0, 1.0];
+    }
+
+    setup(){
+        super.setup();
+    }
+
+    update() {
+        super.update();
+        this.shader.setStruct('u_material', {
+            emission: this.color
+        });
+    }
+} 
+// CONCATENATED MODULE: ./src/Render/Materials/normalMaterial.js
+
+
+
+
+
+let normalMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+      
+        out vec3 normal;
+        void main(void) {
+            normal = (u_mNormal * vec4(a_normal, 0.0)).xyz;
+            normal = normalize(normal);
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec3 normal;
+
+        out vec4 outputColor;
+        void main(void) {
+            outputColor =  vec4(abs(normal), 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class normalMaterial_NormalMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
+        let shader = resourceManager_RM.createShader('normal-shader', normalMaterial_shaderSource.vs, normalMaterial_shaderSource.ps);
+        super(shader, args);
+        this.mNormal;
+    }
+
+    setup() {
+        super.setup();
+    }
+
+    update() {
+        super.update();
+        if(!this.mNormal) this.mNormal = mat4_namespaceObject.create();
+        mat4_namespaceObject.invert(this.mNormal, this.mModel);
+        mat4_namespaceObject.transpose(this.mNormal, this.mNormal);
+        this.shader.setMatrix('u_mNormal', this.mNormal);
+    }
+} 
 // CONCATENATED MODULE: ./src/Render/Materials/lambertMaterial.js
 
 
@@ -7300,7 +7387,10 @@ class lambertMaterial_LambertMaterial extends baseMaterial_BaseMaterial{
 
     setup(){
         super.setup();
-        this.shader.setMatrix('u_mNormal', this.mNormal);
+    }
+    
+    update() {
+        super.update();
         this.shader.setStruct('u_light', this.light);
         this.shader.setStruct('u_material', {
             ambient: this.ambient,
@@ -7420,12 +7510,15 @@ class phongMaterial_PhongMaterial extends baseMaterial_BaseMaterial{
         this.diffuse = args['diffuse'] || [1.0, 1.0, 1.0];
         this.specular = args['specular'] || [1.0, 1.0, 1.0];
         this.shininess = args['shininess'] || 8.0;
-        this.mNormal = args['mNormal'] || mat4_namespaceObject.create();
         this.viewPos = args['viewPos'] || [0.0, 0.0, 0.0];
     }
 
     setup(){
         super.setup();
+    }
+
+    update() { 
+        super.update();
         this.shader.setMatrix('u_mNormal', this.mNormal);
         this.shader.setVecf('u_viewPos', this.viewPos);
         this.shader.setStruct('u_light', this.light);
@@ -7489,6 +7582,8 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return baseMaterial_BaseMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return baseMaterial_MaterialTag; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BasicMaterial", function() { return basicMaterial_BasicMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return normalMaterial_NormalMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return lambertMaterial_LambertMaterial; });
@@ -7505,6 +7600,8 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
+
+
 
 
 

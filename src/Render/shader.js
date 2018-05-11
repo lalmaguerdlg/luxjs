@@ -24,12 +24,20 @@ export class Shader{
     }
 
     setMatrixUniforms(mModel, mView, mPerspective){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         this.setMatrix("u_model", mModel);
         this.setMatrix("u_view", mView);
         this.setMatrix("u_perspective", mPerspective);
     }
 
     setFloat(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             gl.uniform1f(location, value);
@@ -37,6 +45,10 @@ export class Shader{
     }
 
     setInt(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             gl.uniform1f(location, value);
@@ -44,6 +56,10 @@ export class Shader{
     }
 
     setVecf(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -67,6 +83,10 @@ export class Shader{
     }
 
     setVeci(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -90,6 +110,10 @@ export class Shader{
     }
 
     setMatrix(name, value){
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let location = this._getOrAddUniform(name);
         if (location !== null){
             switch(value.length){
@@ -110,7 +134,10 @@ export class Shader{
     }
 
     setStruct(name, obj, varType){
-
+        if(!this.binded) {
+            console.warn(this.name + ': Could not set unifoms. This shader is not currently binded');
+            return;
+        }
         let vType = varType || gl.FLOAT;
         let self = this;
         let _setStruct = function(name, obj, varType) {

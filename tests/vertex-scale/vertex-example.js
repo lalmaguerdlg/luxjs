@@ -1,8 +1,8 @@
 let gl;
-let color_shader;
-let normal_shader;
-let lambert_shader;
-let phong_shader;
+let basicMaterial;
+let vertexDispMaterial;
+
+let light;
 
 function main() {
 
@@ -14,27 +14,24 @@ function main() {
     gl.clearColor(0.1, 0.1, 0.1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    let vs = getShaderSource("color-vs");
-    let fs = getShaderSource("color-fs");
-    color_shader = new lux.Shader(vs, fs, "Color shader");
+    light = new lux.PointLight({
+        position: [0.0, 0.0, 0.0],
+        ambient: [0.2, 0.2, 0.2],
+        diffuse: [1.0, 1.0, 1.0],
+        specular: [1.0, 1.0, 1.0],
+    });
 
-    vs = getShaderSource("normal-color-vs");
-    fs = getShaderSource("normal-color-fs");
-    normal_shader = new lux.Shader(vs, fs, "Normal shader");
-
-    vs = getShaderSource("lambert-vs");
-    fs = getShaderSource("lambert-fs");
-    lambert_shader = new lux.Shader(vs, fs, "Lambert shader");
-
-    vs = getShaderSource("phong-vs");
-    fs = getShaderSource("phong-fs");
-    phong_shader = new lux.Shader(vs, fs, "Phong shader");
-
+    basicMaterial = new lux.BasicMaterial();
+    vertexDispMaterial = new VertexDispMaterial({
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2],
+        specular: [1.0, 1.0, 1.0],
+        shininess: 16
+    });
+    
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.cullFace(gl.BACK);
+    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
     
     lux.glLoop(render);
 }
@@ -46,32 +43,9 @@ let mView = lux.mat4.create();
 let mPerspective = lux.mat4.create();
 let mNormal = lux.mat4.create();
 
-let lightColor = lux.vec3.create();
-let lightPosition = lux.vec3.create();
-
-let light = {
-    position: [0.0, 0.0, 0.0],
-    ambient: [0.2, 0.2, 0.2],
-    diffuse: [1.0, 1.0, 1.0],
-    specular: [1.0, 1.0, 1.0],
-}
-
 let cameraPos = lux.vec3.create();
 
-let orange_material = {
-    ambient: [1.0, 0.5, 0.2],
-    diffuse: [1.0, 0.5, 0.2],
-    specular: [1.0, 1.0, 1.0],
-    shininess: 16
-}
-
-let white_material = {
-    diffuse: [1.0, 1.0, 1.0],
-}
-
-
 function render(dt){
-    color_shader.bind();
     t += dt;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     lux.mat4.identity(mModel);
@@ -94,34 +68,29 @@ function render(dt){
     lux.mat4.identity(mModel);
     lux.mat4.translate(mModel, mModel, light.position);
     lux.mat4.scale(mModel, mModel, [0.2, 0.2, 0.2]);
-    color_shader.setMatrixUniforms(mModel, mView, mPerspective);
-    color_shader.setVecf('u_materialColor', light.specular);
+
+    basicMaterial.setMatrices(mModel, mView, mPerspective);
+    basicMaterial.use();
 
     cubeMesh.render(gl.TRIANGLES);
-    color_shader.unbind();    
-    phong_shader.bind();
-        for(let j = 0; j < 10; j++) {
-            for(let i = 0; i < 10; i++) {
-                lux.mat4.identity(mModel);
-                //lux.mat4.translate(mModel, mModel, [0.0, Math.sin(t), 0.0]);
-                lux.mat4.translate(mModel, mModel, [j, i, 0.0]);
-                //lux.mat4.rotate(mModel, mModel, -t, [0.0, 1.0, 0.0]);
-                lux.mat4.invert(mNormal, mModel);
-                lux.mat4.transpose(mNormal, mNormal);
-                
-                phong_shader.setMatrixUniforms(mModel, mView, mPerspective);
-                phong_shader.setMatrix('u_mNormal', mNormal);
-                phong_shader.setVecf('u_viewPos', cameraPos);
-                phong_shader.setFloat('time', t);
-                phong_shader.setFloat('u_maxDistance', maxDist);
 
-                phong_shader.setStruct("u_light", light);
-                phong_shader.setStruct("u_material", orange_material);
+    vertexDispMaterial.use();
+    for(let j = 0; j < 10; j++) {
+        for(let i = 0; i < 10; i++) {
+            lux.mat4.identity(mModel);
+            //lux.mat4.translate(mModel, mModel, [0.0, Math.sin(t), 0.0]);
+            lux.mat4.translate(mModel, mModel, [j, i, 0.0]);
+            //lux.mat4.rotate(mModel, mModel, -t, [0.0, 1.0, 0.0]);
+            
+            vertexDispMaterial.setMatrices(mModel, mView, mPerspective);
+            vertexDispMaterial.viewPos = cameraPos;
+            vertexDispMaterial.influenceRange = maxDist;
+            vertexDispMaterial.light = light;
+            vertexDispMaterial.update();
 
-                cubeMesh.render(gl.TRIANGLES);
-            }
+            cubeMesh.render(gl.TRIANGLES);
         }
-    phong_shader.unbind();
+    }
 }
 
 

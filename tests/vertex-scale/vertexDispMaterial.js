@@ -1,8 +1,3 @@
-import { BaseMaterial } from './baseMaterial'
-import { MaterialTag } from './baseMaterial'
-import { RM } from '../../Core/resourceManager'
-import { mat4 } from 'gl-matrix'
-
 let shaderSource = {
     vs: 
         `#version 300 es
@@ -16,6 +11,20 @@ let shaderSource = {
         uniform mat4 u_perspective;
         uniform mat4 u_mNormal;
 
+        struct Light{
+            vec3 position;
+
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+
+        uniform Light u_light;
+
+        uniform vec3 u_viewPos;
+
+        uniform float u_influenceRange;
+
         out vec3 normal;
         out vec3 fragPos;
 
@@ -24,10 +33,23 @@ let shaderSource = {
         }
 
         void main(void) {
-            normal = normalize(vec3(u_mNormal * vec4(a_normal, 0.0)));
-            fragPos = vec3(u_model * vec4(a_position, 1.0));
 
-            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+            vec3 vertex = a_position;
+            vec4 objectPosition = u_model * vec4(vec3(0.0), 1.0);
+            vec4 worldSpaceVertex = u_model * vec4(vertex, 1.0);
+            vec3 dir = (objectPosition.xyz - u_light.position.xyz);
+            float dist = min(length(dir) / u_influenceRange, 1.0);
+            dir = normalize(dir);
+            float disp = mix( 1.0, 0.0, dist);
+            vec3 scale = vec3(mix(0.0, 1.0, dist));
+            vec3 translation = vec3(disp * 5.0) * dir;
+            //vertex = vertex.xyz * scale;
+            vertex = (vertex * scale) + translation;
+            gl_Position = u_perspective * u_view * u_model * vec4(vertex, 1.0);
+
+            normal = vec3(u_mNormal * vec4(a_normal, 0.0));
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+            
         }`,
     ps: 
         `#version 300 es
@@ -38,6 +60,7 @@ let shaderSource = {
 
         struct Light{
             vec3 position;
+
             vec3 ambient;
             vec3 diffuse;
             vec3 specular;
@@ -84,7 +107,7 @@ let shaderSource = {
             float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), kShininess);
 
             //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
-            vec3 specular = u_light.specular * (spec * u_material.specular);
+            vec3 specular = u_light.specular * (spec * u_material.diffuse);
 
             vec3 result = ambient + diffuse + specular;
             outputColor = vec4(result, 1.0);
@@ -96,11 +119,11 @@ let shaderSource = {
 }
 
 
-export class PhongMaterial extends BaseMaterial{
+class VertexDispMaterial extends lux.BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || MaterialTag.lit;
-        let shader = RM.createShader('phong-shader', shaderSource.vs, shaderSource.ps);
+        args['tag'] = args['tag'] || lux.MaterialTag.lit;
+        let shader = lux.RM.createShader('vertex-displacement-shader', shaderSource.vs, shaderSource.ps);
         super(shader, args);
 
         this.light = args['light'];
@@ -110,16 +133,17 @@ export class PhongMaterial extends BaseMaterial{
         this.specular = args['specular'] || [1.0, 1.0, 1.0];
         this.shininess = args['shininess'] || 8.0;
         this.viewPos = args['viewPos'] || [0.0, 0.0, 0.0];
+        this.influenceRange = args['influenceRange'] || 0.0;
     }
 
     setup(){
         super.setup();
     }
 
-    update() { 
+    update() {
         super.update();
-        this.shader.setMatrix('u_mNormal', this.mNormal);
         this.shader.setVecf('u_viewPos', this.viewPos);
+        this.shader.setFloat('u_influenceRange', this.influenceRange);
         this.shader.setStruct('u_light', this.light);
         this.shader.setStruct('u_material', {
             ambient: this.ambient,

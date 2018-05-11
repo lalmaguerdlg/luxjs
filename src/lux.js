@@ -12,6 +12,8 @@ export { Mesh } from './Render/Geometry/mesh';
 export { Geometry } from './Render/Geometry/geometry';
 
 export { Shader } from './Render/shader'
+export { BaseMaterial } from './Render/Materials/baseMaterial'
+export { MaterialTag } from './Render/Materials/baseMaterial'
 export { BasicMaterial } from './Render/Materials/basicMaterial'
 export { NormalMaterial } from './Render/Materials/normalMaterial'
 export { LambertMaterial } from './Render/Materials/lambertMaterial'

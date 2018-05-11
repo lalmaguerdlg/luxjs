@@ -10,9 +10,6 @@ function main() {
 
     $('#canvasContainer').append(lux.renderer.domElement);
     gl = lux.gl;
-    
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
 
@@ -32,9 +29,8 @@ function main() {
 
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.cullFace(gl.BACK);
+    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
+    
     
     lux.glLoop(render);
 }
@@ -90,10 +86,10 @@ function render(dt){
     lux.mat4.translate(mModel, mModel, light.position);
     lux.mat4.scale(mModel, mModel, [0.2, 0.2, 0.2]);
     
-    basicMaterial.use();
-    basicMaterial.updateMatrix(mModel, mView, mPerspective);
+    
+    basicMaterial.setMatrices(mModel, mView, mPerspective);
     basicMaterial.color = light.specular;
-    basicMaterial.setup();
+    basicMaterial.use();
     cubeMesh.render(gl.TRIANGLES);
         
     lux.mat4.identity(mModel);
@@ -101,28 +97,22 @@ function render(dt){
     lux.mat4.translate(mModel, mModel, [0.0, 0.0, 0.0]);
     //lux.mat4.rotate(mModel, mModel, t, [0.0, 1.0, 0.0]);
     lux.mat4.scale(mModel, mModel, [20.0, 1.0, 20.0]);
-
-    lux.mat4.invert(mNormal, mModel);
-    lux.mat4.transpose(mNormal, mNormal);
     
-    phongMaterial.use();
-    phongMaterial.updateMatrix(mModel, mView, mPerspective);
-    phongMaterial.mNormal = mNormal;
+    phongMaterial.setMatrices(mModel, mView, mPerspective);
     phongMaterial.viewPos = cameraPos;
     phongMaterial.light = light;
-    phongMaterial.setup();
+    phongMaterial.use();
+
+    
+    /*
+    normalMaterial.setMatrices(mModel, mView, mPerspective);
+    normalMaterial.use();
+    */
 
     /*
-    normalMaterial.use();
-    normalMaterial.updateMatrix(mModel, mView, mPerspective);
-    normalMaterial.mNormal = mNormal;
-    normalMaterial.setup();
-
-    lambertMaterial.use();
-    lambertMaterial.updateMatrix(mModel, mView, mPerspective);
-    lambertMaterial.mNormal = mNormal;
+    lambertMaterial.setMatrices(mModel, mView, mPerspective);
     lambertMaterial.light = light;
-    lambertMaterial.setup();
+    lambertMaterial.use();
     */
 
     cubeMesh.render(gl.TRIANGLES);

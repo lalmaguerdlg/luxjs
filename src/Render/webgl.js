@@ -37,13 +37,26 @@ class WebGLRenderer{
         }
 
         window.addEventListener("resize", this.onResize);
+
+        this.setup();
+    }
+
+    setup(){
+        
     }
 
     fullscreen(isFullscreen){
         this.isFullscreen = isFullscreen;
         this.onResize();
     }
+    
+    setClearColor(r, g, b, a){
+        this.context.clearColor(r, g, b, a);
+    }
 }
+
+
+
 
 export let renderer = new WebGLRenderer();
 export let gl = renderer.context;
