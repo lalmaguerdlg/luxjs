@@ -14,6 +14,7 @@
 - Add **MeshRenderer** component class to combine Mesh and Material and link Transform variables
 - Add **WebGLRenderer | Renderer | SceneRenderer** class to render a given scene
 - Add **Camera** class
+- Thinkg about using forward or deferred rendering
 - Add **WebGLConfig | WebGLState | RendererState** class to place all of the webgl state
 - Manage different states for different shaders failling back to RendererState default state 
 
