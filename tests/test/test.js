@@ -1,8 +1,8 @@
 let gl;
-let color_shader;
-let normal_shader;
-let lambert_shader;
-let phong_shader;
+let basicMaterial;
+let normalMaterial;
+let lambertMaterial;
+let phongMaterial;
 
 function main() {
 
@@ -14,21 +14,21 @@ function main() {
     gl.clearColor(0.1, 0.1, 0.1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    let vs = getShaderSource("color-vs");
-    let fs = getShaderSource("color-fs");
-    color_shader = new lux.Shader(vs, fs, "Color shader");
+    basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
 
-    vs = getShaderSource("normal-color-vs");
-    fs = getShaderSource("normal-color-fs");
-    normal_shader = new lux.Shader(vs, fs, "Normal shader");
+    normalMaterial = new lux.NormalMaterial();
 
-    vs = getShaderSource("lambert-vs");
-    fs = getShaderSource("lambert-fs");
-    lambert_shader = new lux.Shader(vs, fs, "Lambert shader");
-
-    vs = getShaderSource("phong-vs");
-    fs = getShaderSource("phong-fs");
-    phong_shader = new lux.Shader(vs, fs, "Phong shader");
+    lambertMaterial = new lux.LambertMaterial({
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2]
+    });
+    
+    phongMaterial = new lux.PhongMaterial({ 
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2],
+        specular: [1.0, 1.0, 1.0],
+        shininess: 32 
+    });
 
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
@@ -49,12 +49,12 @@ let mNormal = lux.mat4.create();
 let lightColor = lux.vec3.create();
 let lightPosition = lux.vec3.create();
 
-let light = {
+let light = new lux.PointLight({
     position: [0.0, 0.0, 0.0],
     ambient: [0.2, 0.2, 0.2],
     diffuse: [1.0, 1.0, 1.0],
     specular: [1.0, 1.0, 1.0],
-}
+});
 
 let cameraPos = lux.vec3.create();
 
@@ -65,13 +65,9 @@ let orange_material = {
     shininess: 8
 }
 
-let white_material = {
-    diffuse: [1.0, 1.0, 1.0],
-}
-
 
 function render(dt){
-    color_shader.bind();
+    
     t += dt;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     lux.mat4.identity(mModel);
@@ -80,9 +76,9 @@ function render(dt){
     lux.mat4.perspective(mPerspective, 45, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
 
 
-    lux.vec3.set(cameraPos, Math.sin(t*0.5) * 20.0 + 5.0, 5.0, Math.cos(t*0.5) * 20.0);
+    lux.vec3.set(cameraPos, Math.sin(t*0.5) * 20.0, 5.0, Math.cos(t*0.5) * 20.0);
     //lux.vec3.set(cameraPos, 5.0, 5.0, 20.0);
-    lux.mat4.lookAt(mView, cameraPos, [5.0,5.0,0.0], [0.0, 1.0, 0.0]);
+    lux.mat4.lookAt(mView, cameraPos, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
     //lux.vec3.set(light.position, Math.sin(t) * 1.5, 1.0, Math.cos(t) * 1.5);
     let lightTravel = 3.0
@@ -93,28 +89,43 @@ function render(dt){
     lux.mat4.identity(mModel);
     lux.mat4.translate(mModel, mModel, light.position);
     lux.mat4.scale(mModel, mModel, [0.2, 0.2, 0.2]);
-    color_shader.setMatrixUniforms(mModel, mView, mPerspective);
-    color_shader.setVecf('u_materialColor', light.specular);
-
+    
+    basicMaterial.use();
+    basicMaterial.updateMatrix(mModel, mView, mPerspective);
+    basicMaterial.color = light.specular;
+    basicMaterial.setup();
     cubeMesh.render(gl.TRIANGLES);
-    color_shader.unbind();    
-    phong_shader.bind();
+        
     lux.mat4.identity(mModel);
     //lux.mat4.translate(mModel, mModel, [0.0, Math.sin(t), 0.0]);
-    lux.mat4.translate(mModel, mModel, [j, i, 0.0]);
-    //lux.mat4.rotate(mModel, mModel, -t, [0.0, 1.0, 0.0]);
+    lux.mat4.translate(mModel, mModel, [0.0, 0.0, 0.0]);
+    //lux.mat4.rotate(mModel, mModel, t, [0.0, 1.0, 0.0]);
+    lux.mat4.scale(mModel, mModel, [20.0, 1.0, 20.0]);
+
     lux.mat4.invert(mNormal, mModel);
     lux.mat4.transpose(mNormal, mNormal);
     
-    phong_shader.setMatrixUniforms(mModel, mView, mPerspective);
-    phong_shader.setMatrix('u_mNormal', mNormal);
-    phong_shader.setVecf('u_viewPos', cameraPos);
+    phongMaterial.use();
+    phongMaterial.updateMatrix(mModel, mView, mPerspective);
+    phongMaterial.mNormal = mNormal;
+    phongMaterial.viewPos = cameraPos;
+    phongMaterial.light = light;
+    phongMaterial.setup();
 
-    phong_shader.setStruct("u_light", light);
-    phong_shader.setStruct("u_material", orange_material);
+    /*
+    normalMaterial.use();
+    normalMaterial.updateMatrix(mModel, mView, mPerspective);
+    normalMaterial.mNormal = mNormal;
+    normalMaterial.setup();
+
+    lambertMaterial.use();
+    lambertMaterial.updateMatrix(mModel, mView, mPerspective);
+    lambertMaterial.mNormal = mNormal;
+    lambertMaterial.light = light;
+    lambertMaterial.setup();
+    */
 
     cubeMesh.render(gl.TRIANGLES);
-    phong_shader.unbind();
 }
 
 

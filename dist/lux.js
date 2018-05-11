@@ -548,167 +548,6 @@ class vertexArray_VertexArray{
         return new Float32Array(result);
     }
 }
-// CONCATENATED MODULE: ./src/Render/Geometry/mesh.js
-
-
-class mesh_Mesh{
-    constructor(vertexArray, indices, usage){
-        this.vertices = vertexArray;
-        //    [ new AttribPointer(0, 3, gl.FLOAT, false, this.vertices.count * Float32Array.BYTES_PER_ELEMENT, 0) ];
-        this.indices = indices;
-        this.isIndexed = indices ? true : false;
-        this.usage = usage || gl.STATIC_DRAW;
-        this.binded = false;
-        this.buffers = undefined;
-    }
-
-    render(mode) {
-        this.bind();
-        if(this.isIndexed){
-            gl.drawElements(mode, this.indices.length, gl.UNSIGNED_SHORT, 0);
-        }else{
-            gl.drawArrays(mode, 0, this.vertices.count);
-        }
-        this.unbind();
-    }
-
-    bind(){
-        if(!this.binded){
-            if(!this.buffers)
-                this._initBuffers();
-            gl.bindVertexArray(this.buffers.VAO);
-            this.binded = true;    
-        }
-    }
-
-    unbind(){
-        if(this.binded){
-            gl.bindVertexArray(null);
-            this.binded = false;
-        }
-    }
-
-    _initBuffers(){
-        this.buffers = {};
-        // VAO = Vertex array buffer
-        // VBO = Vertex buffer object
-        // EBO = Element buffer object (indices)
-        this.buffers.VAO = gl.createVertexArray();
-        this.buffers.VBO = gl.createBuffer();
-        this.buffers.EBO = this.isIndexed ? gl.createBuffer() : undefined;
-        gl.bindVertexArray(this.buffers.VAO);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.VBO);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices.array, this.usage);
-        if(this.isIndexed){
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.EBO);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.usage);
-        }
-        for(let iter of this.vertices.layout){
-            let attr = iter.attribute;
-            gl.vertexAttribPointer(
-                attr.location, // Attribute location
-                attr.size, // Number of elements per attribute
-                attr.type, // Type of element
-                attr.normalized, // Normalized
-                attr.stride, // Size of an individual vertex
-                attr.offset // Offset from the begining of a  single vertex to this attribute
-            );
-            gl.enableVertexAttribArray(attr.location);
-        }
-        gl.bindVertexArray(null);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-    }
-}
-// CONCATENATED MODULE: ./src/Render/Geometry/geometry.js
-
-
-
-
-
-let geometry_Geometry = {
-    Triangle: function(size){
-        const halfS = size * 0.5 || 0.5;
-        let vertices = [
-            //position                          normal              color
-            new vertex_Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0]),
-            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]),
-            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0])
-        ];
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
-        return new mesh_Mesh(vertexArray);
-    },
-    Square: function(size){
-        const halfS = size * 0.5 || 0.5
-        let vertices = [
-            //position                           normal             color
-            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0]), // top right
-            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0]), // bottom right
-            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]), // bottom left
-            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0]) // top left
-        ];
-        let indices = [
-            0, 3, 1,
-            1, 3, 2
-        ]
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
-        return new mesh_Mesh(vertexArray, indices);
-    },
-    
-    Box: function(sizeX, sizeY, sizeZ){
-        const halfX = sizeX * 0.5 || 0.5;
-        const halfY = sizeY * 0.5 || 0.5;
-        const halfZ = sizeZ * 0.5 || 0.5;
-
-        let vertices = [
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
-       
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
-       
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
-       
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
-       
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
-       
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0])
-        ];
-
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
-        return new mesh_Mesh(vertexArray);
-    }
-    
-}
 // CONCATENATED MODULE: ./src/Render/shader.js
 
 
@@ -956,6 +795,365 @@ class shader_Shader{
         return result;
     }
 }
+// CONCATENATED MODULE: ./src/Render/Geometry/mesh.js
+
+
+class mesh_Mesh{
+    constructor(vertexArray, indices, usage){
+        this.vertices = vertexArray;
+        //    [ new AttribPointer(0, 3, gl.FLOAT, false, this.vertices.count * Float32Array.BYTES_PER_ELEMENT, 0) ];
+        this.indices = indices;
+        this.isIndexed = indices ? true : false;
+        this.usage = usage || gl.STATIC_DRAW;
+        this.binded = false;
+        this.buffers = undefined;
+    }
+
+    render(mode) {
+        this.bind();
+        if(this.isIndexed){
+            gl.drawElements(mode, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        }else{
+            gl.drawArrays(mode, 0, this.vertices.count);
+        }
+        this.unbind();
+    }
+
+    bind(){
+        if(!this.binded){
+            if(!this.buffers)
+                this._initBuffers();
+            gl.bindVertexArray(this.buffers.VAO);
+            this.binded = true;    
+        }
+    }
+
+    unbind(){
+        if(this.binded){
+            gl.bindVertexArray(null);
+            this.binded = false;
+        }
+    }
+
+    _initBuffers(){
+        this.buffers = {};
+        // VAO = Vertex array buffer
+        // VBO = Vertex buffer object
+        // EBO = Element buffer object (indices)
+        this.buffers.VAO = gl.createVertexArray();
+        this.buffers.VBO = gl.createBuffer();
+        this.buffers.EBO = this.isIndexed ? gl.createBuffer() : undefined;
+        gl.bindVertexArray(this.buffers.VAO);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.VBO);
+        gl.bufferData(gl.ARRAY_BUFFER, this.vertices.array, this.usage);
+        if(this.isIndexed){
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.EBO);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.usage);
+        }
+        for(let iter of this.vertices.layout){
+            let attr = iter.attribute;
+            gl.vertexAttribPointer(
+                attr.location, // Attribute location
+                attr.size, // Number of elements per attribute
+                attr.type, // Type of element
+                attr.normalized, // Normalized
+                attr.stride, // Size of an individual vertex
+                attr.offset // Offset from the begining of a  single vertex to this attribute
+            );
+            gl.enableVertexAttribArray(attr.location);
+        }
+        gl.bindVertexArray(null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
+}
+// CONCATENATED MODULE: ./src/Render/Geometry/geometry.js
+
+
+
+
+
+let geometry_Geometry = {
+    Triangle: function(size){
+        const halfS = size * 0.5 || 0.5;
+        let vertices = [
+            //position                          normal              color
+            new vertex_Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0]),
+            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]),
+            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0])
+        ];
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray);
+    },
+    Square: function(size){
+        const halfS = size * 0.5 || 0.5
+        let vertices = [
+            //position                           normal             color
+            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0]), // top right
+            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0]), // bottom right
+            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]), // bottom left
+            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0]) // top left
+        ];
+        let indices = [
+            0, 3, 1,
+            1, 3, 2
+        ]
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray, indices);
+    },
+    
+    Box: function(sizeX, sizeY, sizeZ){
+        const halfX = sizeX * 0.5 || 0.5;
+        const halfY = sizeY * 0.5 || 0.5;
+        const halfZ = sizeZ * 0.5 || 0.5;
+
+        let vertices = [
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
+       
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+       
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
+       
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+       
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+       
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0])
+        ];
+
+        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        return new mesh_Mesh(vertexArray);
+    }
+    
+}
+// CONCATENATED MODULE: ./src/Core/resourceManager.js
+
+
+
+
+class resourceManager_ResourceManager{
+    constructor() {
+        this.shaders = {};
+        this.meshes = {};
+        this.currentShader;
+    }
+
+    bindShader(shader){
+        if(this.currentShader != shader){
+            if(this.currentShader)
+                this.currentShader.unbind();
+            this.currentShader = shader;
+            this.currentShader.bind();
+        }
+    }
+
+    createShader(name, vs, fs) {
+        if(!this.shaders[name]) {
+            let shader = new shader_Shader(vs, fs, name);
+            this.addShader(name, shader);
+        }
+        else{
+            console.warn('Resource manager: ' + name + ' could not be created because there is another shader with the same name.');
+        }
+        return this.shaders[name];
+    }
+
+    addShader(name, shader){
+        if(!shader instanceof shader_Shader){
+            console.warn('Resource manager: object is not instance of Shader');
+            return;
+        }
+        if(!this.shaders[name]){
+            this.shaders[name] = shader;
+        }
+    }
+
+    getShader(name){
+        return this.shaders[name];
+    }
+
+
+}
+
+
+let resourceManager_RM = new resourceManager_ResourceManager();
+// CONCATENATED MODULE: ./src/Render/Materials/baseMaterial.js
+//import { Shader } from './shader'
+
+
+
+let baseMaterial_MaterialTag = {
+    'none': 0,
+    'unlit': 1,
+    'lit': 2,
+    'translucent': 3
+}
+
+Object.freeze(baseMaterial_MaterialTag);
+
+class baseMaterial_BaseMaterial {
+    constructor(shader, vargs) {
+        let args = vargs || {};
+        this.shader = shader;
+        this.drawMode = args['drawMode'] || gl.TRIANGLES;
+        this.cullMode = args['cullMode'] || gl.BACK;
+        this.tag = args['tag'] || baseMaterial_MaterialTag.none;
+        this.uniformType = gl.FLOAT;
+    }
+
+    setup(){
+        gl.cullFace(this.cullMode);
+    }
+
+    updateMatrix(mModel, mView, mPerspective){
+        this.shader.setMatrixUniforms(mModel, mView, mPerspective);
+    }
+
+    use(){
+        resourceManager_RM.bindShader(this.shader);
+        //this.setup();
+    }
+}
+
+// CONCATENATED MODULE: ./src/Render/Materials/basicMaterial.js
+
+
+
+
+let basicMaterial_basicShaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+    
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+    
+        void main(void) {
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+        
+        struct Unlit_Material {
+            vec3 emission;
+        };
+
+        uniform Unlit_Material u_material;
+
+        out vec4 outputColor;
+        void main(void) {
+            outputColor = vec4(u_material.emission, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
+        let shader = resourceManager_RM.createShader('basic-shader', basicMaterial_basicShaderSource.vs, basicMaterial_basicShaderSource.ps);
+        super(shader, args);
+
+        this.color = args['color'] || [1.0, 1.0, 1.0];
+    }
+
+    setup(){
+        super.setup();
+        this.shader.setStruct('u_material', {
+            emission: this.color
+        });
+    }
+} 
+// CONCATENATED MODULE: ./src/Render/Materials/normalMaterial.js
+
+
+
+
+let normalMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+      
+        out vec3 normal;
+        void main(void) {
+            normal = (u_mNormal * vec4(a_normal, 0.0)).xyz;
+            normal = normalize(normal);
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec3 normal;
+
+        out vec4 outputColor;
+        void main(void) {
+            outputColor =  vec4(abs(normal), 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class normalMaterial_NormalMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
+        let shader = resourceManager_RM.createShader('normal-shader', normalMaterial_shaderSource.vs, normalMaterial_shaderSource.ps);
+        super(shader, args);
+        this.mNormal = args['mNormal'] || [];
+    }
+
+    setup(){
+        super.setup();
+        this.shader.setMatrix('u_mNormal', this.mNormal);
+    }
+} 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
@@ -7013,6 +7211,272 @@ THE SOFTWARE. */
 
 
 
+// CONCATENATED MODULE: ./src/Render/Materials/lambertMaterial.js
+
+
+
+
+
+
+let lambertMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+
+        out vec3 normal;
+        out vec3 fragPos;
+        void main(void) {
+            normal = normalize(vec3(u_mNormal * vec4(a_normal, 0.0)));
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+        
+        in vec3 normal;
+        in vec3 fragPos;
+
+        struct Light{
+            vec3 position;
+
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+        
+        struct Material{
+            vec3 ambient;
+            vec3 diffuse;
+        };
+
+        uniform Light u_light;
+        uniform Material u_material;
+
+        out vec4 outputColor;
+        void main(void) {
+
+            // Ambient color
+            vec3 ambient = u_light.ambient * u_material.ambient;
+
+            // Light direction
+            vec3 norm = normalize(normal);
+            vec3 lightDir = normalize(u_light.position - fragPos);
+
+            // diffuse color
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+
+            vec3 result = ambient + diffuse;
+
+            outputColor = vec4(result, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class lambertMaterial_LambertMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.lit;
+        let shader = resourceManager_RM.createShader('lambert-shader', lambertMaterial_shaderSource.vs, lambertMaterial_shaderSource.ps);
+        super(shader, args);
+
+        this.light = args['light'];
+
+        this.ambient = args['ambient'] || [1.0, 1.0, 1.0];
+        this.diffuse = args['diffuse'] || [1.0, 1.0, 1.0];
+        this.mNormal = args['mNormal'] || mat4_namespaceObject.create();
+    }
+
+    setup(){
+        super.setup();
+        this.shader.setMatrix('u_mNormal', this.mNormal);
+        this.shader.setStruct('u_light', this.light);
+        this.shader.setStruct('u_material', {
+            ambient: this.ambient,
+            diffuse: this.diffuse,
+        });
+    }
+} 
+// CONCATENATED MODULE: ./src/Render/Materials/phongMaterial.js
+
+
+
+
+
+let phongMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec3 a_position;
+        in vec3 a_normal;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+
+        out vec3 normal;
+        out vec3 fragPos;
+
+        vec4 when_gt(vec4 x, vec4 y) {
+            return max(sign(x - y), 0.0);
+        }
+
+        void main(void) {
+            normal = normalize(vec3(u_mNormal * vec4(a_normal, 0.0)));
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+        
+        in vec3 normal;
+        in vec3 fragPos;
+
+        struct Light{
+            vec3 position;
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+        
+        struct Material{
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+            float shininess;
+        };
+
+        uniform Light u_light;
+        uniform Material u_material;
+
+        uniform vec3 u_viewPos;
+
+        out vec4 outputColor;
+        void main(void) {
+
+            // Ambient color
+            vec3 ambient = u_light.ambient * u_material.ambient;
+
+            // Light direction
+            vec3 norm = normalize(normal);
+            vec3 lightDir = normalize(u_light.position - fragPos);
+
+            // diffuse color
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+
+            // Specular color
+
+            // Energy conservation for specular shininess
+            const float kPi = 3.14159265;
+            float kShininess = u_material.shininess;
+            float kEnergyConservation = ( 8.0 + kShininess ) / ( 8.0 * kPi );
+
+
+            vec3 viewDir = normalize(u_viewPos - fragPos);
+            vec3 reflectDir = reflect(-lightDir, norm);
+            vec3 halfwayDir = normalize(lightDir + viewDir);
+
+            float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), kShininess);
+
+            //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
+            vec3 specular = u_light.specular * (spec * u_material.specular);
+
+            vec3 result = ambient + diffuse + specular;
+            outputColor = vec4(result, 1.0);
+
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+        }`,
+}
+
+
+class phongMaterial_PhongMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.lit;
+        let shader = resourceManager_RM.createShader('phong-shader', phongMaterial_shaderSource.vs, phongMaterial_shaderSource.ps);
+        super(shader, args);
+
+        this.light = args['light'];
+
+        this.ambient = args['ambient'] || [1.0, 1.0, 1.0];
+        this.diffuse = args['diffuse'] || [1.0, 1.0, 1.0];
+        this.specular = args['specular'] || [1.0, 1.0, 1.0];
+        this.shininess = args['shininess'] || 8.0;
+        this.mNormal = args['mNormal'] || mat4_namespaceObject.create();
+        this.viewPos = args['viewPos'] || [0.0, 0.0, 0.0];
+    }
+
+    setup(){
+        super.setup();
+        this.shader.setMatrix('u_mNormal', this.mNormal);
+        this.shader.setVecf('u_viewPos', this.viewPos);
+        this.shader.setStruct('u_light', this.light);
+        this.shader.setStruct('u_material', {
+            ambient: this.ambient,
+            diffuse: this.diffuse,
+            specular: this.specular,
+            shininess: this.shininess
+        });
+    }
+} 
+// CONCATENATED MODULE: ./src/Render/Lights/pointLight.js
+class PointLight{
+    constructor(vargs){
+        this.position = vargs['position'] || [0.0, 0.0, 0.0];
+        this.ambient = vargs['ambient'] || [0.1, 0.1, 0.1];
+        this.diffuse = vargs['diffuse'] || [0.5, 0.5, 0.5];
+        this.specular = vargs['specular'] || [1.0, 1.0, 1.0];
+    }
+}
+// CONCATENATED MODULE: ./src/Core/transform.js
+
+
+
+class transform_Transform{
+    constructor(parent){
+        this.parent = parent || undefined;
+        this.position = vec3_namespaceObject.create();
+        this.rotation = vec3_namespaceObject.create();
+        this.scale = vec3_namespaceObject.create();
+        this.worldMatrix = mat4_namespaceObject.create();
+    }
+
+    toMatrix(){
+        mat4_namespaceObject.identity(this.worldMatrix);
+        mat4_namespaceObject.translate(this.worldMatrix, this.worldMatrix, this.position);
+        mat4_namespaceObject.rotateX(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[0]));
+        mat4_namespaceObject.rotateY(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[1]));
+        mat4_namespaceObject.rotateZ(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[2]));
+        mat4_namespaceObject.scale(this.worldMatrix, this.worldMatrix, this.scale);
+        return this.worldMatrix;
+    }
+}
+// CONCATENATED MODULE: ./src/Core/gameObject.js
+
+
+class GameObject{
+    constructor(){
+        
+    }
+}
 // CONCATENATED MODULE: ./src/lux.js
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "renderer", function() { return renderer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
@@ -7021,9 +7485,17 @@ THE SOFTWARE. */
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return vertex_Vertex; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return vertex_VERTEX_LAYOUT; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return vertexArray_VertexArray; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RM", function() { return resourceManager_RM; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BasicMaterial", function() { return basicMaterial_BasicMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return normalMaterial_NormalMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return lambertMaterial_LambertMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PhongMaterial", function() { return phongMaterial_PhongMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PointLight", function() { return PointLight; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return GameObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glMatrix", function() { return common_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec2", function() { return vec2_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec3", function() { return vec3_namespaceObject; });
@@ -7033,6 +7505,20 @@ THE SOFTWARE. */
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
