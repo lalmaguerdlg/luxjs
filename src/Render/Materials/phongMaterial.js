@@ -41,6 +41,10 @@ let shaderSource = {
             vec3 ambient;
             vec3 diffuse;
             vec3 specular;
+
+            float constant;
+            float linear;
+            float quadratic;
         };
         
         struct Material{
@@ -63,7 +67,10 @@ let shaderSource = {
 
             // Light direction
             vec3 norm = normalize(normal);
-            vec3 lightDir = normalize(u_light.position - fragPos);
+            
+            vec3 lightDir = (u_light.position - fragPos);
+            float lightDistance = length(lightDir);
+            lightDir = normalize(lightDir); 
 
             // diffuse color
             float diff = max(dot(norm, lightDir), 0.0);
@@ -85,6 +92,14 @@ let shaderSource = {
 
             //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
             vec3 specular = u_light.specular * (spec * u_material.specular);
+
+
+            // Attenuation
+            float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            ambient *= attenuation;
+            diffuse *= attenuation;
+            specular *= attenuation;
+
 
             vec3 result = ambient + diffuse + specular;
             outputColor = vec4(result, 1.0);
