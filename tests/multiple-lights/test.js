@@ -27,12 +27,12 @@ function main() {
         shininess: 32 
     });
 
-    phongMaterial = new lux.PhongMaterial({ 
+    /*phongMaterial = new lux.PhongMaterial({ 
         ambient: [1.0, 1.0, 1.0],
         diffuse: [1.0, 1.0, 1.0],
         specular: [1.0, 1.0, 1.0],
         shininess: 32 
-    });
+    });*/
 
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
@@ -41,7 +41,7 @@ function main() {
 
     let light = new lux.PointLight({
         position: [0.0, 0.0, 0.0],
-        ambient: [0.2, 0.0, 0.0],
+        ambient: [1.0, 0.0, 0.0],
         diffuse: [1.0, 0.0, 0.0],
         specular: [1.0, 0.0, 0.0],
     });
@@ -49,7 +49,7 @@ function main() {
     lights.push(light);
     light = new lux.PointLight({
         position: [0.0, 2.0, 0.0],
-        ambient: [0.0, 0.0  , 0.2],
+        ambient: [0.0, 0.0  , 1.0],
         diffuse: [0.0, 0.0, 1.0],
         specular: [0.0, 0.0, 1.0],
     });
@@ -57,7 +57,7 @@ function main() {
 
     light = new lux.PointLight({
         position: [2.0, 2.0, 2.0],
-        ambient: [0.0, 0.2, 0.0],
+        ambient: [0.0, 1.0, 0.0],
         diffuse: [0.0, 1.0, 0.0],
         specular: [0.0, 1.0, 0.0],
     });
