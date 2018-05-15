@@ -19,10 +19,6 @@ let shaderSource = {
         out vec3 normal;
         out vec3 fragPos;
 
-        vec4 when_gt(vec4 x, vec4 y) {
-            return max(sign(x - y), 0.0);
-        }
-
         void main(void) {
             normal = normalize(vec3(u_mNormal * vec4(a_normal, 0.0)));
             fragPos = vec3(u_model * vec4(a_position, 1.0));
@@ -38,13 +34,10 @@ let shaderSource = {
 
         struct Light{
             vec3 position;
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
+            
+            vec3 color;
 
-            float constant;
-            float linear;
-            float quadratic;
+            float intensity;
         };
         
         struct Material{
@@ -63,7 +56,7 @@ let shaderSource = {
         void main(void) {
 
             // Ambient color
-            vec3 ambient = u_light.ambient * u_material.ambient;
+            vec3 ambient = u_light.intensity * u_light.color * u_material.ambient;
 
             // Light direction
             vec3 norm = normalize(normal);
@@ -74,7 +67,7 @@ let shaderSource = {
 
             // diffuse color
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+            vec3 diffuse = u_light.intensity * u_light.color * (diff * u_material.diffuse);
 
             // Specular color
 
@@ -91,22 +84,22 @@ let shaderSource = {
             float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), kShininess);
 
             //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
-            vec3 specular = u_light.specular * (spec * u_material.specular);
+            vec3 specular = u_light.intensity * u_light.color * (spec * u_material.specular);
 
 
             // Attenuation
-            float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            //float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            float attenuation = 1.0 / (lightDistance * lightDistance);
             ambient *= attenuation;
             diffuse *= attenuation;
             specular *= attenuation;
-
 
             vec3 result = ambient + diffuse + specular;
             outputColor = vec4(result, 1.0);
 
             // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+            //float gamma = 2.2;
+            //outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));    
         }`,
 }
 

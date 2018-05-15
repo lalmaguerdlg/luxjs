@@ -15,14 +15,14 @@ export let Geometry = {
         let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray);
     },
-    Square: function(size){
+    Quad: function(size){
         const halfS = size * 0.5 || 0.5
         let vertices = [
-            //position                           normal             color
-            new Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0]), // top right
-            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0]), // bottom right
-            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]), // bottom left
-            new Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0]) // top left
+            //position                           normal             uv
+            new Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0], [1.0, 1.0]), // top right
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0], [1.0, 0.0]), // bottom right
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0], [0.0, 0.0]), // bottom left
+            new Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0], [0.0, 1.0]) // top left
         ];
         let indices = [
             0, 3, 1,
@@ -31,7 +31,6 @@ export let Geometry = {
         let vertexArray = new VertexArray(vertices, VERTEX_LAYOUT);
         return new Mesh(vertexArray, indices);
     },
-    
     Box: function(sizeX, sizeY, sizeZ){
         const halfX = sizeX * 0.5 || 0.5;
         const halfY = sizeY * 0.5 || 0.5;

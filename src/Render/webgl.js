@@ -1,8 +1,15 @@
 
 class WebGLRenderer{
     constructor(canvas){
+        let self = this;
         this.domElement = canvas || document.createElement('CANVAS');
         this.context = this.domElement.getContext("webgl2");
+        this.viewport = {
+            width: this.domElement.innerWidth,
+            height: this.domElement.innerHeight,
+            aspect: () => { self.viewport.width / self.viewport.height }
+        }
+
         if(!this.context){
             this.context = this.domElement.getContext("experimental-webgl2");
         }
@@ -13,26 +20,33 @@ class WebGLRenderer{
 
         this.isFullscreen = false;
 
-        this.context.viewport(0, 0, this.context.canvas.width, this.context.canvas.height);
+        this.context.viewport(0, 0, this.viewport.width, this.viewport.height);
+        this.onResizeCallback;
 
-        let self = this;
-        this.onResize = function() {
-            let displayWidth = 0;
-            let displayHeight = 0;
-
-            if(self.isFullscreen) {
-                displayWidth = window.innerWidth;
-                displayHeight = window.innerHeight;
-            }
+        this.onResize = function(callback) {
+            if(callback){
+                this.onResizeCallback = callback;
+            } 
             else {
-                displayWidth = self.domElement.clientWidth;
-                displayHeight = self.domElement.clientHeight;
-            }
-            
-            if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
-                self.domElement.width = displayWidth;
-                self.domElement.height = displayHeight;
-                self.context.viewport(0, 0, self.domElement.width, self.domElement.height);
+                let displayWidth = 0;
+                let displayHeight = 0;
+
+                if(self.isFullscreen) {
+                    displayWidth = window.innerWidth;
+                    displayHeight = window.innerHeight;
+                }
+                else {
+                    displayWidth = self.domElement.clientWidth;
+                    displayHeight = self.domElement.clientHeight;
+                }
+                
+                if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
+                    self.domElement.width = displayWidth;
+                    self.domElement.height = displayHeight;
+                    self.viewport.width = displayWidth;
+                    self.viewport.height = displayHeight;
+                    self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
+                }
             }
         }
 
@@ -42,7 +56,10 @@ class WebGLRenderer{
     }
 
     setup(){
-        
+        // webgl extensions:
+        this.ext = {
+            color_buffer_float: this.context.getExtension('EXT_color_buffer_float'),
+        }                
     }
 
     fullscreen(isFullscreen){

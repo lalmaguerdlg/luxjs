@@ -7,7 +7,8 @@ export let MaterialTag = {
     'none': 0,
     'unlit': 1,
     'lit': 2,
-    'translucent': 3
+    'translucent': 3,
+    'postprocess': 4,
 }
 
 Object.freeze(MaterialTag);

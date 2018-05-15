@@ -11,13 +11,17 @@ export { RM } from './Core/resourceManager'
 export { Mesh } from './Render/Geometry/mesh';
 export { Geometry } from './Render/Geometry/geometry';
 
+export { Texture, TextureFormat, TexturePresets } from './Render/Textures/texture';
+export { Framebuffer } from './Render/Textures/framebuffer';
+
 export { Shader } from './Render/shader'
-export { BaseMaterial } from './Render/Materials/baseMaterial'
-export { MaterialTag } from './Render/Materials/baseMaterial'
+export { BaseMaterial, MaterialTag } from './Render/Materials/baseMaterial'
 export { BasicMaterial } from './Render/Materials/basicMaterial'
 export { NormalMaterial } from './Render/Materials/normalMaterial'
 export { LambertMaterial } from './Render/Materials/lambertMaterial'
 export { PhongMaterial } from './Render/Materials/phongMaterial'
+
+export { HDRMaterial } from './Render/Materials/Post Process/hdrMaterial'
 
 export { PointLight } from './Render/Lights/pointLight'
 

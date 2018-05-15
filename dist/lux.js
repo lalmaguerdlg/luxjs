@@ -396,8 +396,15 @@ __webpack_require__.d(vec2_namespaceObject, "forEach", function() { return vec2_
 
 class WebGLRenderer{
     constructor(canvas){
+        let self = this;
         this.domElement = canvas || document.createElement('CANVAS');
         this.context = this.domElement.getContext("webgl2");
+        this.viewport = {
+            width: this.domElement.innerWidth,
+            height: this.domElement.innerHeight,
+            aspect: () => { self.viewport.width / self.viewport.height }
+        }
+
         if(!this.context){
             this.context = this.domElement.getContext("experimental-webgl2");
         }
@@ -408,26 +415,33 @@ class WebGLRenderer{
 
         this.isFullscreen = false;
 
-        this.context.viewport(0, 0, this.context.canvas.width, this.context.canvas.height);
+        this.context.viewport(0, 0, this.viewport.width, this.viewport.height);
+        this.onResizeCallback;
 
-        let self = this;
-        this.onResize = function() {
-            let displayWidth = 0;
-            let displayHeight = 0;
-
-            if(self.isFullscreen) {
-                displayWidth = window.innerWidth;
-                displayHeight = window.innerHeight;
-            }
+        this.onResize = function(callback) {
+            if(callback){
+                this.onResizeCallback = callback;
+            } 
             else {
-                displayWidth = self.domElement.clientWidth;
-                displayHeight = self.domElement.clientHeight;
-            }
-            
-            if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
-                self.domElement.width = displayWidth;
-                self.domElement.height = displayHeight;
-                self.context.viewport(0, 0, self.domElement.width, self.domElement.height);
+                let displayWidth = 0;
+                let displayHeight = 0;
+
+                if(self.isFullscreen) {
+                    displayWidth = window.innerWidth;
+                    displayHeight = window.innerHeight;
+                }
+                else {
+                    displayWidth = self.domElement.clientWidth;
+                    displayHeight = self.domElement.clientHeight;
+                }
+                
+                if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
+                    self.domElement.width = displayWidth;
+                    self.domElement.height = displayHeight;
+                    self.viewport.width = displayWidth;
+                    self.viewport.height = displayHeight;
+                    self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
+                }
             }
         }
 
@@ -437,7 +451,10 @@ class WebGLRenderer{
     }
 
     setup(){
-        
+        // webgl extensions:
+        this.ext = {
+            color_buffer_float: this.context.getExtension('EXT_color_buffer_float'),
+        }                
     }
 
     fullscreen(isFullscreen){
@@ -485,13 +502,15 @@ class AttributePointer{
 
 
 class vertex_Vertex{
-    constructor(vertex, normal){
+    constructor(vertex, normal, uv){
         this.position = vertex || [0.0, 0.0, 0.0];
         this.normal = normal || [0.0, 1.0, 0.0];
+        this.uv = uv || [0.0, 0.0];
     }
     toArray(){
         let result = this.position;
         result = result.concat(this.normal);
+        result = result.concat(this.uv);
         return result;
     }
 }
@@ -499,6 +518,7 @@ class vertex_Vertex{
 let vertex_attributes = [
     {name: "a_position", elements: 3 },
     {name: "a_normal", elements: 3 },
+    {name: "a_texCoords", elements: 2 }
 ]
 
 let vertex_bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
@@ -615,7 +635,7 @@ class shader_Shader{
         }
         let location = this._getOrAddUniform(name);
         if (location !== null){
-            gl.uniform1f(location, value);
+            gl.uniform1i(location, value);
         }
     }
 
@@ -925,14 +945,14 @@ let geometry_Geometry = {
         let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray);
     },
-    Square: function(size){
+    Quad: function(size){
         const halfS = size * 0.5 || 0.5
         let vertices = [
-            //position                           normal             color
-            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0]), // top right
-            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0]), // bottom right
-            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]), // bottom left
-            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0]) // top left
+            //position                           normal             uv
+            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0], [1.0, 1.0]), // top right
+            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0], [1.0, 0.0]), // bottom right
+            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0], [0.0, 0.0]), // bottom left
+            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0], [0.0, 1.0]) // top left
         ];
         let indices = [
             0, 3, 1,
@@ -941,7 +961,6 @@ let geometry_Geometry = {
         let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray, indices);
     },
-    
     Box: function(sizeX, sizeY, sizeZ){
         const halfX = sizeX * 0.5 || 0.5;
         const halfY = sizeY * 0.5 || 0.5;
@@ -1047,6 +1066,187 @@ class resourceManager_ResourceManager{
 
 
 let resourceManager_RM = new resourceManager_ResourceManager();
+// CONCATENATED MODULE: ./src/Render/Textures/texture.js
+
+
+
+
+class texture_TextureFormat {
+    constructor(format, filtering, wrap){
+        this.level = format['level'] || 0;
+        this.internalFormat = format['internalFormat'] || gl.RGB;
+        this.border = format['border'] || 0;
+        this.format = format['format'] || gl.RGB;
+        this.type = format['type'] || gl.UNSIGNED_BYTE;
+
+        this.wrap = {S: gl.REPEAT, T: gl.REPEAT };
+        this.filtering = { min: gl.NEAREST, mag: gl.LINEAR };
+
+        this.wrap.S = wrap['S'] || this.wrap.S;
+        this.wrap.T = wrap['T'] || this.wrap.T;
+        this.filtering.min = filtering['min'] || this.filtering.min;
+        this.filtering.mag = filtering['mag'] || this.filtering.mag;
+    }
+
+}
+
+let texture_TexturePresets = {
+    RGB: () => { return new texture_TextureFormat() },
+    sRGB: () => { return new texture_TextureFormat() }, // TODO: Make sRGB texture preset
+    FB_COLOR: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE}); 
+    },
+    FB_HDR_COLOR: () => {
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA16F,
+            format: gl.RGBA,
+            type: gl.FLOAT,
+        },
+        { min: gl.NEAREST, mag: gl.NEAREST},
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    
+    FB_DEPTH: () => { 
+        
+        return new texture_TextureFormat({
+            internalFormat: gl.DEPTH_COMPONENT24,
+            format: gl.DEPTH_COMPONENT,
+            type: gl.UNSIGNED_INT,
+        }, 
+        { min: gl.NEAREST, mag: gl.NEAREST },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    FB_STENCIL: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    FB_DEPTH_STENCIL: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+}
+
+Object.freeze(texture_TexturePresets);
+
+class texture_Texture {
+    constructor(width, height, textureFormat, data){
+        this.width = width || 256;
+        this.height = height || 256;
+        
+        this.data = data;
+
+        this.textureFormat = textureFormat || texture_TexturePresets.RGB();
+
+        this.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.texImage2D(gl.TEXTURE_2D, this.textureFormat.level, this.textureFormat.internalFormat, 
+                        this.width, this.height, this.textureFormat.border, 
+                        this.textureFormat.format, this.textureFormat.type, this.data);
+        
+        //TODO: MIPMAPing 
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.textureFormat.filtering.min);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.textureFormat.filtering.mag);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.textureFormat.wrap.S);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.textureFormat.wrap.T);
+
+    }
+
+    bind(textureUnit) {
+        if(textureUnit < 0) textureUnit = 0;
+        if(textureUnit > 15) textureUnit = 15;
+        gl.activeTexture(gl.TEXTURE0 + textureUnit);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    }
+
+    dispose(){
+        gl.deleteTexture(this.texture);
+    }
+}
+// CONCATENATED MODULE: ./src/Render/Textures/framebuffer.js
+
+
+
+class framebuffer_Framebuffer{
+    constructor(width, height){
+        this.binded = false;
+        this.aspect = width / height;
+        this.width = width;
+        this.height = height;
+
+        this.textures = {
+            color: undefined,
+            depth: undefined,
+            stencil: undefined,
+            depthStencil: undefined,
+        };
+
+        this.colorFormat = texture_TexturePresets.FB_COLOR();
+
+        this.fbo = gl.createFramebuffer();
+    }
+
+    addColor(colorFormat){
+        this.bind();
+        this.colorFormat = colorFormat || this.colorFormat;
+        this.textures.color = new texture_Texture(this.width, this.height, this.colorFormat, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.textures.color.texture, 0);
+        this.unbind();
+    }
+
+    addDepth(){
+        this.bind();
+        this.depthFormat = texture_TexturePresets.FB_DEPTH();
+        this.textures.depth = new texture_Texture(this.width, this.height, this.depthFormat, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.textures.depth.texture, 0);
+        this.bind();
+    }
+
+    addStencil(){
+        // TODO: stencil texture
+    }
+
+    addDepthStencil() {
+        // TODO: Create depth and stencil combined texture
+    }
+
+    dispose(){
+        for(let texture of this.textures){
+            if(texture)
+                texture.dispose();
+        }
+        gl.deleteFramebuffer(framebuffer);
+    }
+
+    bind(){
+        if(!this.binded){
+            this.binded = true;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+        }
+    }
+
+    unbind(){
+        if(this.binded){
+            this.binded = false;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        }
+    }
+}
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
@@ -7114,7 +7314,8 @@ let baseMaterial_MaterialTag = {
     'none': 0,
     'unlit': 1,
     'lit': 2,
-    'translucent': 3
+    'translucent': 3,
+    'postprocess': 4,
 }
 
 Object.freeze(baseMaterial_MaterialTag);
@@ -7420,10 +7621,6 @@ let phongMaterial_shaderSource = {
         out vec3 normal;
         out vec3 fragPos;
 
-        vec4 when_gt(vec4 x, vec4 y) {
-            return max(sign(x - y), 0.0);
-        }
-
         void main(void) {
             normal = normalize(vec3(u_mNormal * vec4(a_normal, 0.0)));
             fragPos = vec3(u_model * vec4(a_position, 1.0));
@@ -7439,13 +7636,10 @@ let phongMaterial_shaderSource = {
 
         struct Light{
             vec3 position;
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
+            
+            vec3 color;
 
-            float constant;
-            float linear;
-            float quadratic;
+            float intensity;
         };
         
         struct Material{
@@ -7464,7 +7658,7 @@ let phongMaterial_shaderSource = {
         void main(void) {
 
             // Ambient color
-            vec3 ambient = u_light.ambient * u_material.ambient;
+            vec3 ambient = u_light.intensity * u_light.color * u_material.ambient;
 
             // Light direction
             vec3 norm = normalize(normal);
@@ -7475,7 +7669,7 @@ let phongMaterial_shaderSource = {
 
             // diffuse color
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+            vec3 diffuse = u_light.intensity * u_light.color * (diff * u_material.diffuse);
 
             // Specular color
 
@@ -7492,22 +7686,22 @@ let phongMaterial_shaderSource = {
             float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), kShininess);
 
             //float spec = pow( max( dot(normal, halfwayDir), 0.0 ), 32.0 );
-            vec3 specular = u_light.specular * (spec * u_material.specular);
+            vec3 specular = u_light.intensity * u_light.color * (spec * u_material.specular);
 
 
             // Attenuation
-            float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            //float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            float attenuation = 1.0 / (lightDistance * lightDistance);
             ambient *= attenuation;
             diffuse *= attenuation;
             specular *= attenuation;
-
 
             vec3 result = ambient + diffuse + specular;
             outputColor = vec4(result, 1.0);
 
             // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+            //float gamma = 2.2;
+            //outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));    
         }`,
 }
 
@@ -7545,26 +7739,75 @@ class phongMaterial_PhongMaterial extends baseMaterial_BaseMaterial{
         });
     }
 } 
+// CONCATENATED MODULE: ./src/Render/Materials/Post Process/hdrMaterial.js
+
+
+
+
+let hdrMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec2 a_texCoords;
+    
+        out vec2 texCoords;
+        void main(void) {
+            gl_Position = vec4(a_position.xy, 0.0, 1.0);
+            texCoords = a_texCoords;
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec2 texCoords;
+
+        uniform sampler2D u_texture;
+
+        out vec4 outColor;
+        void main(void) {
+            const float gamma = 2.2;
+
+            vec3 hdrColor = texture(u_texture, texCoords).rgb;
+
+            vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
+
+            mapped = pow(mapped, vec3(1.0 / gamma));
+
+            outColor = vec4(mapped, 1.0);
+
+            /*
+            // Gamma correction
+            float gamma = 2.2;
+            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
+            */
+        }`,
+}
+
+
+class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.postprocess;
+        let shader = resourceManager_RM.createShader('hdr-shader', hdrMaterial_shaderSource.vs, hdrMaterial_shaderSource.ps);
+        super(shader, args);
+    }
+
+    setup(){
+        super.setup();
+    }
+
+    update() {
+        super.update();
+        this.shader.setInt('u_texture', 0);
+    }
+} 
 // CONCATENATED MODULE: ./src/Render/Lights/pointLight.js
 class PointLight{
     constructor(vargs){
         this.position = vargs['position'] || [0.0, 0.0, 0.0];
-        this.ambient = vargs['ambient'] || [0.1, 0.1, 0.1];
-        this.diffuse = vargs['diffuse'] || [0.5, 0.5, 0.5];
-        this.specular = vargs['specular'] || [1.0, 1.0, 1.0];
 
         this.color = vargs['color'] || [1.0, 1.0, 1.0];
-        this.range = vargs['range'] || 100.0;
-
-        this.constant = vargs['constant'] || 1.0;
-        this.linear = vargs['linear'] || 1.0 / this.range; //0.09;
-        this.quadratic = vargs['quadratic'] || 1.0 / (this.range * this.range) //0.032;
-    }
-
-    calculateAttenuation(){
-        this.constant = 1.0;
-        this.linear = 10.0 / this.range;
-        this.quadratic = 10.0 / (this.range * this.range);
+        this.intensity = vargs['intensity'] || 1.0;
     }
 }
 // CONCATENATED MODULE: ./src/Core/transform.js
@@ -7609,6 +7852,10 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RM", function() { return resourceManager_RM; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Texture", function() { return texture_Texture; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TextureFormat", function() { return texture_TextureFormat; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TexturePresets", function() { return texture_TexturePresets; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Framebuffer", function() { return framebuffer_Framebuffer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return baseMaterial_BaseMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return baseMaterial_MaterialTag; });
@@ -7616,6 +7863,7 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return normalMaterial_NormalMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return lambertMaterial_LambertMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PhongMaterial", function() { return phongMaterial_PhongMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "HDRMaterial", function() { return hdrMaterial_HDRMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PointLight", function() { return PointLight; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return GameObject; });
@@ -7628,6 +7876,10 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
+
+
+
+
 
 
 

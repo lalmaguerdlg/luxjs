@@ -2,13 +2,15 @@ import { gl } from '../webgl'
 import { AttributePointer } from './attributePointer';
 
 export class Vertex{
-    constructor(vertex, normal){
+    constructor(vertex, normal, uv){
         this.position = vertex || [0.0, 0.0, 0.0];
         this.normal = normal || [0.0, 1.0, 0.0];
+        this.uv = uv || [0.0, 0.0];
     }
     toArray(){
         let result = this.position;
         result = result.concat(this.normal);
+        result = result.concat(this.uv);
         return result;
     }
 }
@@ -16,6 +18,7 @@ export class Vertex{
 let attributes = [
     {name: "a_position", elements: 3 },
     {name: "a_normal", elements: 3 },
+    {name: "a_texCoords", elements: 2 }
 ]
 
 let bytesPerElement = Float32Array.BYTES_PER_ELEMENT;

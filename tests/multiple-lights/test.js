@@ -4,12 +4,27 @@ let normalMaterial;
 let lambertMaterial;
 let phongMaterial;
 
+let hdrMaterial;
+
+let framebuffer;
+let screenQuad;
+
 function main() {
 
     lux.renderer.fullscreen(true);
 
     $('#canvasContainer').append(lux.renderer.domElement);
     gl = lux.gl;
+
+    
+    framebuffer = new lux.Framebuffer(lux.renderer.viewport.width, lux.renderer.viewport.height);
+    let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
+    fbFormat.filtering.min = gl.LINEAR;
+    fbFormat.filtering.mag = gl.LINEAR;
+    framebuffer.addColor(fbFormat);
+    framebuffer.addDepth();
+
+    screenQuad = new lux.Geometry.Quad(2.0);
 
     basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
 
@@ -34,45 +49,27 @@ function main() {
         shininess: 32 
     });*/
 
+    hdrMaterial = new lux.HDRMaterial();
+
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
-    
-    /*
-    let light = new lux.PointLight({
-        position: [0.0, 0.0, 0.0],
-        ambient: [1.0, 1.0, 1.0],
-        diffuse: [1.0, 1.0, 1.0],
-        specular: [1.0, 1.0, 1.0],
-        range: 1.0
-        /*
-        linear: 0.7,
-        quadratic: 0.16*/
-    /*});
-
-    /*lights.push(light);*/
+    lux.renderer.setClearColor(0.1, 0.1, 0.1, 0.0);
 
     let light = new lux.PointLight({
         position: [0.0, 0.0, 0.0],
-        ambient: [1.0, 0.0, 0.0],
-        diffuse: [1.0, 0.0, 0.0],
-        specular: [1.0, 0.0, 0.0],
+        color: [1.0, 0.0, 0.0],
     });
 
     lights.push(light);
     light = new lux.PointLight({
         position: [0.0, 2.0, 0.0],
-        ambient: [0.0, 0.0  , 1.0],
-        diffuse: [0.0, 0.0, 1.0],
-        specular: [0.0, 0.0, 1.0],
+        color: [0.0, 1.0, 0.0],
     });
     lights.push(light);
 
     light = new lux.PointLight({
         position: [2.0, 2.0, 2.0],
-        ambient: [0.0, 1.0, 0.0],
-        diffuse: [0.0, 1.0, 0.0],
-        specular: [0.0, 1.0, 0.0],
+        color: [0.0, 0.0, 1.0],
     });
     lights.push(light);
 
@@ -95,7 +92,10 @@ let cameraPos = lux.vec3.create();
 
 function render(dt){
     
+    framebuffer.bind();
+
     t += dt;
+    lux.renderer.setClearColor(0.0, 0.0, 0.0, 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     lux.mat4.identity(mModel);
     lux.mat4.identity(mView);
@@ -111,13 +111,16 @@ function render(dt){
     let sinT = Math.sin(t);
     let cosT = Math.cos(t);
     let index = 0;
-    let lightDistance = $('#lightDistance').val();
-    console.log(lightDistance);
+    let lightInten = $('#lightDistance').val();
     
     //lux.vec3.set(lights[0].position, Math.cos(t) * lightTravel + 5.0, Math.sin(t) * lightTravel + 5.0, Math.sin(t)*5.0);    
+    
     for(let light of lights){
+        /*
         light.range = lightDistance;
         light.calculateAttenuation();
+        */
+       light.intensity = lightInten;
         
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
@@ -132,7 +135,7 @@ function render(dt){
         lux.mat4.scale(mModel, mModel, [0.2, 0.2, 0.2]);
         
         basicMaterial.setMatrices(mModel, mView, mPerspective);
-        basicMaterial.color = light.specular;
+        basicMaterial.color = light.color;
         basicMaterial.use();
         cubeMesh.render(gl.TRIANGLES);
             
@@ -157,9 +160,21 @@ function render(dt){
 
         cubeMesh.render(gl.TRIANGLES);
         index++;
-
     }
+    framebuffer.unbind();
 
+    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    hdrMaterial.use();
+    framebuffer.textures.color.bind(0);
+    screenQuad.render(gl.TRIANGLES);
+    /*phongMaterial.setMatrices(mModel, mView, mPerspective);
+    phongMaterial.viewPos = cameraPos;
+    phongMaterial.light = lights[0];
+    phongMaterial.use();
+
+    cubeMesh.render(gl.TRIANGLES);*/
 }
 
 

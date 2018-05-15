@@ -51,7 +51,7 @@ export class Shader{
         }
         let location = this._getOrAddUniform(name);
         if (location !== null){
-            gl.uniform1f(location, value);
+            gl.uniform1i(location, value);
         }
     }
 
