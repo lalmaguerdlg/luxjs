@@ -14,10 +14,19 @@
             overflow: hidden; /*  Disable scrollbars */
             display: block;  /* No floating content on sides */
         }
+        canvas {
+            position: absolute;
+            z-index: -1;
+        }
+
+        input[type="range"]{
+            position: absolute;
+        }
     </style>
     
 </head>
 <body>
+    <input id="lightDistance" type="range" min="1" max="100">
     <div id="canvasContainer"></div>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="../../dist/lux.js"></script>

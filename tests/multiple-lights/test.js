@@ -38,6 +38,19 @@ function main() {
 
     lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
     
+    /*
+    let light = new lux.PointLight({
+        position: [0.0, 0.0, 0.0],
+        ambient: [1.0, 1.0, 1.0],
+        diffuse: [1.0, 1.0, 1.0],
+        specular: [1.0, 1.0, 1.0],
+        range: 1.0
+        /*
+        linear: 0.7,
+        quadratic: 0.16*/
+    /*});
+
+    /*lights.push(light);*/
 
     let light = new lux.PointLight({
         position: [0.0, 0.0, 0.0],
@@ -98,9 +111,13 @@ function render(dt){
     let sinT = Math.sin(t);
     let cosT = Math.cos(t);
     let index = 0;
+    let lightDistance = $('#lightDistance').val();
+    console.log(lightDistance);
+    
     //lux.vec3.set(lights[0].position, Math.cos(t) * lightTravel + 5.0, Math.sin(t) * lightTravel + 5.0, Math.sin(t)*5.0);    
     for(let light of lights){
-
+        light.range = lightDistance;
+        light.calculateAttenuation();
         
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
