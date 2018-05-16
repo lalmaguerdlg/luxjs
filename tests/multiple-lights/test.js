@@ -9,6 +9,17 @@ let hdrMaterial;
 let framebuffer;
 let screenQuad;
 
+
+function resize(){
+    if(framebuffer) framebuffer.dispose();
+    framebuffer = new lux.Framebuffer(lux.renderer.viewport.width, lux.renderer.viewport.height);
+    let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
+
+    framebuffer.addColor(fbFormat);
+    framebuffer.addColor(fbFormat);
+    framebuffer.addDepth();
+}
+
 function main() {
 
     lux.renderer.fullscreen(true);
@@ -16,15 +27,15 @@ function main() {
     $('#canvasContainer').append(lux.renderer.domElement);
     gl = lux.gl;
 
+    lux.renderer.onResizeCallback = resize;
     
     framebuffer = new lux.Framebuffer(lux.renderer.viewport.width, lux.renderer.viewport.height);
     let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
-    fbFormat.filtering.min = gl.LINEAR;
-    fbFormat.filtering.mag = gl.LINEAR;
+    framebuffer.addColor(fbFormat);
     framebuffer.addColor(fbFormat);
     framebuffer.addDepth();
 
-    screenQuad = new lux.Geometry.Quad(2.0);
+    screenQuad = new lux.Geometry.Quad(1.0);
 
     basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
 
@@ -111,7 +122,7 @@ function render(dt){
     let sinT = Math.sin(t);
     let cosT = Math.cos(t);
     let index = 0;
-    let lightInten = $('#lightDistance').val();
+    let lightInten = $('#lightIntensity').val();
     
     //lux.vec3.set(lights[0].position, Math.cos(t) * lightTravel + 5.0, Math.sin(t) * lightTravel + 5.0, Math.sin(t)*5.0);    
     
@@ -163,11 +174,30 @@ function render(dt){
     }
     framebuffer.unbind();
 
-    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
+
+    //gl.enable(gl.DEPTH_TEST);
+    //gl.depthFunc(gl.LESS);
+    //gl.disable(gl.BLEND);
+    lux.renderer.setClearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    let cameraExposure = $('#cameraExposure').val();
+
+    lux.mat4.identity(mModel);
+    lux.mat4.translate(mModel, mModel, [-0.5, 0.0, 0.0]);
+    hdrMaterial.setMatrices(mModel, mView, mPerspective);
+    hdrMaterial.exposure = 1.0;
+
     hdrMaterial.use();
-    framebuffer.textures.color.bind(0);
+    framebuffer.textures.color[0].bind(0);
+    screenQuad.render(gl.TRIANGLES);
+
+    lux.mat4.identity(mModel);
+    lux.mat4.translate(mModel, mModel, [0.5, 0.0, 0.0]);
+    hdrMaterial.setMatrices(mModel, mView, mPerspective);
+    hdrMaterial.exposure = cameraExposure;
+    hdrMaterial.use();
+    framebuffer.textures.color[0].bind(0);
     screenQuad.render(gl.TRIANGLES);
     /*phongMaterial.setMatrices(mModel, mView, mPerspective);
     phongMaterial.viewPos = cameraPos;

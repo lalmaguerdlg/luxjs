@@ -21,33 +21,29 @@ class WebGLRenderer{
         this.isFullscreen = false;
 
         this.context.viewport(0, 0, this.viewport.width, this.viewport.height);
-        this.onResizeCallback;
+        this.onResizeCallback = () => {};
 
-        this.onResize = function(callback) {
-            if(callback){
-                this.onResizeCallback = callback;
-            } 
-            else {
-                let displayWidth = 0;
-                let displayHeight = 0;
+        this.onResize = function() {
+            let displayWidth = 0;
+            let displayHeight = 0;
 
-                if(self.isFullscreen) {
-                    displayWidth = window.innerWidth;
-                    displayHeight = window.innerHeight;
-                }
-                else {
-                    displayWidth = self.domElement.clientWidth;
-                    displayHeight = self.domElement.clientHeight;
-                }
-                
-                if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
-                    self.domElement.width = displayWidth;
-                    self.domElement.height = displayHeight;
-                    self.viewport.width = displayWidth;
-                    self.viewport.height = displayHeight;
-                    self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
-                }
+            if(self.isFullscreen) {
+                displayWidth = window.innerWidth;
+                displayHeight = window.innerHeight;
             }
+            else {
+                displayWidth = self.domElement.clientWidth;
+                displayHeight = self.domElement.clientHeight;
+            }
+            
+            if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
+                self.domElement.width = displayWidth;
+                self.domElement.height = displayHeight;
+                self.viewport.width = displayWidth;
+                self.viewport.height = displayHeight;
+                self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
+            }
+            self.onResizeCallback();
         }
 
         window.addEventListener("resize", this.onResize);

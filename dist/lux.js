@@ -416,33 +416,29 @@ class WebGLRenderer{
         this.isFullscreen = false;
 
         this.context.viewport(0, 0, this.viewport.width, this.viewport.height);
-        this.onResizeCallback;
+        this.onResizeCallback = () => {};
 
-        this.onResize = function(callback) {
-            if(callback){
-                this.onResizeCallback = callback;
-            } 
-            else {
-                let displayWidth = 0;
-                let displayHeight = 0;
+        this.onResize = function() {
+            let displayWidth = 0;
+            let displayHeight = 0;
 
-                if(self.isFullscreen) {
-                    displayWidth = window.innerWidth;
-                    displayHeight = window.innerHeight;
-                }
-                else {
-                    displayWidth = self.domElement.clientWidth;
-                    displayHeight = self.domElement.clientHeight;
-                }
-                
-                if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
-                    self.domElement.width = displayWidth;
-                    self.domElement.height = displayHeight;
-                    self.viewport.width = displayWidth;
-                    self.viewport.height = displayHeight;
-                    self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
-                }
+            if(self.isFullscreen) {
+                displayWidth = window.innerWidth;
+                displayHeight = window.innerHeight;
             }
+            else {
+                displayWidth = self.domElement.clientWidth;
+                displayHeight = self.domElement.clientHeight;
+            }
+            
+            if (self.domElement.width != displayWidth || self.domElement.height != displayHeight){
+                self.domElement.width = displayWidth;
+                self.domElement.height = displayHeight;
+                self.viewport.width = displayWidth;
+                self.viewport.height = displayHeight;
+                self.context.viewport(0, 0, self.viewport.width, self.viewport.height);
+            }
+            self.onResizeCallback();
         }
 
         window.addEventListener("resize", this.onResize);
@@ -1069,8 +1065,6 @@ let resourceManager_RM = new resourceManager_ResourceManager();
 // CONCATENATED MODULE: ./src/Render/Textures/texture.js
 
 
-
-
 class texture_TextureFormat {
     constructor(format, filtering, wrap){
         this.level = format['level'] || 0;
@@ -1144,6 +1138,8 @@ let texture_TexturePresets = {
 
 Object.freeze(texture_TexturePresets);
 
+const texture_TEXTUREUNITMAX = 15;
+
 class texture_Texture {
     constructor(width, height, textureFormat, data){
         this.width = width || 256;
@@ -1169,7 +1165,7 @@ class texture_Texture {
 
     bind(textureUnit) {
         if(textureUnit < 0) textureUnit = 0;
-        if(textureUnit > 15) textureUnit = 15;
+        if(textureUnit > texture_TEXTUREUNITMAX) textureUnit = texture_TEXTUREUNITMAX;
         gl.activeTexture(gl.TEXTURE0 + textureUnit);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
     }
@@ -1182,6 +1178,8 @@ class texture_Texture {
 
 
 
+const framebuffer_COLORATTACHMENTMAX = 15;
+
 class framebuffer_Framebuffer{
     constructor(width, height){
         this.binded = false;
@@ -1190,7 +1188,7 @@ class framebuffer_Framebuffer{
         this.height = height;
 
         this.textures = {
-            color: undefined,
+            color: [],
             depth: undefined,
             stencil: undefined,
             depthStencil: undefined,
@@ -1202,11 +1200,27 @@ class framebuffer_Framebuffer{
     }
 
     addColor(colorFormat){
+        let attachmentOffset = this.textures.color.length;
+        let overflow = false;
+        if(attachmentOffset > framebuffer_COLORATTACHMENTMAX) {
+            attachmentOffset = framebuffer_COLORATTACHMENTMAX;
+            overflow = true;
+        }
+        
+        let usedColorFormat = colorFormat || this.colorFormat;
+
         this.bind();
-        this.colorFormat = colorFormat || this.colorFormat;
-        this.textures.color = new texture_Texture(this.width, this.height, this.colorFormat, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.textures.color.texture, 0);
+        let colorTexture = new texture_Texture(this.width, this.height, usedColorFormat, null);
+        if(!overflow)
+            this.textures.color.push(colorTexture);
+        else {
+            this.textures.color[attachmentOffset].dispose();
+            this.textures.color[attachmentOffset] = colorTexture;
+        }
+            
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + attachmentOffset, gl.TEXTURE_2D, colorTexture.texture, 0);
         this.unbind();
+
     }
 
     addDepth(){
@@ -1226,17 +1240,31 @@ class framebuffer_Framebuffer{
     }
 
     dispose(){
-        for(let texture of this.textures){
-            if(texture)
-                texture.dispose();
+        for(let textureT in this.textures){
+            let t = this.textures[this.textureT]
+            if(t){
+                if(Array.isArray(t)){
+                    for(let tex of t){
+                        tex.dispose();
+                    }
+                }
+                else {
+                    t.dispose();
+                }
+            }
         }
-        gl.deleteFramebuffer(framebuffer);
+        gl.deleteFramebuffer(this.fbo);
     }
 
     bind(){
         if(!this.binded){
             this.binded = true;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+            let drawBuffers = [];
+            for(let i = 0; i < this.textures.color.length; i++){
+                drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
+            }
+            gl.drawBuffers(drawBuffers);
         }
     }
 
@@ -1244,6 +1272,7 @@ class framebuffer_Framebuffer{
         if(this.binded){
             this.binded = false;
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.drawBuffers([gl.BACK]);
         }
     }
 }
@@ -7750,9 +7779,11 @@ let hdrMaterial_shaderSource = {
         in vec3 a_position;
         in vec2 a_texCoords;
     
+        uniform mat4 u_model;
+
         out vec2 texCoords;
         void main(void) {
-            gl_Position = vec4(a_position.xy, 0.0, 1.0);
+            gl_Position = u_model * vec4(a_position.xy, 0.0, 1.0);
             texCoords = a_texCoords;
         }`,
     ps: 
@@ -7762,6 +7793,7 @@ let hdrMaterial_shaderSource = {
         in vec2 texCoords;
 
         uniform sampler2D u_texture;
+        uniform float u_exposure;
 
         out vec4 outColor;
         void main(void) {
@@ -7769,17 +7801,16 @@ let hdrMaterial_shaderSource = {
 
             vec3 hdrColor = texture(u_texture, texCoords).rgb;
 
-            vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
-
+            //Reinhard tone mapping
+            //vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
+            
+            // Exposure tone mapping
+            vec3 mapped = vec3(1.0) - exp(-hdrColor * u_exposure);
+            
+            // Gamma correction 
             mapped = pow(mapped, vec3(1.0 / gamma));
-
+          
             outColor = vec4(mapped, 1.0);
-
-            /*
-            // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
-            */
         }`,
 }
 
@@ -7790,6 +7821,7 @@ class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
         args['tag'] = args['tag'] || baseMaterial_MaterialTag.postprocess;
         let shader = resourceManager_RM.createShader('hdr-shader', hdrMaterial_shaderSource.vs, hdrMaterial_shaderSource.ps);
         super(shader, args);
+        this.exposure = 1.0;
     }
 
     setup(){
@@ -7799,6 +7831,7 @@ class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
     update() {
         super.update();
         this.shader.setInt('u_texture', 0);
+        this.shader.setFloat('u_exposure', this.exposure);
     }
 } 
 // CONCATENATED MODULE: ./src/Render/Lights/pointLight.js

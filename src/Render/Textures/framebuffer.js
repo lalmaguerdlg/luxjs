@@ -1,6 +1,8 @@
 import { gl } from '../webgl'
 import { Texture, TexturePresets } from './texture'
 
+const COLORATTACHMENTMAX = 15;
+
 export class Framebuffer{
     constructor(width, height){
         this.binded = false;
@@ -9,7 +11,7 @@ export class Framebuffer{
         this.height = height;
 
         this.textures = {
-            color: undefined,
+            color: [],
             depth: undefined,
             stencil: undefined,
             depthStencil: undefined,
@@ -21,11 +23,27 @@ export class Framebuffer{
     }
 
     addColor(colorFormat){
+        let attachmentOffset = this.textures.color.length;
+        let overflow = false;
+        if(attachmentOffset > COLORATTACHMENTMAX) {
+            attachmentOffset = COLORATTACHMENTMAX;
+            overflow = true;
+        }
+        
+        let usedColorFormat = colorFormat || this.colorFormat;
+
         this.bind();
-        this.colorFormat = colorFormat || this.colorFormat;
-        this.textures.color = new Texture(this.width, this.height, this.colorFormat, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.textures.color.texture, 0);
+        let colorTexture = new Texture(this.width, this.height, usedColorFormat, null);
+        if(!overflow)
+            this.textures.color.push(colorTexture);
+        else {
+            this.textures.color[attachmentOffset].dispose();
+            this.textures.color[attachmentOffset] = colorTexture;
+        }
+            
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + attachmentOffset, gl.TEXTURE_2D, colorTexture.texture, 0);
         this.unbind();
+
     }
 
     addDepth(){
@@ -45,17 +63,31 @@ export class Framebuffer{
     }
 
     dispose(){
-        for(let texture of this.textures){
-            if(texture)
-                texture.dispose();
+        for(let textureT in this.textures){
+            let t = this.textures[this.textureT]
+            if(t){
+                if(Array.isArray(t)){
+                    for(let tex of t){
+                        tex.dispose();
+                    }
+                }
+                else {
+                    t.dispose();
+                }
+            }
         }
-        gl.deleteFramebuffer(framebuffer);
+        gl.deleteFramebuffer(this.fbo);
     }
 
     bind(){
         if(!this.binded){
             this.binded = true;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+            let drawBuffers = [];
+            for(let i = 0; i < this.textures.color.length; i++){
+                drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
+            }
+            gl.drawBuffers(drawBuffers);
         }
     }
 
@@ -63,6 +95,7 @@ export class Framebuffer{
         if(this.binded){
             this.binded = false;
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.drawBuffers([gl.BACK]);
         }
     }
 }

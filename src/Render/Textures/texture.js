@@ -1,7 +1,5 @@
 import { gl } from '../webgl'
 
-
-
 export class TextureFormat {
     constructor(format, filtering, wrap){
         this.level = format['level'] || 0;
@@ -75,6 +73,8 @@ export let TexturePresets = {
 
 Object.freeze(TexturePresets);
 
+const TEXTUREUNITMAX = 15;
+
 export class Texture {
     constructor(width, height, textureFormat, data){
         this.width = width || 256;
@@ -100,7 +100,7 @@ export class Texture {
 
     bind(textureUnit) {
         if(textureUnit < 0) textureUnit = 0;
-        if(textureUnit > 15) textureUnit = 15;
+        if(textureUnit > TEXTUREUNITMAX) textureUnit = TEXTUREUNITMAX;
         gl.activeTexture(gl.TEXTURE0 + textureUnit);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
     }
