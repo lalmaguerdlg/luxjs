@@ -3,6 +3,7 @@ let basicMaterial;
 let normalMaterial;
 let lambertMaterial;
 let phongMaterial;
+let texturedMaterial;
 
 let hdrMaterial;
 
@@ -50,8 +51,10 @@ function main() {
         ambient: [1.0, 0.5, 0.2],
         diffuse: [1.0, 0.5, 0.2],
         specular: [1.0, 1.0, 1.0],
-        shininess: 32 
+        shininess: 128 
     });
+
+    texturedMaterial = new lux.TexturedMaterial();
 
     /*phongMaterial = new lux.PhongMaterial({ 
         ambient: [1.0, 1.0, 1.0],
@@ -175,16 +178,16 @@ function render(dt){
     framebuffer.unbind();
 
 
-    //gl.enable(gl.DEPTH_TEST);
-    //gl.depthFunc(gl.LESS);
-    //gl.disable(gl.BLEND);
-    lux.renderer.setClearColor(0.0, 0.0, 0.0, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    gl.disable(gl.BLEND);
+    lux.renderer.setClearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let cameraExposure = $('#cameraExposure').val();
 
     lux.mat4.identity(mModel);
-    lux.mat4.translate(mModel, mModel, [-0.5, 0.0, 0.0]);
+    lux.mat4.translate(mModel, mModel, [0.0, 0.5, 0.0]);
     hdrMaterial.setMatrices(mModel, mView, mPerspective);
     hdrMaterial.exposure = 1.0;
 
@@ -193,12 +196,24 @@ function render(dt){
     screenQuad.render(gl.TRIANGLES);
 
     lux.mat4.identity(mModel);
-    lux.mat4.translate(mModel, mModel, [0.5, 0.0, 0.0]);
+    lux.mat4.translate(mModel, mModel, [0.0, -0.5, 0.0]);
     hdrMaterial.setMatrices(mModel, mView, mPerspective);
     hdrMaterial.exposure = cameraExposure;
     hdrMaterial.use();
     framebuffer.textures.color[0].bind(0);
     screenQuad.render(gl.TRIANGLES);
+
+    lux.mat4.identity(mModel);
+    lux.mat4.translate(mModel, mModel, [5.0, 0.0, -0.1]);
+    lux.mat4.rotate(mModel, mModel, t, [1.0, 0.0, 0.0]);
+    lux.mat4.scale(mModel, mModel, [10.0, 10.0, 10.0]);
+    
+    texturedMaterial.setMatrices(mModel, mView, mPerspective);
+    texturedMaterial.exposure = cameraExposure;
+    texturedMaterial.use();
+    framebuffer.textures.color[0].bind(0);
+    cubeMesh.render(gl.TRIANGLES);
+    //screenQuad.render(gl.TRIANGLES);
     /*phongMaterial.setMatrices(mModel, mView, mPerspective);
     phongMaterial.viewPos = cameraPos;
     phongMaterial.light = lights[0];

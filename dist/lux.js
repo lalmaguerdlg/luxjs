@@ -963,47 +963,47 @@ let geometry_Geometry = {
         const halfZ = sizeZ * 0.5 || 0.5;
 
         let vertices = [
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0]), 
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0]), 
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  0.0]), 
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]), 
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  1.0]), 
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]), 
        
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  1.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
        
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0], [1.0,  1.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0], [0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
        
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0], [1.0,  1.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0], [0.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
        
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [1.0,  1.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [0.0,  0.0]),
+           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
        
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0])
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0]),
+           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [1.0,  1.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [0.0,  0.0]),
+           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0])
         ];
 
         let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
@@ -7768,6 +7768,84 @@ class phongMaterial_PhongMaterial extends baseMaterial_BaseMaterial{
         });
     }
 } 
+// CONCATENATED MODULE: ./src/Render/Materials/texturedMaterial.js
+
+
+
+
+
+let texturedMaterial_shaderSource = {
+    vs: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec3 a_position;
+        in vec3 a_normal;
+        in vec2 a_texCoords;
+      
+        uniform mat4 u_model;
+        uniform mat4 u_view;
+        uniform mat4 u_perspective;
+        uniform mat4 u_mNormal;
+
+        out vec3 normal;
+        out vec3 fragPos;
+        out vec2 texCoords;
+
+        void main(void) {
+            fragPos = vec3(u_model * vec4(a_position, 1.0));
+            texCoords = a_texCoords;
+
+            gl_Position = u_perspective * u_view * u_model * vec4(a_position, 1.0);
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+        
+        in vec3 fragPos;
+        in vec2 texCoords;
+
+        uniform sampler2D u_texture;
+        uniform float u_exposure;
+
+        out vec4 outputColor;
+        void main(void) {
+
+            const float gamma = 2.2;
+
+            vec3 hdrColor = texture(u_texture, texCoords).rgb;
+            
+            // Exposure tone mapping
+            vec3 mapped = vec3(1.0) - exp(-hdrColor * u_exposure);
+            
+            // Gamma correction 
+            mapped = pow(mapped, vec3(1.0 / gamma));
+
+            outputColor = vec4(mapped, 1.0);
+        }`,
+}
+
+
+class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
+        let shader = resourceManager_RM.createShader('textured-shader', texturedMaterial_shaderSource.vs, texturedMaterial_shaderSource.ps);
+        super(shader, args);
+        this.textures = 1;
+        this.exposure = 1.0
+    }
+
+    setup(){
+        super.setup();
+    }
+
+    update() { 
+        super.update();
+        this.shader.setInt('u_texture', 0);
+        this.shader.setFloat('u_exposure', this.exposure);
+    }
+} 
 // CONCATENATED MODULE: ./src/Render/Materials/Post Process/hdrMaterial.js
 
 
@@ -7896,6 +7974,7 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return normalMaterial_NormalMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return lambertMaterial_LambertMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PhongMaterial", function() { return phongMaterial_PhongMaterial; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TexturedMaterial", function() { return texturedMaterial_TexturedMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "HDRMaterial", function() { return hdrMaterial_HDRMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PointLight", function() { return PointLight; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
@@ -7909,6 +7988,7 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat2d", function() { return mat2d_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat3", function() { return mat3_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "mat4", function() { return mat4_namespaceObject; });
+
 
 
 

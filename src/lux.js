@@ -20,6 +20,7 @@ export { BasicMaterial } from './Render/Materials/basicMaterial'
 export { NormalMaterial } from './Render/Materials/normalMaterial'
 export { LambertMaterial } from './Render/Materials/lambertMaterial'
 export { PhongMaterial } from './Render/Materials/phongMaterial'
+export { TexturedMaterial } from './Render/Materials/texturedMaterial'
 
 export { HDRMaterial } from './Render/Materials/Post Process/hdrMaterial'
 
