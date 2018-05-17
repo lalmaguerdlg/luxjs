@@ -36,7 +36,7 @@ function main() {
     framebuffer.addColor(fbFormat);
     framebuffer.addDepth();
 
-    screenQuad = new lux.Geometry.Quad(1.0);
+    screenQuad = new lux.Geometry.Quad(2.0);
 
     basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
 
@@ -187,32 +187,24 @@ function render(dt){
     let cameraExposure = $('#cameraExposure').val();
 
     lux.mat4.identity(mModel);
-    lux.mat4.translate(mModel, mModel, [0.0, 0.5, 0.0]);
-    hdrMaterial.setMatrices(mModel, mView, mPerspective);
-    hdrMaterial.exposure = 1.0;
-
-    hdrMaterial.use();
-    framebuffer.textures.color[0].bind(0);
-    screenQuad.render(gl.TRIANGLES);
-
-    lux.mat4.identity(mModel);
-    lux.mat4.translate(mModel, mModel, [0.0, -0.5, 0.0]);
+    lux.mat4.translate(mModel, mModel, [0.0, 0.0, 0.0]);
     hdrMaterial.setMatrices(mModel, mView, mPerspective);
     hdrMaterial.exposure = cameraExposure;
     hdrMaterial.use();
-    framebuffer.textures.color[0].bind(0);
+    framebuffer.textures.color[0].use(0);
     screenQuad.render(gl.TRIANGLES);
 
+    /*
     lux.mat4.identity(mModel);
     lux.mat4.translate(mModel, mModel, [5.0, 0.0, -0.1]);
     lux.mat4.rotate(mModel, mModel, t, [1.0, 0.0, 0.0]);
     lux.mat4.scale(mModel, mModel, [10.0, 10.0, 10.0]);
-    
-    texturedMaterial.setMatrices(mModel, mView, mPerspective);
+    */
+    /*texturedMaterial.setMatrices(mModel, mView, mPerspective);
     texturedMaterial.exposure = cameraExposure;
     texturedMaterial.use();
-    framebuffer.textures.color[0].bind(0);
-    cubeMesh.render(gl.TRIANGLES);
+    framebuffer.textures.color[0].use(0);
+    cubeMesh.render(gl.TRIANGLES);*/
     //screenQuad.render(gl.TRIANGLES);
     /*phongMaterial.setMatrices(mModel, mView, mPerspective);
     phongMaterial.viewPos = cameraPos;

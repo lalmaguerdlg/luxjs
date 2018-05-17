@@ -1163,10 +1163,11 @@ class texture_Texture {
 
     }
 
-    bind(textureUnit) {
-        if(textureUnit < 0) textureUnit = 0;
-        if(textureUnit > texture_TEXTUREUNITMAX) textureUnit = texture_TEXTUREUNITMAX;
-        gl.activeTexture(gl.TEXTURE0 + textureUnit);
+    use(textureUnit) {
+        let unit = textureUnit || 0;
+        if(unit < 0) unit = 0;
+        if(unit > texture_TEXTUREUNITMAX) unit = texture_TEXTUREUNITMAX;
+        gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
     }
 
