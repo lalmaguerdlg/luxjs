@@ -16,6 +16,20 @@ export class Transform{
         this.scale = vec3.create();
     }
 
+    toLocalMatrix() {
+        let local = mat4.create();
+        mat4.fromRotationTranslationScale(local, this.quat, this.position, this.scale );
+        return local;
+    }
+
+    toWorldMatrix() {
+        let world = this.toLocalMatrix();
+        if(this.parent){
+            let parentWorld = this.parent.toWorldMatrix();
+            mat4.mul(world, parentWorld, world);
+        }
+        return world;
+    }
 
     get forward() {
         let result = vec3.create();
@@ -83,21 +97,5 @@ export class Transform{
 
     scale(scaling) {
         vec3.copy(this.scale, scaling);
-    }
-
-    toLocalMatrix() {
-        let local = mat4.create();
-        mat4.fromRotationTranslationScale(local, this.quat, this.position, this.scale );
-        return local;
-    }
-
-    toWorldMatrix() {
-        let world = mat4.create();
-        mat4.fromRotationTranslationScale(world, this.quat, this.position, this.scale );
-        if(this.parent){
-            let parentWorld = this.parent.toMatrix();
-            mat4.mul(world, parentWorld, world);
-        }
-        return world;
     }
 }
