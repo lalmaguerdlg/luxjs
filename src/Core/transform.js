@@ -1,8 +1,8 @@
 import { vec3, mat4, quat, glMatrix } from 'gl-matrix'
 
-let forward = vec3.crete();
-let right = vec3.crete();
-let up = vec3.crete();
+let forward = vec3.create();
+let right = vec3.create();
+let up = vec3.create();
 
 vec3.set(forward, 0, 0, -1);
 vec3.set(right, 1, 0, 0);

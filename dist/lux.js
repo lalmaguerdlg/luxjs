@@ -581,26 +581,57 @@ class vertexArray_VertexArray{
 
 
 
-
 class shader_Shader{
 
     constructor(vertexShaderSource, fragmentShaderSource, shaderName){
         this.name = shaderName || "";
-        this.vsSource = vertexShaderSource;
-        this.fsSource = fragmentShaderSource;
-        
-        let vs = this._createShader(gl.VERTEX_SHADER, this.vsSource);
-        let fs = this._createShader(gl.FRAGMENT_SHADER, this.fsSource);
-        this.program = this._createProgram(vs, fs);
+        this.vertexSource = vertexShaderSource;
+        this.fragmentSource = fragmentShaderSource;
 
-        let attributeNames = [];
+
+        this.vs = undefined;
+        this.fs = undefined;
+        this.program = undefined;
+
+        this.attributeNames = [];
         for(let attr of vertex_VERTEX_LAYOUT) {
-            attributeNames.push( attr.name );
+            this.attributeNames.push( attr.name );
         }
 
-        this.attributes = Object.assign({}, this._getAttributeLocations(attributeNames));
-        this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
+        this.attributes = {};
+        this.uniforms = {};
+
         this.binded = false;
+        this.compiled = false;
+    }
+
+    setVertexShader(source){
+        this.vertexSource = source;
+    }
+
+    setFragmentShader(source){
+        this.fragmentSource = source;
+    }
+
+    compile() {
+        if(this.compiled){
+            gl.deleteShader(this.vs);
+            gl.deleteShader(this.fs);
+            gl.deleteProgram(this.program);
+            this.attributes = {};
+            this.uniforms = {};
+            this.compiled = false;
+        }
+        this.vs = this._createShader(gl.VERTEX_SHADER, this.vertexSource);
+        this.fs = this._createShader(gl.FRAGMENT_SHADER, this.fragmentSource);
+        this.program = this._createProgram(this.vs, this.fs);
+        if(this.program !== null){
+
+            this.attributes = Object.assign({}, this._getAttributeLocations(this.attributeNames));
+            this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
+
+            this.compiled = true;
+        }
     }
 
     setMatrixUniforms(mModel, mView, mPerspective){
@@ -1035,6 +1066,7 @@ class resourceManager_ResourceManager{
     createShader(name, vs, fs) {
         if(!this.shaders[name]) {
             let shader = new shader_Shader(vs, fs, name);
+            shader.compile();
             this.addShader(name, shader);
         }
         else{
@@ -7925,34 +7957,160 @@ class PointLight{
 // CONCATENATED MODULE: ./src/Core/transform.js
 
 
+let transform_forward = vec3_namespaceObject.create();
+let transform_right = vec3_namespaceObject.create();
+let transform_up = vec3_namespaceObject.create();
+
+vec3_namespaceObject.set(transform_forward, 0, 0, -1);
+vec3_namespaceObject.set(transform_right, 1, 0, 0);
+vec3_namespaceObject.set(transform_up, 0, 1, 0);
 
 class transform_Transform{
     constructor(parent){
         this.parent = parent || undefined;
         this.position = vec3_namespaceObject.create();
-        this.rotation = vec3_namespaceObject.create();
+        this.rotation = quat_namespaceObject.create();
         this.scale = vec3_namespaceObject.create();
-        this.worldMatrix = mat4_namespaceObject.create();
     }
 
-    toMatrix(){
-        mat4_namespaceObject.identity(this.worldMatrix);
-        mat4_namespaceObject.translate(this.worldMatrix, this.worldMatrix, this.position);
-        mat4_namespaceObject.rotateX(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[0]));
-        mat4_namespaceObject.rotateY(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[1]));
-        mat4_namespaceObject.rotateZ(this.worldMatrix, this.worldMatrix, common_namespaceObject.toRadian(this.rotation[2]));
-        mat4_namespaceObject.scale(this.worldMatrix, this.worldMatrix, this.scale);
-        return this.worldMatrix;
+    toLocalMatrix() {
+        let local = mat4_namespaceObject.create();
+        mat4_namespaceObject.fromRotationTranslationScale(local, this.quat, this.position, this.scale );
+        return local;
+    }
+
+    toWorldMatrix() {
+        let world = this.toLocalMatrix();
+        if(this.parent){
+            let parentWorld = this.parent.toWorldMatrix();
+            mat4_namespaceObject.mul(world, parentWorld, world);
+        }
+        return world;
+    }
+
+    get forward() {
+        let result = vec3_namespaceObject.create();
+        vec3_namespaceObject.transformQuat(result, transform_forward, this.rotation);
+        return result;
+    }
+
+    get right() {
+        let result = vec3_namespaceObject.create();
+        vec3_namespaceObject.transformQuat(result, transform_right, this.rotation);
+        return result;
+    }
+
+    get up() {
+        let result = vec3_namespaceObject.create();
+        vec3_namespaceObject.transformQuat(result, transform_up, this.rotation);
+        return result;
+    }
+
+    applyRotation(rotation){
+        quat_namespaceObject.mul(this.rotation, this.rotation, rotation);
+    }
+
+    setEuler(roll, pitch, yaw) {
+        quat_namespaceObject.fromEuler(this.rotation, roll, pitch, yaw);
+    }
+
+    eulerAdd(roll, pitch, yaw) {
+        let dest = quat_namespaceObject.create();
+        quat_namespaceObject.fromEuler(dest, roll, pitch, yaw);
+        quat_namespaceObject.mul(this.rotation, this.rotation, dest);
+    }
+
+    setAxes(forward, right, up) {
+        quat_namespaceObject.setAxes(this.rotation, forward, right, up);
+    }
+
+    setAxisAngle(axis, rads) {
+        quat_namespaceObject.setAxisAngle(this.rotation, axis, rads);
+    }
+
+    getAxisAngle(){
+        let result = vec3_namespaceObject.create();
+        quat_namespaceObject.getAxisAngle(result, this.rotation);
+        return result;
+    }
+
+    applyAxisAngle(axis, rads){
+        let dest = quat_namespaceObject.create();
+        quat_namespaceObject.setAxisAngle(dest, axis, rads);
+        quat_namespaceObject.mul(this.rotation, this.rotation, dest);
+    }
+
+    translate(translation){
+        vec3_namespaceObject.copy(this.position, translation);
+    }
+
+    applyTranslation(translation) {
+        vec3_namespaceObject.add(this.position, this.position, translation);
+    }
+
+    applyScale(scaling){
+        vec3_namespaceObject.mul(this.scale, this.scale, scaling);
+    }
+
+    scale(scaling) {
+        vec3_namespaceObject.copy(this.scale, scaling);
     }
 }
 // CONCATENATED MODULE: ./src/Core/gameObject.js
 
 
-class GameObject{
-    constructor(){
-        
+class gameObject_GameObject{
+    constructor(parent){
+        this.parent = parent || undefined;
+        this.transform = new transform_Transform();
+        if(this.parent){
+            this.transform.parent = this.parent.transform;
+        }
+        this.components = [];
+        this.input = undefined;
+    }
+
+    addComponent(component){
+        if ( !component instanceof gameObject_Component) return;
+        let componentType = component.constructor.name;
+        let duplicated = false;
+        for(let c of this.components){
+            if( c.constructor.name === componentType){
+                duplicated = ture;
+                break;
+            }
+        }
+
+        if(!duplicated){
+            this.components.push(component);
+        }
+    }
+
+    input() {
+
+    }
+
+    update() {
+        for(let component of this.components){
+            component.update();
+        }
     }
 }
+
+
+class gameObject_Component {
+    constructor(gameObject){
+        this.gameObject = gameObject;
+        this.transform = this.gameObject.transform;
+    }
+
+    update(){
+
+    }
+
+}
+
+
 // CONCATENATED MODULE: ./src/lux.js
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "renderer", function() { return renderer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
@@ -7979,7 +8137,7 @@ class GameObject{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "HDRMaterial", function() { return hdrMaterial_HDRMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PointLight", function() { return PointLight; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return GameObject; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return gameObject_GameObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glMatrix", function() { return common_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec2", function() { return vec2_namespaceObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "vec3", function() { return vec3_namespaceObject; });

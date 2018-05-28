@@ -21,6 +21,7 @@ class ResourceManager{
     createShader(name, vs, fs) {
         if(!this.shaders[name]) {
             let shader = new Shader(vs, fs, name);
+            shader.compile();
             this.addShader(name, shader);
         }
         else{

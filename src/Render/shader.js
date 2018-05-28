@@ -1,26 +1,57 @@
 import { gl } from './webgl'
 import { VERTEX_LAYOUT } from './Geometry/vertex'
 
-
 export class Shader{
 
     constructor(vertexShaderSource, fragmentShaderSource, shaderName){
         this.name = shaderName || "";
-        this.vsSource = vertexShaderSource;
-        this.fsSource = fragmentShaderSource;
-        
-        let vs = this._createShader(gl.VERTEX_SHADER, this.vsSource);
-        let fs = this._createShader(gl.FRAGMENT_SHADER, this.fsSource);
-        this.program = this._createProgram(vs, fs);
+        this.vertexSource = vertexShaderSource;
+        this.fragmentSource = fragmentShaderSource;
 
-        let attributeNames = [];
+
+        this.vs = undefined;
+        this.fs = undefined;
+        this.program = undefined;
+
+        this.attributeNames = [];
         for(let attr of VERTEX_LAYOUT) {
-            attributeNames.push( attr.name );
+            this.attributeNames.push( attr.name );
         }
 
-        this.attributes = Object.assign({}, this._getAttributeLocations(attributeNames));
-        this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
+        this.attributes = {};
+        this.uniforms = {};
+
         this.binded = false;
+        this.compiled = false;
+    }
+
+    setVertexShader(source){
+        this.vertexSource = source;
+    }
+
+    setFragmentShader(source){
+        this.fragmentSource = source;
+    }
+
+    compile() {
+        if(this.compiled){
+            gl.deleteShader(this.vs);
+            gl.deleteShader(this.fs);
+            gl.deleteProgram(this.program);
+            this.attributes = {};
+            this.uniforms = {};
+            this.compiled = false;
+        }
+        this.vs = this._createShader(gl.VERTEX_SHADER, this.vertexSource);
+        this.fs = this._createShader(gl.FRAGMENT_SHADER, this.fragmentSource);
+        this.program = this._createProgram(this.vs, this.fs);
+        if(this.program !== null){
+
+            this.attributes = Object.assign({}, this._getAttributeLocations(this.attributeNames));
+            this.uniforms = Object.assign({}, this._getUniformLocations(['u_model', 'u_view', 'u_perspective']));
+
+            this.compiled = true;
+        }
     }
 
     setMatrixUniforms(mModel, mView, mPerspective){
