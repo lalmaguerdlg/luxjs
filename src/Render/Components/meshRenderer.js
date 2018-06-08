@@ -7,7 +7,7 @@ export class MeshRenderer extends Component{
         this.material = material;
     }
 
-    render() {
-        
+    render(){
+        this.mesh.render(this.material.drawMode);
     }
 }

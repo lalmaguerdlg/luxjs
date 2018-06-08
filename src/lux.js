@@ -6,7 +6,7 @@ export { Vertex } from './Render/Geometry/vertex';
 export { VERTEX_LAYOUT } from './Render/Geometry/vertex';
 export { VertexArray } from './Render/Geometry/vertexArray'
 
-export { RM } from './Core/resourceManager'
+export { RM } from './Core/resourceManager' // this is sort of a hack for some things.
 
 export { Mesh } from './Render/Geometry/mesh';
 export { Geometry } from './Render/Geometry/geometry';
@@ -29,6 +29,11 @@ export { PointLight } from './Render/Lights/pointLight'
 export { Transform } from './Core/transform'
 export { GameObject } from './Core/gameObject'
 
+export { Component } from './Core/component'
+export { MeshRenderer } from './Render/Components/meshRenderer'
+export { RenderSystem } from './Render/rendererSystem'
+export { Scene } from './Core/scene'
+export { Camera } from './Render/camera'
 
 export { 
     glMatrix, vec2, vec3,

@@ -69,8 +69,6 @@ class WebGLRenderer{
 }
 
 
-
-
 export let renderer = new WebGLRenderer();
 export let gl = renderer.context;
 

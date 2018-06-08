@@ -54,7 +54,7 @@ export class BaseMaterial {
     }
 
     update(){ 
-        this.shader.setMatrixUniforms(mModel, mView, mPerspective);
+        this.shader.setMatrixUniforms(this.mModel, this.mView, this.mPerspective);
         if(this.tag == MaterialTag.lit ||
             this.tag == MaterialTag.translucent) {
             if(!this.mNormal) this.mNormal = mat4.create();
@@ -63,13 +63,10 @@ export class BaseMaterial {
     }
 
     use(){
-        let gotBinded = false;
         if(!this.shader.binded){
             RM.bindShader(this.shader);
             this.setup();
-            gotBinded = true;
         }
         this.update();
-        return gotBinded;
     }
 }

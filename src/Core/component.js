@@ -8,4 +8,5 @@ export class Component {
     }
     update(){}
     render(){}
+    clone(){ return new Component(); }
 }

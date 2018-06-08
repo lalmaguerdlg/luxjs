@@ -12,25 +12,36 @@ export class GameObject{
         this.components = [];
 
         this.input = undefined;
+        this.active = true;
     }
 
-    add(gameObject) {
-        if (!component instanceof GameObject) return;
+    add(object) {
+        if( object instanceof GameObject) this._addChild(object);
+        else if( object instanceof Component) this._addComponent(object);
+    }
+
+    setParent(parent){
+        this.parent = parent;
+        this.transform.parent = parent.transform;
+    }
+
+    _addChild(gameObject) {
+        if (!gameObject instanceof GameObject) return;
         let duplicated = false;
-        for(let c of this.childs){
-            if( c.constructor.name === componentType){
+        for(let c of this.children){
+            if( c == gameObject){
                 duplicated = ture;
                 break;
             }
         }
 
         if(!duplicated){
-            this.components.push(component);
+            gameObject.setParent(this);
+            this.children.push(gameObject);
         }
-        this.children.push(gameObject);
     }
 
-    addComponent(component) {
+    _addComponent(component) {
         if ( !component instanceof Component) return;
         let componentType = component.constructor.name;
         let duplicated = false;
@@ -42,6 +53,7 @@ export class GameObject{
         }
 
         if(!duplicated){
+            component.setOwner(this);
             this.components.push(component);
         }
     }
@@ -57,7 +69,7 @@ export class GameObject{
         let component = this.getComponent(name);
         if (component) result.push(component);
         for(let child of this.children){
-            result = result.join(child.getComponents(name))
+            result = result.concat(child.getComponents(name))
         }
         return result;
     }

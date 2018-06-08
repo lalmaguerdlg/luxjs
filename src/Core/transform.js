@@ -14,11 +14,12 @@ export class Transform{
         this.position = vec3.create();
         this.rotation = quat.create();
         this.scale = vec3.create();
+        vec3.set(this.scale, 1, 1, 1);
     }
 
     toLocalMatrix() {
         let local = mat4.create();
-        mat4.fromRotationTranslationScale(local, this.quat, this.position, this.scale );
+        mat4.fromRotationTranslationScale(local, this.rotation, this.position, this.scale );
         return local;
     }
 
