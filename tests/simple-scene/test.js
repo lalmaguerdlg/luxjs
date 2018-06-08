@@ -5,6 +5,7 @@ let renderSystem;
 
 let cube;
 let cube2;
+let cube3;
 
 function main() {
 
@@ -27,12 +28,21 @@ function main() {
 
     cube = new lux.GameObject();
     cube2 = new lux.GameObject();
+    cube3 = new lux.GameObject();
+
     let meshRenderer = new lux.MeshRenderer(cubeMesh, basicMaterial);
     let meshRenderer2 = new lux.MeshRenderer(cubeMesh, basicMaterial);
+    let meshRenderer3 = new lux.MeshRenderer(cubeMesh, basicMaterial);
+
     cube.add(meshRenderer);
     cube2.add(meshRenderer2);
+    cube3.add(meshRenderer3);
+
     cube2.transform.position[0] = 2;
+    cube3.transform.position[1] = 2;
+
     cube.add(cube2);
+    cube2.add(cube3);
 
     
     let camera = new lux.Camera();
