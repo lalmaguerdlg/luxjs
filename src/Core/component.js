@@ -1,12 +1,11 @@
 import { Transform } from './transform'
 
-class Component {
-    constructor(gameObject){
+export class Component {
+    constructor(){}
+    setOwner(gameObject){
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;
     }
-
-    update(){
-        
-    }
+    update(){}
+    render(){}
 }

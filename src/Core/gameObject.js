@@ -14,13 +14,14 @@ export class GameObject{
         this.input = undefined;
     }
 
-    addGameObject(gameObject) {
+    add(gameObject) {
+        if (!component instanceof GameObject) return;
         let duplicated = false;
         for(let c of this.childs){
             if( c.constructor.name === componentType){
                 duplicated = ture;
                 break;
-            }61, 143, 149
+            }
         }
 
         if(!duplicated){
@@ -45,6 +46,22 @@ export class GameObject{
         }
     }
 
+    getComponent(name){
+        for(let c of this.components){
+            if(c.constructor.name === name) return c;
+        }
+    }
+
+    getComponents(name){
+        let result = [];
+        let component = this.getComponent(name);
+        if (component) result.push(component);
+        for(let child of this.children){
+            result = result.join(child.getComponents(name))
+        }
+        return result;
+    }
+
     input() {
         for(let child of this.children){
             child.input();
@@ -58,6 +75,16 @@ export class GameObject{
 
         for(let child of this.children){
             child.update();
+        }
+    }
+
+    render() {
+        for(let component of this.components){
+            component.render();
+        }
+
+        for (let child of this.children) {
+            child.render();
         }
     }
 }

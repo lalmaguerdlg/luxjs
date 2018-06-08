@@ -63,10 +63,13 @@ export class BaseMaterial {
     }
 
     use(){
+        let gotBinded = false;
         if(!this.shader.binded){
             RM.bindShader(this.shader);
             this.setup();
+            gotBinded = true;
         }
         this.update();
+        return gotBinded;
     }
 }
