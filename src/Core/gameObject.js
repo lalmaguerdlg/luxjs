@@ -5,9 +5,10 @@ export class GameObject{
     constructor(parent){
         this.parent = parent || undefined;
         this.transform = new Transform();
-        if(this.parent){
+        if (this.parent) {
             this.transform.parent = this.parent.transform;
         }
+
         this.children = [];
         this.components = [];
 
@@ -15,7 +16,25 @@ export class GameObject{
         this.active = true;
     }
 
-    
+    awake() {
+        for(let c of this.components) {
+            c.awake();
+        }
+        for(let child of this.children) { 
+            child.awake();
+        }
+    }
+
+    start() {
+        for (let c of this.components) {
+            c.start();
+        }
+        for (let child of this.children) {
+            child.start();
+        }
+    }
+
+
     add(object) {
         if (object instanceof GameObject) this._addChild(object);
         else if (object instanceof Component) this._addComponent(object);
@@ -79,6 +98,12 @@ export class GameObject{
         return result;
     }
 
+    hasComponent(type) { 
+        for (let c of this.components) {
+            if (c instanceof type) return true;
+        }
+    }
+
     _addChild(gameObject) {
         if (!gameObject instanceof GameObject) return;
         let duplicated = false;
@@ -109,6 +134,7 @@ export class GameObject{
         if(!duplicated){
             component.setOwner(this);
             this.components.push(component);
+            component.onAttach();
             if(component instanceof BehaviourComponent){
                 component.awake();
                 component.start();

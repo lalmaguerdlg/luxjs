@@ -8,7 +8,7 @@ vec3.set(forward, 0, 0, -1);
 vec3.set(right, 1, 0, 0);
 vec3.set(up, 0, 1, 0);
 
-export class Transform{
+export class Transform {
     constructor(parent){
         this.parent = parent || undefined;
         this.position = vec3.create();
@@ -30,6 +30,18 @@ export class Transform{
             mat4.mul(world, parentWorld, world);
         }
         return world;
+    }
+
+    detach() {
+        let world = this.toWorldMatrix();
+        this.fromWorldMatrix(world);
+        this.parent = undefined;
+    }
+
+    fromWorldMatrix(world) {
+        mat4.getTranslation(this.position, world);
+        mat4.getRotation(this.rotation, world);
+        mat4.getScaling(this.scale, world);
     }
 
     get forward() {

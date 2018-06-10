@@ -8,11 +8,19 @@ export class Scene {
         this.gameObjects = [];
         this.lights = [];
         this.cameras = [];
+        this.isPlaying = false;
     }
 
     add(object) {
-        if ( object instanceof GameObject)      this.gameObjects.push(object);
+        if ( object instanceof GameObject) { 
+            this.gameObjects.push(object);
+            if(this.isPlaying){
+                object.awake();
+                object.start();
+            }
+        }
         else if ( object instanceof PointLight) this.lights.push(object);
         else if ( object instanceof Camera)     this.cameras.push(object);
     }
+
 }

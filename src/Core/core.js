@@ -17,6 +17,14 @@ class Core {
 	useScene(scene) {
 		if(!scene instanceof Scene) return;
 		this.currentScene = scene;
+		this.currentScene.isPlaying = true;
+	}
+
+	swapScene(scene) {
+		if (!scene instanceof Scene) return;
+		this.currentScene.isPlaying = false;
+		this.useScene(scene);
+		this.start();
 	}
 
 	update(behaviours){
@@ -28,6 +36,13 @@ class Core {
 	lateUpdate(behaviours) { 
 		for (let b of behaviours) {
 			b.lateUpdate(this.time);
+		}
+	}
+
+	start() { 
+		for (let go of this.currentScene.gameObjects) {
+			go.awake();
+			go.start();
 		}
 	}
 
@@ -61,6 +76,7 @@ class Core {
 	run() {
 		let lastTime = 0;
 		let self = this;
+		this.start();
 		function _loop(nowTime) {
 			nowTime *= 0.001; // Convert time to seconds
 			let deltaTime = nowTime - lastTime;

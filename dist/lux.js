@@ -6540,6 +6540,7 @@ THE SOFTWARE. */
 // CONCATENATED MODULE: ./src/Core/transform.js
 
 
+
 let transform_forward = vec3_namespaceObject.create();
 let transform_right = vec3_namespaceObject.create();
 let transform_up = vec3_namespaceObject.create();
@@ -6548,7 +6549,7 @@ vec3_namespaceObject.set(transform_forward, 0, 0, -1);
 vec3_namespaceObject.set(transform_right, 1, 0, 0);
 vec3_namespaceObject.set(transform_up, 0, 1, 0);
 
-class transform_Transform{
+class transform_Transform {
     constructor(parent){
         this.parent = parent || undefined;
         this.position = vec3_namespaceObject.create();
@@ -6570,6 +6571,18 @@ class transform_Transform{
             mat4_namespaceObject.mul(world, parentWorld, world);
         }
         return world;
+    }
+
+    detach() {
+        let world = this.toWorldMatrix();
+        this.fromWorldMatrix(world);
+        this.parent = undefined;
+    }
+
+    fromWorldMatrix(world) {
+        mat4_namespaceObject.getTranslation(this.position, world);
+        mat4_namespaceObject.getRotation(this.rotation, world);
+        mat4_namespaceObject.getScaling(this.scale, world);
     }
 
     get forward() {
@@ -6649,12 +6662,22 @@ class Component {
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;
     }
+
+    getComponent(type){
+        if(!this.gameObject) return;
+        return this.gameObject.getComponent(type);
+    }
+
+    onAttach() {}
+    awake() { }
+    start() { }
     clone(){ return new Component(); }
 }
 
 class PhysicsComponent extends Component {
     constructor() {
         super();
+        this.kinematic = false;
     }
     simulate(time) { }
 }
@@ -6663,8 +6686,7 @@ class BehaviourComponent extends Component {
     constructor(){
         super();
     }
-    awake(){}
-    start(){}
+    
     update(time){}
     lateUpdate(time){}
 }
@@ -7521,9 +7543,10 @@ class gameObject_GameObject{
     constructor(parent){
         this.parent = parent || undefined;
         this.transform = new transform_Transform();
-        if(this.parent){
+        if (this.parent) {
             this.transform.parent = this.parent.transform;
         }
+
         this.children = [];
         this.components = [];
 
@@ -7531,7 +7554,25 @@ class gameObject_GameObject{
         this.active = true;
     }
 
-    
+    awake() {
+        for(let c of this.components) {
+            c.awake();
+        }
+        for(let child of this.children) { 
+            child.awake();
+        }
+    }
+
+    start() {
+        for (let c of this.components) {
+            c.start();
+        }
+        for (let child of this.children) {
+            child.start();
+        }
+    }
+
+
     add(object) {
         if (object instanceof gameObject_GameObject) this._addChild(object);
         else if (object instanceof Component) this._addComponent(object);
@@ -7595,6 +7636,12 @@ class gameObject_GameObject{
         return result;
     }
 
+    hasComponent(type) { 
+        for (let c of this.components) {
+            if (c instanceof type) return true;
+        }
+    }
+
     _addChild(gameObject) {
         if (!gameObject instanceof gameObject_GameObject) return;
         let duplicated = false;
@@ -7625,6 +7672,7 @@ class gameObject_GameObject{
         if(!duplicated){
             component.setOwner(this);
             this.components.push(component);
+            component.onAttach();
             if(component instanceof BehaviourComponent){
                 component.awake();
                 component.start();
@@ -7654,13 +7702,21 @@ class scene_Scene {
         this.gameObjects = [];
         this.lights = [];
         this.cameras = [];
+        this.isPlaying = false;
     }
 
     add(object) {
-        if ( object instanceof gameObject_GameObject)      this.gameObjects.push(object);
+        if ( object instanceof gameObject_GameObject) { 
+            this.gameObjects.push(object);
+            if(this.isPlaying){
+                object.awake();
+                object.start();
+            }
+        }
         else if ( object instanceof PointLight) this.lights.push(object);
         else if ( object instanceof camera_Camera)     this.cameras.push(object);
     }
+
 }
 
 // CONCATENATED MODULE: ./src/Physics/physicsSimulation.js
@@ -7702,6 +7758,14 @@ class core_Core {
 	useScene(scene) {
 		if(!scene instanceof scene_Scene) return;
 		this.currentScene = scene;
+		this.currentScene.isPlaying = true;
+	}
+
+	swapScene(scene) {
+		if (!scene instanceof scene_Scene) return;
+		this.currentScene.isPlaying = false;
+		this.useScene(scene);
+		this.start();
 	}
 
 	update(behaviours){
@@ -7713,6 +7777,13 @@ class core_Core {
 	lateUpdate(behaviours) { 
 		for (let b of behaviours) {
 			b.lateUpdate(this.time);
+		}
+	}
+
+	start() { 
+		for (let go of this.currentScene.gameObjects) {
+			go.awake();
+			go.start();
 		}
 	}
 
@@ -7746,6 +7817,7 @@ class core_Core {
 	run() {
 		let lastTime = 0;
 		let self = this;
+		this.start();
 		function _loop(nowTime) {
 			nowTime *= 0.001; // Convert time to seconds
 			let deltaTime = nowTime - lastTime;
@@ -7771,6 +7843,14 @@ class rigidbody_Rigidbody extends PhysicsComponent{
         this.velocity = vec3_namespaceObject.create();
         this.aceleration = vec3_namespaceObject.create();
     }
+
+    awake() {
+        this.gameObject.transform.detach();
+    }
+
+    /*onAttach() {
+        detach();
+    }*/
 
     applyGravity(gravity) {
         let force = vec3_namespaceObject.clone(gravity);
