@@ -1,5 +1,5 @@
 
-class WebGLRenderer{
+class WebGLConfig{
     constructor(canvas){
         let self = this;
         this.domElement = canvas || document.createElement('CANVAS');
@@ -69,8 +69,8 @@ class WebGLRenderer{
 }
 
 
-export let renderer = new WebGLRenderer();
-export let gl = renderer.context;
+export let webgl = new WebGLConfig();
+export let gl = webgl.context;
 
 export function glLoop(callback){
     let lastTime = 0;

@@ -1,6 +1,6 @@
-import { Component } from "../../Core/component";
+import { RenderComponent } from "../../Core/component";
 
-export class MeshRenderer extends Component{
+export class MeshRenderer extends RenderComponent{
     constructor(mesh, material){
         super();
         this.mesh = mesh;

@@ -6,9 +6,9 @@ let light;
 
 function main() {
 
-    lux.renderer.fullscreen(true);
+    lux.webgl.fullscreen(true);
 
-    $('#canvasContainer').append(lux.renderer.domElement);
+    $('#canvasContainer').append(lux.webgl.domElement);
     gl = lux.gl;
     
     gl.clearColor(0.1, 0.1, 0.1, 1.0);
@@ -31,7 +31,7 @@ function main() {
     
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    lux.renderer.setClearColor(0.1, 0.1, 0.1, 1.0);
+    lux.webgl.setClearColor(0.1, 0.1, 0.1, 1.0);
     
     lux.glLoop(render);
 }

@@ -13,7 +13,7 @@ let screenQuad;
 
 function resize(){
     if(framebuffer) framebuffer.dispose();
-    framebuffer = new lux.Framebuffer(lux.renderer.viewport.width, lux.renderer.viewport.height);
+    framebuffer = new lux.Framebuffer(lux.webgl.viewport.width, lux.webgl.viewport.height);
     let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
 
     framebuffer.addColor(fbFormat);
@@ -23,14 +23,14 @@ function resize(){
 
 function main() {
 
-    lux.renderer.fullscreen(true);
+    lux.webgl.fullscreen(true);
 
-    $('#canvasContainer').append(lux.renderer.domElement);
+    $('#canvasContainer').append(lux.webgl.domElement);
     gl = lux.gl;
 
-    lux.renderer.onResizeCallback = resize;
+    lux.webgl.onResizeCallback = resize;
     
-    framebuffer = new lux.Framebuffer(lux.renderer.viewport.width, lux.renderer.viewport.height);
+    framebuffer = new lux.Framebuffer(lux.webgl.viewport.width, lux.webgl.viewport.height);
     let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
     framebuffer.addColor(fbFormat);
     framebuffer.addColor(fbFormat);
@@ -67,7 +67,7 @@ function main() {
 
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    lux.renderer.setClearColor(0.1, 0.1, 0.1, 0.0);
+    lux.webgl.setClearColor(0.1, 0.1, 0.1, 0.0);
 
     let light = new lux.PointLight({
         position: [0.0, 0.0, 0.0],
@@ -109,7 +109,7 @@ function render(dt){
     framebuffer.bind();
 
     t += dt;
-    lux.renderer.setClearColor(0.0, 0.0, 0.0, 0.0);
+    lux.webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     lux.mat4.identity(mModel);
     lux.mat4.identity(mView);
@@ -181,7 +181,7 @@ function render(dt){
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
     gl.disable(gl.BLEND);
-    lux.renderer.setClearColor(1.0, 1.0, 1.0, 1.0);
+    lux.webgl.setClearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let cameraExposure = $('#cameraExposure').val();

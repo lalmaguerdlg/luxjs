@@ -1,7 +1,7 @@
 let gl;
 
 let scene;
-let renderSystem;
+let forwardRenderer;
 
 let cube;
 let cube2;
@@ -9,12 +9,12 @@ let cube3;
 
 function main() {
 
-    lux.renderer.fullscreen(true);
+    lux.webgl.fullscreen(true);
 
-    $('#canvasContainer').append(lux.renderer.domElement);
+    $('#canvasContainer').append(lux.webgl.domElement);
     gl = lux.gl;
 
-    renderSystem = new lux.RenderSystem();
+    forwardRenderer = new lux.ForwardRenderer();
     scene = new lux.Scene();
 
     basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
@@ -30,13 +30,12 @@ function main() {
     cube2 = new lux.GameObject();
     cube3 = new lux.GameObject();
 
-    let meshRenderer = new lux.MeshRenderer(cubeMesh, basicMaterial);
-    let meshRenderer2 = new lux.MeshRenderer(cubeMesh, basicMaterial);
-    let meshRenderer3 = new lux.MeshRenderer(cubeMesh, basicMaterial);
-
-    cube.add(meshRenderer);
-    cube2.add(meshRenderer2);
-    cube3.add(meshRenderer3);
+    cube.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
+    cube.attach(new lux.Rigidbody());
+    cube2.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
+    cube2.attach(new lux.Rigidbody());
+    cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
+    cube3.attach(new lux.Rigidbody());
 
     cube2.transform.position[0] = 2;
     cube3.transform.position[1] = 2;
@@ -59,7 +58,13 @@ function main() {
     scene.add(light);
     scene.add(camera);
 
-    lux.glLoop(render);
+    
+    lux.luxCore.useScene(scene);
+
+    //lux.physicsSimulation.gravity = lux.vec3.create();
+    lux.luxCore.run();
+
+    //lux.glLoop(render);
 }
 
 let t = 0;
@@ -70,17 +75,7 @@ function render(dt){
     cube.transform.setEuler(0, t * 90, 0);
     lux.vec3.set(cube2.transform.position, Math.sin(t) + 2, 0, 0);
     //cube2.transform.setEuler(0, t * -90, 0);
-    renderSystem.render(scene);
-}
-
-
-function getShaderSource(id){
-    let shaderScript = $('#'+id);
-    if(!shaderScript)
-        return "";
-    
-    let shaderText = shaderScript.text();
-    return shaderText;
+    forwardRenderer.render(scene);
 }
 
 

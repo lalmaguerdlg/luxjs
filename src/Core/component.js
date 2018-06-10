@@ -6,7 +6,29 @@ export class Component {
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;
     }
-    update(){}
-    render(){}
     clone(){ return new Component(); }
+}
+
+export class PhysicsComponent extends Component {
+    constructor() {
+        super();
+    }
+    simulate(time) { }
+}
+
+export class BehaviourComponent extends Component {
+    constructor(){
+        super();
+    }
+    awake(){}
+    start(){}
+    update(time){}
+    lateUpdate(time){}
+}
+
+export class RenderComponent extends Component {
+    constructor(){
+        super();
+    }
+    render(){}
 }

@@ -1,5 +1,5 @@
 import { Transform } from './transform'
-import { Component } from './component'
+import { Component, BehaviourComponent } from './component'
 
 export class GameObject{
     constructor(parent){
@@ -15,14 +15,68 @@ export class GameObject{
         this.active = true;
     }
 
+    
     add(object) {
+        if (object instanceof GameObject) this._addChild(object);
+        else if (object instanceof Component) this._addComponent(object);
+    }
+    
+    attach(object) {
         if( object instanceof GameObject) this._addChild(object);
         else if( object instanceof Component) this._addComponent(object);
+    }
+    
+    setActive(value) {
+        if(this.active != value) {
+            if (!this.active && value) {
+                for(let c of this.components) {
+                    if(c instanceof BehaviourComponent) c.awake();
+                }
+            }
+            this.active = value;
+            for(let child of this.children){
+                child.setActive(value);
+            }
+        }
     }
 
     setParent(parent){
         this.parent = parent;
         this.transform.parent = parent.transform;
+    }
+
+    getComponent(type) {
+        for (let c of this.components) {
+            if (c instanceof type) return c;
+        }
+    }
+
+    getComponents(type) {
+        let result = [];
+        let component = this.getComponent(type);
+        if (component) result.push(component);
+        for (let child of this.children) {
+            result = result.concat(child.getComponents(type))
+        }
+        return result;
+    }
+
+    getComponentList(typeList) {
+        let result = [];
+        for(let c of this.components) {
+            for(let t of typeList) {
+                if(c instanceof t) result.push(c);
+            }
+        }
+        return result;
+    }
+
+    getComponentsList(typeList) {
+        let result = this.getComponentList(typeList);
+        for(let child of this.children){
+            result = result.concat(child.getComponentsList(typeList));
+        }
+        return result;
     }
 
     _addChild(gameObject) {
@@ -55,49 +109,12 @@ export class GameObject{
         if(!duplicated){
             component.setOwner(this);
             this.components.push(component);
+            if(component instanceof BehaviourComponent){
+                component.awake();
+                component.start();
+            }
         }
     }
 
-    getComponent(name){
-        for(let c of this.components){
-            if(c.constructor.name === name) return c;
-        }
-    }
-
-    getComponents(name){
-        let result = [];
-        let component = this.getComponent(name);
-        if (component) result.push(component);
-        for(let child of this.children){
-            result = result.concat(child.getComponents(name))
-        }
-        return result;
-    }
-
-    input() {
-        for(let child of this.children){
-            child.input();
-        }
-    }
-
-    update() {
-        for(let component of this.components){
-            component.update();
-        }
-
-        for(let child of this.children){
-            child.update();
-        }
-    }
-
-    render() {
-        for(let component of this.components){
-            component.render();
-        }
-
-        for (let child of this.children) {
-            child.render();
-        }
-    }
 }
 
