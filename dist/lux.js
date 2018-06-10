@@ -6540,7 +6540,6 @@ THE SOFTWARE. */
 // CONCATENATED MODULE: ./src/Core/transform.js
 
 
-
 let transform_forward = vec3_namespaceObject.create();
 let transform_right = vec3_namespaceObject.create();
 let transform_up = vec3_namespaceObject.create();
@@ -6573,10 +6572,21 @@ class transform_Transform {
         return world;
     }
 
+    setParent(parent) {
+        this.parent = parent;
+    }
+
     detach() {
-        let world = this.toWorldMatrix();
-        this.fromWorldMatrix(world);
-        this.parent = undefined;
+        if (this.parent) {
+            let world = this.toWorldMatrix();
+            let savedScale = vec3_namespaceObject.clone(this.scale);
+            this.fromWorldMatrix(world);
+            savedScale[0] *= this.parent.scale[0];
+            savedScale[1] *= this.parent.scale[1];
+            savedScale[2] *= this.parent.scale[2];
+            vec3_namespaceObject.copy(this.scale, savedScale);
+            this.parent = undefined;
+        }
     }
 
     fromWorldMatrix(world) {
@@ -6609,6 +6619,7 @@ class transform_Transform {
 
     setEuler(roll, pitch, yaw) {
         quat_namespaceObject.fromEuler(this.rotation, roll, pitch, yaw);
+        quat_namespaceObject.normalize(this.rotation, this.rotation);
     }
 
     eulerAdd(roll, pitch, yaw) {
@@ -6649,7 +6660,7 @@ class transform_Transform {
         vec3_namespaceObject.mul(this.scale, this.scale, scaling);
     }
 
-    scale(scaling) {
+    setScale(scaling) {
         vec3_namespaceObject.copy(this.scale, scaling);
     }
 }
@@ -7544,7 +7555,7 @@ class gameObject_GameObject{
         this.parent = parent || undefined;
         this.transform = new transform_Transform();
         if (this.parent) {
-            this.transform.parent = this.parent.transform;
+            this.transform.setParent(this.parent.transform);
         }
 
         this.children = [];
@@ -7845,7 +7856,8 @@ class rigidbody_Rigidbody extends PhysicsComponent{
     }
 
     awake() {
-        this.gameObject.transform.detach();
+        if(!this.kinematic)
+            this.gameObject.transform.detach();
     }
 
     /*onAttach() {

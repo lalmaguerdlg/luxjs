@@ -43,7 +43,11 @@ function main() {
     cube.add(cube2);
     cube2.add(cube3);
 
-    
+    cube.transform.setEuler(0, 180, 0);
+    cube.transform.setScale([1.0, 0.5, 1.0]);
+    //cube2.transform.setScale([0.5, 0.5, 0.5]);
+
+
     let camera = new lux.Camera();
 
     lux.mat4.identity(camera.mView);
@@ -57,11 +61,10 @@ function main() {
     scene.add(cube);
     scene.add(light);
     scene.add(camera);
-
     
     lux.luxCore.useScene(scene);
 
-    //lux.physicsSimulation.gravity = lux.vec3.create();
+    lux.physicsSimulation.gravity = lux.vec3.create();
     lux.luxCore.run();
 
     //lux.glLoop(render);

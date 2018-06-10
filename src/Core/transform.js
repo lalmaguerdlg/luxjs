@@ -32,10 +32,21 @@ export class Transform {
         return world;
     }
 
+    setParent(parent) {
+        this.parent = parent;
+    }
+
     detach() {
-        let world = this.toWorldMatrix();
-        this.fromWorldMatrix(world);
-        this.parent = undefined;
+        if (this.parent) {
+            let world = this.toWorldMatrix();
+            let savedScale = vec3.clone(this.scale);
+            this.fromWorldMatrix(world);
+            savedScale[0] *= this.parent.scale[0];
+            savedScale[1] *= this.parent.scale[1];
+            savedScale[2] *= this.parent.scale[2];
+            vec3.copy(this.scale, savedScale);
+            this.parent = undefined;
+        }
     }
 
     fromWorldMatrix(world) {
@@ -68,6 +79,7 @@ export class Transform {
 
     setEuler(roll, pitch, yaw) {
         quat.fromEuler(this.rotation, roll, pitch, yaw);
+        quat.normalize(this.rotation, this.rotation);
     }
 
     eulerAdd(roll, pitch, yaw) {
@@ -108,7 +120,7 @@ export class Transform {
         vec3.mul(this.scale, this.scale, scaling);
     }
 
-    scale(scaling) {
+    setScale(scaling) {
         vec3.copy(this.scale, scaling);
     }
 }

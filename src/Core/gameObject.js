@@ -6,7 +6,7 @@ export class GameObject{
         this.parent = parent || undefined;
         this.transform = new Transform();
         if (this.parent) {
-            this.transform.parent = this.parent.transform;
+            this.transform.setParent(this.parent.transform);
         }
 
         this.children = [];
