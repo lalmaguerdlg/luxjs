@@ -2,13 +2,13 @@ import { Transform } from './transform'
 import { Component, BehaviourComponent } from './component'
 import { vec3, quat } from 'gl-matrix';
 
-
-
 export class GameObject{
     constructor(parent){
         this.parent = parent || undefined;
+        this.scene = undefined;
         this.transform = new Transform();
         if (this.parent) {
+            this.scene = this.parent.scene;
             this.transform.setParent(this.parent.transform);
         }
 
@@ -17,6 +17,8 @@ export class GameObject{
 
         this.input = undefined;
         this.active = true;
+        this.tag = 'gameobject';
+        this.name = 'gameobject';
     }
 
     awake() {
@@ -67,6 +69,39 @@ export class GameObject{
         this.transform.parent = parent.transform;
     }
 
+    findObjectWithName(name) {
+        let result = undefined;
+        if( this.name == name ) result = this;
+        else {
+            for(let child of this.children) {
+                if( child.name == name ){
+                    result = child;
+                    break;
+                }
+                else{
+                    result = child.findObjectWithName(name);
+                    if( result ) break;
+                }
+            }
+        }
+        return result;
+    }
+
+    findObjectsWithTag(tag) {
+        let result = [];
+        if( this.tag == tag ) result.push(this);
+        
+        for(let child of this.children) {
+            if( child.tag == tag ) 
+                result.push(child);
+            
+            let objects = child.findObjectsWithTag(tag);
+            result = result.concat(objects);
+        }
+        
+        return result;
+    }
+
     getComponent(type) {
         for (let c of this.components) {
             if (c instanceof type) return c;
@@ -109,7 +144,10 @@ export class GameObject{
 
     clone() {
         let cloned = new GameObject();
-        cloned.parent = this.parent;
+        if(this.parent){
+            cloned.parent = this.parent;
+            cloned.scene = this.scene;
+        }
         cloned.transform.position = vec3.clone(this.transform.position);
         cloned.transform.rotation = quat.clone(this.transform.rotation);
         cloned.transform.scale = vec3.clone(this.transform.scale);

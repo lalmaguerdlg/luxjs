@@ -10,6 +10,16 @@ export class Rigidbody extends PhysicsComponent{
         this.aceleration = vec3.create();
     }
 
+    clone() {
+        let cloned = new this.constructor();
+        cloned = Object.assign(cloned, this);
+        cloned.gameObject = undefined;
+        cloned.transform = undefined;
+        cloned.velocity = vec3.create();
+        cloned.aceleration = vec3.create();
+        return cloned;
+    }
+
     awake() {
         if(!this.kinematic)
             this.gameObject.transform.detach();
@@ -26,6 +36,7 @@ export class Rigidbody extends PhysicsComponent{
     }
 
     simulate(time) {
+        
         vec3.scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.deltaTime);
         vec3.scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.deltaTime);
         vec3.set(this.aceleration, 0, 0, 0);

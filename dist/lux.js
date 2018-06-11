@@ -46,17 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -86,40 +101,43 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var common_namespaceObject = {};
+__webpack_require__.r(common_namespaceObject);
 __webpack_require__.d(common_namespaceObject, "EPSILON", function() { return EPSILON; });
 __webpack_require__.d(common_namespaceObject, "ARRAY_TYPE", function() { return ARRAY_TYPE; });
 __webpack_require__.d(common_namespaceObject, "RANDOM", function() { return RANDOM; });
 __webpack_require__.d(common_namespaceObject, "setMatrixArrayType", function() { return setMatrixArrayType; });
 __webpack_require__.d(common_namespaceObject, "toRadian", function() { return toRadian; });
-__webpack_require__.d(common_namespaceObject, "equals", function() { return common_equals; });
+__webpack_require__.d(common_namespaceObject, "equals", function() { return equals; });
 var mat2_namespaceObject = {};
-__webpack_require__.d(mat2_namespaceObject, "create", function() { return mat2_create; });
-__webpack_require__.d(mat2_namespaceObject, "clone", function() { return mat2_clone; });
-__webpack_require__.d(mat2_namespaceObject, "copy", function() { return mat2_copy; });
-__webpack_require__.d(mat2_namespaceObject, "identity", function() { return mat2_identity; });
-__webpack_require__.d(mat2_namespaceObject, "fromValues", function() { return mat2_fromValues; });
-__webpack_require__.d(mat2_namespaceObject, "set", function() { return mat2_set; });
-__webpack_require__.d(mat2_namespaceObject, "transpose", function() { return mat2_transpose; });
-__webpack_require__.d(mat2_namespaceObject, "invert", function() { return mat2_invert; });
-__webpack_require__.d(mat2_namespaceObject, "adjoint", function() { return mat2_adjoint; });
-__webpack_require__.d(mat2_namespaceObject, "determinant", function() { return mat2_determinant; });
-__webpack_require__.d(mat2_namespaceObject, "multiply", function() { return mat2_multiply; });
-__webpack_require__.d(mat2_namespaceObject, "rotate", function() { return mat2_rotate; });
+__webpack_require__.r(mat2_namespaceObject);
+__webpack_require__.d(mat2_namespaceObject, "create", function() { return create; });
+__webpack_require__.d(mat2_namespaceObject, "clone", function() { return clone; });
+__webpack_require__.d(mat2_namespaceObject, "copy", function() { return copy; });
+__webpack_require__.d(mat2_namespaceObject, "identity", function() { return identity; });
+__webpack_require__.d(mat2_namespaceObject, "fromValues", function() { return fromValues; });
+__webpack_require__.d(mat2_namespaceObject, "set", function() { return set; });
+__webpack_require__.d(mat2_namespaceObject, "transpose", function() { return transpose; });
+__webpack_require__.d(mat2_namespaceObject, "invert", function() { return invert; });
+__webpack_require__.d(mat2_namespaceObject, "adjoint", function() { return adjoint; });
+__webpack_require__.d(mat2_namespaceObject, "determinant", function() { return determinant; });
+__webpack_require__.d(mat2_namespaceObject, "multiply", function() { return multiply; });
+__webpack_require__.d(mat2_namespaceObject, "rotate", function() { return rotate; });
 __webpack_require__.d(mat2_namespaceObject, "scale", function() { return mat2_scale; });
-__webpack_require__.d(mat2_namespaceObject, "fromRotation", function() { return mat2_fromRotation; });
-__webpack_require__.d(mat2_namespaceObject, "fromScaling", function() { return mat2_fromScaling; });
-__webpack_require__.d(mat2_namespaceObject, "str", function() { return mat2_str; });
-__webpack_require__.d(mat2_namespaceObject, "frob", function() { return mat2_frob; });
-__webpack_require__.d(mat2_namespaceObject, "LDU", function() { return mat2_LDU; });
-__webpack_require__.d(mat2_namespaceObject, "add", function() { return mat2_add; });
-__webpack_require__.d(mat2_namespaceObject, "subtract", function() { return mat2_subtract; });
-__webpack_require__.d(mat2_namespaceObject, "exactEquals", function() { return mat2_exactEquals; });
+__webpack_require__.d(mat2_namespaceObject, "fromRotation", function() { return fromRotation; });
+__webpack_require__.d(mat2_namespaceObject, "fromScaling", function() { return fromScaling; });
+__webpack_require__.d(mat2_namespaceObject, "str", function() { return str; });
+__webpack_require__.d(mat2_namespaceObject, "frob", function() { return frob; });
+__webpack_require__.d(mat2_namespaceObject, "LDU", function() { return LDU; });
+__webpack_require__.d(mat2_namespaceObject, "add", function() { return add; });
+__webpack_require__.d(mat2_namespaceObject, "subtract", function() { return subtract; });
+__webpack_require__.d(mat2_namespaceObject, "exactEquals", function() { return exactEquals; });
 __webpack_require__.d(mat2_namespaceObject, "equals", function() { return mat2_equals; });
-__webpack_require__.d(mat2_namespaceObject, "multiplyScalar", function() { return mat2_multiplyScalar; });
-__webpack_require__.d(mat2_namespaceObject, "multiplyScalarAndAdd", function() { return mat2_multiplyScalarAndAdd; });
-__webpack_require__.d(mat2_namespaceObject, "mul", function() { return mat2_mul; });
-__webpack_require__.d(mat2_namespaceObject, "sub", function() { return mat2_sub; });
+__webpack_require__.d(mat2_namespaceObject, "multiplyScalar", function() { return multiplyScalar; });
+__webpack_require__.d(mat2_namespaceObject, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+__webpack_require__.d(mat2_namespaceObject, "mul", function() { return mul; });
+__webpack_require__.d(mat2_namespaceObject, "sub", function() { return sub; });
 var mat2d_namespaceObject = {};
+__webpack_require__.r(mat2d_namespaceObject);
 __webpack_require__.d(mat2d_namespaceObject, "create", function() { return mat2d_create; });
 __webpack_require__.d(mat2d_namespaceObject, "clone", function() { return mat2d_clone; });
 __webpack_require__.d(mat2d_namespaceObject, "copy", function() { return mat2d_copy; });
@@ -131,10 +149,10 @@ __webpack_require__.d(mat2d_namespaceObject, "determinant", function() { return 
 __webpack_require__.d(mat2d_namespaceObject, "multiply", function() { return mat2d_multiply; });
 __webpack_require__.d(mat2d_namespaceObject, "rotate", function() { return mat2d_rotate; });
 __webpack_require__.d(mat2d_namespaceObject, "scale", function() { return mat2d_scale; });
-__webpack_require__.d(mat2d_namespaceObject, "translate", function() { return mat2d_translate; });
+__webpack_require__.d(mat2d_namespaceObject, "translate", function() { return translate; });
 __webpack_require__.d(mat2d_namespaceObject, "fromRotation", function() { return mat2d_fromRotation; });
 __webpack_require__.d(mat2d_namespaceObject, "fromScaling", function() { return mat2d_fromScaling; });
-__webpack_require__.d(mat2d_namespaceObject, "fromTranslation", function() { return mat2d_fromTranslation; });
+__webpack_require__.d(mat2d_namespaceObject, "fromTranslation", function() { return fromTranslation; });
 __webpack_require__.d(mat2d_namespaceObject, "str", function() { return mat2d_str; });
 __webpack_require__.d(mat2d_namespaceObject, "frob", function() { return mat2d_frob; });
 __webpack_require__.d(mat2d_namespaceObject, "add", function() { return mat2d_add; });
@@ -146,8 +164,9 @@ __webpack_require__.d(mat2d_namespaceObject, "equals", function() { return mat2d
 __webpack_require__.d(mat2d_namespaceObject, "mul", function() { return mat2d_mul; });
 __webpack_require__.d(mat2d_namespaceObject, "sub", function() { return mat2d_sub; });
 var mat3_namespaceObject = {};
+__webpack_require__.r(mat3_namespaceObject);
 __webpack_require__.d(mat3_namespaceObject, "create", function() { return mat3_create; });
-__webpack_require__.d(mat3_namespaceObject, "fromMat4", function() { return mat3_fromMat4; });
+__webpack_require__.d(mat3_namespaceObject, "fromMat4", function() { return fromMat4; });
 __webpack_require__.d(mat3_namespaceObject, "clone", function() { return mat3_clone; });
 __webpack_require__.d(mat3_namespaceObject, "copy", function() { return mat3_copy; });
 __webpack_require__.d(mat3_namespaceObject, "fromValues", function() { return mat3_fromValues; });
@@ -164,10 +183,10 @@ __webpack_require__.d(mat3_namespaceObject, "scale", function() { return mat3_sc
 __webpack_require__.d(mat3_namespaceObject, "fromTranslation", function() { return mat3_fromTranslation; });
 __webpack_require__.d(mat3_namespaceObject, "fromRotation", function() { return mat3_fromRotation; });
 __webpack_require__.d(mat3_namespaceObject, "fromScaling", function() { return mat3_fromScaling; });
-__webpack_require__.d(mat3_namespaceObject, "fromMat2d", function() { return mat3_fromMat2d; });
-__webpack_require__.d(mat3_namespaceObject, "fromQuat", function() { return mat3_fromQuat; });
-__webpack_require__.d(mat3_namespaceObject, "normalFromMat4", function() { return mat3_normalFromMat4; });
-__webpack_require__.d(mat3_namespaceObject, "projection", function() { return mat3_projection; });
+__webpack_require__.d(mat3_namespaceObject, "fromMat2d", function() { return fromMat2d; });
+__webpack_require__.d(mat3_namespaceObject, "fromQuat", function() { return fromQuat; });
+__webpack_require__.d(mat3_namespaceObject, "normalFromMat4", function() { return normalFromMat4; });
+__webpack_require__.d(mat3_namespaceObject, "projection", function() { return projection; });
 __webpack_require__.d(mat3_namespaceObject, "str", function() { return mat3_str; });
 __webpack_require__.d(mat3_namespaceObject, "frob", function() { return mat3_frob; });
 __webpack_require__.d(mat3_namespaceObject, "add", function() { return mat3_add; });
@@ -179,6 +198,7 @@ __webpack_require__.d(mat3_namespaceObject, "equals", function() { return mat3_e
 __webpack_require__.d(mat3_namespaceObject, "mul", function() { return mat3_mul; });
 __webpack_require__.d(mat3_namespaceObject, "sub", function() { return mat3_sub; });
 var mat4_namespaceObject = {};
+__webpack_require__.r(mat4_namespaceObject);
 __webpack_require__.d(mat4_namespaceObject, "create", function() { return mat4_create; });
 __webpack_require__.d(mat4_namespaceObject, "clone", function() { return mat4_clone; });
 __webpack_require__.d(mat4_namespaceObject, "copy", function() { return mat4_copy; });
@@ -193,28 +213,29 @@ __webpack_require__.d(mat4_namespaceObject, "multiply", function() { return mat4
 __webpack_require__.d(mat4_namespaceObject, "translate", function() { return mat4_translate; });
 __webpack_require__.d(mat4_namespaceObject, "scale", function() { return mat4_scale; });
 __webpack_require__.d(mat4_namespaceObject, "rotate", function() { return mat4_rotate; });
-__webpack_require__.d(mat4_namespaceObject, "rotateX", function() { return mat4_rotateX; });
-__webpack_require__.d(mat4_namespaceObject, "rotateY", function() { return mat4_rotateY; });
-__webpack_require__.d(mat4_namespaceObject, "rotateZ", function() { return mat4_rotateZ; });
+__webpack_require__.d(mat4_namespaceObject, "rotateX", function() { return rotateX; });
+__webpack_require__.d(mat4_namespaceObject, "rotateY", function() { return rotateY; });
+__webpack_require__.d(mat4_namespaceObject, "rotateZ", function() { return rotateZ; });
 __webpack_require__.d(mat4_namespaceObject, "fromTranslation", function() { return mat4_fromTranslation; });
 __webpack_require__.d(mat4_namespaceObject, "fromScaling", function() { return mat4_fromScaling; });
 __webpack_require__.d(mat4_namespaceObject, "fromRotation", function() { return mat4_fromRotation; });
-__webpack_require__.d(mat4_namespaceObject, "fromXRotation", function() { return mat4_fromXRotation; });
-__webpack_require__.d(mat4_namespaceObject, "fromYRotation", function() { return mat4_fromYRotation; });
-__webpack_require__.d(mat4_namespaceObject, "fromZRotation", function() { return mat4_fromZRotation; });
-__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslation", function() { return mat4_fromRotationTranslation; });
-__webpack_require__.d(mat4_namespaceObject, "getTranslation", function() { return mat4_getTranslation; });
-__webpack_require__.d(mat4_namespaceObject, "getScaling", function() { return mat4_getScaling; });
-__webpack_require__.d(mat4_namespaceObject, "getRotation", function() { return mat4_getRotation; });
-__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScale", function() { return mat4_fromRotationTranslationScale; });
-__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScaleOrigin", function() { return mat4_fromRotationTranslationScaleOrigin; });
+__webpack_require__.d(mat4_namespaceObject, "fromXRotation", function() { return fromXRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromYRotation", function() { return fromYRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromZRotation", function() { return fromZRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslation", function() { return fromRotationTranslation; });
+__webpack_require__.d(mat4_namespaceObject, "fromQuat2", function() { return fromQuat2; });
+__webpack_require__.d(mat4_namespaceObject, "getTranslation", function() { return getTranslation; });
+__webpack_require__.d(mat4_namespaceObject, "getScaling", function() { return getScaling; });
+__webpack_require__.d(mat4_namespaceObject, "getRotation", function() { return getRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScale", function() { return fromRotationTranslationScale; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScaleOrigin", function() { return fromRotationTranslationScaleOrigin; });
 __webpack_require__.d(mat4_namespaceObject, "fromQuat", function() { return mat4_fromQuat; });
-__webpack_require__.d(mat4_namespaceObject, "frustum", function() { return mat4_frustum; });
-__webpack_require__.d(mat4_namespaceObject, "perspective", function() { return mat4_perspective; });
-__webpack_require__.d(mat4_namespaceObject, "perspectiveFromFieldOfView", function() { return mat4_perspectiveFromFieldOfView; });
-__webpack_require__.d(mat4_namespaceObject, "ortho", function() { return mat4_ortho; });
-__webpack_require__.d(mat4_namespaceObject, "lookAt", function() { return mat4_lookAt; });
-__webpack_require__.d(mat4_namespaceObject, "targetTo", function() { return mat4_targetTo; });
+__webpack_require__.d(mat4_namespaceObject, "frustum", function() { return frustum; });
+__webpack_require__.d(mat4_namespaceObject, "perspective", function() { return perspective; });
+__webpack_require__.d(mat4_namespaceObject, "perspectiveFromFieldOfView", function() { return perspectiveFromFieldOfView; });
+__webpack_require__.d(mat4_namespaceObject, "ortho", function() { return ortho; });
+__webpack_require__.d(mat4_namespaceObject, "lookAt", function() { return lookAt; });
+__webpack_require__.d(mat4_namespaceObject, "targetTo", function() { return targetTo; });
 __webpack_require__.d(mat4_namespaceObject, "str", function() { return mat4_str; });
 __webpack_require__.d(mat4_namespaceObject, "frob", function() { return mat4_frob; });
 __webpack_require__.d(mat4_namespaceObject, "add", function() { return mat4_add; });
@@ -226,6 +247,7 @@ __webpack_require__.d(mat4_namespaceObject, "equals", function() { return mat4_e
 __webpack_require__.d(mat4_namespaceObject, "mul", function() { return mat4_mul; });
 __webpack_require__.d(mat4_namespaceObject, "sub", function() { return mat4_sub; });
 var vec3_namespaceObject = {};
+__webpack_require__.r(vec3_namespaceObject);
 __webpack_require__.d(vec3_namespaceObject, "create", function() { return vec3_create; });
 __webpack_require__.d(vec3_namespaceObject, "clone", function() { return vec3_clone; });
 __webpack_require__.d(vec3_namespaceObject, "length", function() { return vec3_length; });
@@ -235,45 +257,46 @@ __webpack_require__.d(vec3_namespaceObject, "set", function() { return vec3_set;
 __webpack_require__.d(vec3_namespaceObject, "add", function() { return vec3_add; });
 __webpack_require__.d(vec3_namespaceObject, "subtract", function() { return vec3_subtract; });
 __webpack_require__.d(vec3_namespaceObject, "multiply", function() { return vec3_multiply; });
-__webpack_require__.d(vec3_namespaceObject, "divide", function() { return vec3_divide; });
-__webpack_require__.d(vec3_namespaceObject, "ceil", function() { return vec3_ceil; });
-__webpack_require__.d(vec3_namespaceObject, "floor", function() { return vec3_floor; });
-__webpack_require__.d(vec3_namespaceObject, "min", function() { return vec3_min; });
-__webpack_require__.d(vec3_namespaceObject, "max", function() { return vec3_max; });
-__webpack_require__.d(vec3_namespaceObject, "round", function() { return vec3_round; });
+__webpack_require__.d(vec3_namespaceObject, "divide", function() { return divide; });
+__webpack_require__.d(vec3_namespaceObject, "ceil", function() { return ceil; });
+__webpack_require__.d(vec3_namespaceObject, "floor", function() { return floor; });
+__webpack_require__.d(vec3_namespaceObject, "min", function() { return min; });
+__webpack_require__.d(vec3_namespaceObject, "max", function() { return max; });
+__webpack_require__.d(vec3_namespaceObject, "round", function() { return round; });
 __webpack_require__.d(vec3_namespaceObject, "scale", function() { return vec3_scale; });
-__webpack_require__.d(vec3_namespaceObject, "scaleAndAdd", function() { return vec3_scaleAndAdd; });
-__webpack_require__.d(vec3_namespaceObject, "distance", function() { return vec3_distance; });
-__webpack_require__.d(vec3_namespaceObject, "squaredDistance", function() { return vec3_squaredDistance; });
-__webpack_require__.d(vec3_namespaceObject, "squaredLength", function() { return vec3_squaredLength; });
-__webpack_require__.d(vec3_namespaceObject, "negate", function() { return vec3_negate; });
-__webpack_require__.d(vec3_namespaceObject, "inverse", function() { return vec3_inverse; });
-__webpack_require__.d(vec3_namespaceObject, "normalize", function() { return vec3_normalize; });
+__webpack_require__.d(vec3_namespaceObject, "scaleAndAdd", function() { return scaleAndAdd; });
+__webpack_require__.d(vec3_namespaceObject, "distance", function() { return distance; });
+__webpack_require__.d(vec3_namespaceObject, "squaredDistance", function() { return squaredDistance; });
+__webpack_require__.d(vec3_namespaceObject, "squaredLength", function() { return squaredLength; });
+__webpack_require__.d(vec3_namespaceObject, "negate", function() { return negate; });
+__webpack_require__.d(vec3_namespaceObject, "inverse", function() { return inverse; });
+__webpack_require__.d(vec3_namespaceObject, "normalize", function() { return normalize; });
 __webpack_require__.d(vec3_namespaceObject, "dot", function() { return vec3_dot; });
-__webpack_require__.d(vec3_namespaceObject, "cross", function() { return vec3_cross; });
-__webpack_require__.d(vec3_namespaceObject, "lerp", function() { return vec3_lerp; });
-__webpack_require__.d(vec3_namespaceObject, "hermite", function() { return vec3_hermite; });
-__webpack_require__.d(vec3_namespaceObject, "bezier", function() { return vec3_bezier; });
-__webpack_require__.d(vec3_namespaceObject, "random", function() { return vec3_random; });
-__webpack_require__.d(vec3_namespaceObject, "transformMat4", function() { return vec3_transformMat4; });
-__webpack_require__.d(vec3_namespaceObject, "transformMat3", function() { return vec3_transformMat3; });
-__webpack_require__.d(vec3_namespaceObject, "transformQuat", function() { return vec3_transformQuat; });
+__webpack_require__.d(vec3_namespaceObject, "cross", function() { return cross; });
+__webpack_require__.d(vec3_namespaceObject, "lerp", function() { return lerp; });
+__webpack_require__.d(vec3_namespaceObject, "hermite", function() { return hermite; });
+__webpack_require__.d(vec3_namespaceObject, "bezier", function() { return bezier; });
+__webpack_require__.d(vec3_namespaceObject, "random", function() { return random; });
+__webpack_require__.d(vec3_namespaceObject, "transformMat4", function() { return transformMat4; });
+__webpack_require__.d(vec3_namespaceObject, "transformMat3", function() { return transformMat3; });
+__webpack_require__.d(vec3_namespaceObject, "transformQuat", function() { return transformQuat; });
 __webpack_require__.d(vec3_namespaceObject, "rotateX", function() { return vec3_rotateX; });
 __webpack_require__.d(vec3_namespaceObject, "rotateY", function() { return vec3_rotateY; });
 __webpack_require__.d(vec3_namespaceObject, "rotateZ", function() { return vec3_rotateZ; });
-__webpack_require__.d(vec3_namespaceObject, "angle", function() { return vec3_angle; });
+__webpack_require__.d(vec3_namespaceObject, "angle", function() { return angle; });
 __webpack_require__.d(vec3_namespaceObject, "str", function() { return vec3_str; });
 __webpack_require__.d(vec3_namespaceObject, "exactEquals", function() { return vec3_exactEquals; });
 __webpack_require__.d(vec3_namespaceObject, "equals", function() { return vec3_equals; });
 __webpack_require__.d(vec3_namespaceObject, "sub", function() { return vec3_sub; });
 __webpack_require__.d(vec3_namespaceObject, "mul", function() { return vec3_mul; });
-__webpack_require__.d(vec3_namespaceObject, "div", function() { return vec3_div; });
-__webpack_require__.d(vec3_namespaceObject, "dist", function() { return vec3_dist; });
-__webpack_require__.d(vec3_namespaceObject, "sqrDist", function() { return vec3_sqrDist; });
+__webpack_require__.d(vec3_namespaceObject, "div", function() { return div; });
+__webpack_require__.d(vec3_namespaceObject, "dist", function() { return dist; });
+__webpack_require__.d(vec3_namespaceObject, "sqrDist", function() { return sqrDist; });
 __webpack_require__.d(vec3_namespaceObject, "len", function() { return vec3_len; });
-__webpack_require__.d(vec3_namespaceObject, "sqrLen", function() { return vec3_sqrLen; });
-__webpack_require__.d(vec3_namespaceObject, "forEach", function() { return vec3_forEach; });
+__webpack_require__.d(vec3_namespaceObject, "sqrLen", function() { return sqrLen; });
+__webpack_require__.d(vec3_namespaceObject, "forEach", function() { return forEach; });
 var vec4_namespaceObject = {};
+__webpack_require__.r(vec4_namespaceObject);
 __webpack_require__.d(vec4_namespaceObject, "create", function() { return vec4_create; });
 __webpack_require__.d(vec4_namespaceObject, "clone", function() { return vec4_clone; });
 __webpack_require__.d(vec4_namespaceObject, "fromValues", function() { return vec4_fromValues; });
@@ -314,20 +337,21 @@ __webpack_require__.d(vec4_namespaceObject, "len", function() { return vec4_len;
 __webpack_require__.d(vec4_namespaceObject, "sqrLen", function() { return vec4_sqrLen; });
 __webpack_require__.d(vec4_namespaceObject, "forEach", function() { return vec4_forEach; });
 var quat_namespaceObject = {};
+__webpack_require__.r(quat_namespaceObject);
 __webpack_require__.d(quat_namespaceObject, "create", function() { return quat_create; });
 __webpack_require__.d(quat_namespaceObject, "identity", function() { return quat_identity; });
-__webpack_require__.d(quat_namespaceObject, "setAxisAngle", function() { return quat_setAxisAngle; });
-__webpack_require__.d(quat_namespaceObject, "getAxisAngle", function() { return quat_getAxisAngle; });
+__webpack_require__.d(quat_namespaceObject, "setAxisAngle", function() { return setAxisAngle; });
+__webpack_require__.d(quat_namespaceObject, "getAxisAngle", function() { return getAxisAngle; });
 __webpack_require__.d(quat_namespaceObject, "multiply", function() { return quat_multiply; });
 __webpack_require__.d(quat_namespaceObject, "rotateX", function() { return quat_rotateX; });
 __webpack_require__.d(quat_namespaceObject, "rotateY", function() { return quat_rotateY; });
 __webpack_require__.d(quat_namespaceObject, "rotateZ", function() { return quat_rotateZ; });
-__webpack_require__.d(quat_namespaceObject, "calculateW", function() { return quat_calculateW; });
-__webpack_require__.d(quat_namespaceObject, "slerp", function() { return quat_slerp; });
+__webpack_require__.d(quat_namespaceObject, "calculateW", function() { return calculateW; });
+__webpack_require__.d(quat_namespaceObject, "slerp", function() { return slerp; });
 __webpack_require__.d(quat_namespaceObject, "invert", function() { return quat_invert; });
-__webpack_require__.d(quat_namespaceObject, "conjugate", function() { return quat_conjugate; });
-__webpack_require__.d(quat_namespaceObject, "fromMat3", function() { return quat_fromMat3; });
-__webpack_require__.d(quat_namespaceObject, "fromEuler", function() { return quat_fromEuler; });
+__webpack_require__.d(quat_namespaceObject, "conjugate", function() { return conjugate; });
+__webpack_require__.d(quat_namespaceObject, "fromMat3", function() { return fromMat3; });
+__webpack_require__.d(quat_namespaceObject, "fromEuler", function() { return fromEuler; });
 __webpack_require__.d(quat_namespaceObject, "str", function() { return quat_str; });
 __webpack_require__.d(quat_namespaceObject, "clone", function() { return quat_clone; });
 __webpack_require__.d(quat_namespaceObject, "fromValues", function() { return quat_fromValues; });
@@ -345,10 +369,11 @@ __webpack_require__.d(quat_namespaceObject, "sqrLen", function() { return quat_s
 __webpack_require__.d(quat_namespaceObject, "normalize", function() { return quat_normalize; });
 __webpack_require__.d(quat_namespaceObject, "exactEquals", function() { return quat_exactEquals; });
 __webpack_require__.d(quat_namespaceObject, "equals", function() { return quat_equals; });
-__webpack_require__.d(quat_namespaceObject, "rotationTo", function() { return quat_rotationTo; });
-__webpack_require__.d(quat_namespaceObject, "sqlerp", function() { return quat_sqlerp; });
-__webpack_require__.d(quat_namespaceObject, "setAxes", function() { return quat_setAxes; });
+__webpack_require__.d(quat_namespaceObject, "rotationTo", function() { return rotationTo; });
+__webpack_require__.d(quat_namespaceObject, "sqlerp", function() { return sqlerp; });
+__webpack_require__.d(quat_namespaceObject, "setAxes", function() { return setAxes; });
 var vec2_namespaceObject = {};
+__webpack_require__.r(vec2_namespaceObject);
 __webpack_require__.d(vec2_namespaceObject, "create", function() { return vec2_create; });
 __webpack_require__.d(vec2_namespaceObject, "clone", function() { return vec2_clone; });
 __webpack_require__.d(vec2_namespaceObject, "fromValues", function() { return vec2_fromValues; });
@@ -376,10 +401,12 @@ __webpack_require__.d(vec2_namespaceObject, "dot", function() { return vec2_dot;
 __webpack_require__.d(vec2_namespaceObject, "cross", function() { return vec2_cross; });
 __webpack_require__.d(vec2_namespaceObject, "lerp", function() { return vec2_lerp; });
 __webpack_require__.d(vec2_namespaceObject, "random", function() { return vec2_random; });
-__webpack_require__.d(vec2_namespaceObject, "transformMat2", function() { return vec2_transformMat2; });
-__webpack_require__.d(vec2_namespaceObject, "transformMat2d", function() { return vec2_transformMat2d; });
+__webpack_require__.d(vec2_namespaceObject, "transformMat2", function() { return transformMat2; });
+__webpack_require__.d(vec2_namespaceObject, "transformMat2d", function() { return transformMat2d; });
 __webpack_require__.d(vec2_namespaceObject, "transformMat3", function() { return vec2_transformMat3; });
 __webpack_require__.d(vec2_namespaceObject, "transformMat4", function() { return vec2_transformMat4; });
+__webpack_require__.d(vec2_namespaceObject, "rotate", function() { return vec2_rotate; });
+__webpack_require__.d(vec2_namespaceObject, "angle", function() { return vec2_angle; });
 __webpack_require__.d(vec2_namespaceObject, "str", function() { return vec2_str; });
 __webpack_require__.d(vec2_namespaceObject, "exactEquals", function() { return vec2_exactEquals; });
 __webpack_require__.d(vec2_namespaceObject, "equals", function() { return vec2_equals; });
@@ -481,26 +508,6 @@ function glLoop(callback){
 
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 /**
  * Common utilities
  * @module glMatrix
@@ -540,31 +547,11 @@ function toRadian(a) {
  * @param {Number} b The second number to test.
  * @returns {Boolean} True if the numbers are approximately equal, false otherwise.
  */
-function common_equals(a, b) {
+function equals(a, b) {
   return Math.abs(a - b) <= EPSILON*Math.max(1.0, Math.abs(a), Math.abs(b));
 }
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/mat2.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -577,7 +564,7 @@ THE SOFTWARE. */
  *
  * @returns {mat2} a new 2x2 matrix
  */
-function mat2_create() {
+function create() {
   let out = new ARRAY_TYPE(4);
   out[0] = 1;
   out[1] = 0;
@@ -592,7 +579,7 @@ function mat2_create() {
  * @param {mat2} a matrix to clone
  * @returns {mat2} a new 2x2 matrix
  */
-function mat2_clone(a) {
+function clone(a) {
   let out = new ARRAY_TYPE(4);
   out[0] = a[0];
   out[1] = a[1];
@@ -608,7 +595,7 @@ function mat2_clone(a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-function mat2_copy(out, a) {
+function copy(out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -622,7 +609,7 @@ function mat2_copy(out, a) {
  * @param {mat2} out the receiving matrix
  * @returns {mat2} out
  */
-function mat2_identity(out) {
+function identity(out) {
   out[0] = 1;
   out[1] = 0;
   out[2] = 0;
@@ -639,7 +626,7 @@ function mat2_identity(out) {
  * @param {Number} m11 Component in column 1, row 1 position (index 3)
  * @returns {mat2} out A new 2x2 matrix
  */
-function mat2_fromValues(m00, m01, m10, m11) {
+function fromValues(m00, m01, m10, m11) {
   let out = new ARRAY_TYPE(4);
   out[0] = m00;
   out[1] = m01;
@@ -658,7 +645,7 @@ function mat2_fromValues(m00, m01, m10, m11) {
  * @param {Number} m11 Component in column 1, row 1 position (index 3)
  * @returns {mat2} out
  */
-function mat2_set(out, m00, m01, m10, m11) {
+function set(out, m00, m01, m10, m11) {
   out[0] = m00;
   out[1] = m01;
   out[2] = m10;
@@ -673,7 +660,7 @@ function mat2_set(out, m00, m01, m10, m11) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-function mat2_transpose(out, a) {
+function transpose(out, a) {
   // If we are transposing ourselves we can skip a few steps but have to cache
   // some values
   if (out === a) {
@@ -697,7 +684,7 @@ function mat2_transpose(out, a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-function mat2_invert(out, a) {
+function invert(out, a) {
   let a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
 
   // Calculate the determinant
@@ -723,7 +710,7 @@ function mat2_invert(out, a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-function mat2_adjoint(out, a) {
+function adjoint(out, a) {
   // Caching this value is nessecary if out == a
   let a0 = a[0];
   out[0] =  a[3];
@@ -740,7 +727,7 @@ function mat2_adjoint(out, a) {
  * @param {mat2} a the source matrix
  * @returns {Number} determinant of a
  */
-function mat2_determinant(a) {
+function determinant(a) {
   return a[0] * a[3] - a[2] * a[1];
 }
 
@@ -752,7 +739,7 @@ function mat2_determinant(a) {
  * @param {mat2} b the second operand
  * @returns {mat2} out
  */
-function mat2_multiply(out, a, b) {
+function multiply(out, a, b) {
   let a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
   let b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
   out[0] = a0 * b0 + a2 * b1;
@@ -770,7 +757,7 @@ function mat2_multiply(out, a, b) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat2} out
  */
-function mat2_rotate(out, a, rad) {
+function rotate(out, a, rad) {
   let a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
   let s = Math.sin(rad);
   let c = Math.cos(rad);
@@ -810,7 +797,7 @@ function mat2_scale(out, a, v) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat2} out
  */
-function mat2_fromRotation(out, rad) {
+function fromRotation(out, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
   out[0] = c;
@@ -831,7 +818,7 @@ function mat2_fromRotation(out, rad) {
  * @param {vec2} v Scaling vector
  * @returns {mat2} out
  */
-function mat2_fromScaling(out, v) {
+function fromScaling(out, v) {
   out[0] = v[0];
   out[1] = 0;
   out[2] = 0;
@@ -845,7 +832,7 @@ function mat2_fromScaling(out, v) {
  * @param {mat2} a matrix to represent as a string
  * @returns {String} string representation of the matrix
  */
-function mat2_str(a) {
+function str(a) {
   return 'mat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
 }
 
@@ -855,7 +842,7 @@ function mat2_str(a) {
  * @param {mat2} a the matrix to calculate Frobenius norm of
  * @returns {Number} Frobenius norm
  */
-function mat2_frob(a) {
+function frob(a) {
   return(Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2)))
 }
 
@@ -867,7 +854,7 @@ function mat2_frob(a) {
  * @param {mat2} a the input matrix to factorize
  */
 
-function mat2_LDU(L, D, U, a) {
+function LDU(L, D, U, a) {
   L[2] = a[2]/a[0];
   U[0] = a[0];
   U[1] = a[1];
@@ -883,7 +870,7 @@ function mat2_LDU(L, D, U, a) {
  * @param {mat2} b the second operand
  * @returns {mat2} out
  */
-function mat2_add(out, a, b) {
+function add(out, a, b) {
   out[0] = a[0] + b[0];
   out[1] = a[1] + b[1];
   out[2] = a[2] + b[2];
@@ -899,7 +886,7 @@ function mat2_add(out, a, b) {
  * @param {mat2} b the second operand
  * @returns {mat2} out
  */
-function mat2_subtract(out, a, b) {
+function subtract(out, a, b) {
   out[0] = a[0] - b[0];
   out[1] = a[1] - b[1];
   out[2] = a[2] - b[2];
@@ -914,7 +901,7 @@ function mat2_subtract(out, a, b) {
  * @param {mat2} b The second matrix.
  * @returns {Boolean} True if the matrices are equal, false otherwise.
  */
-function mat2_exactEquals(a, b) {
+function exactEquals(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
 
@@ -942,7 +929,7 @@ function mat2_equals(a, b) {
  * @param {Number} b amount to scale the matrix's elements by
  * @returns {mat2} out
  */
-function mat2_multiplyScalar(out, a, b) {
+function multiplyScalar(out, a, b) {
   out[0] = a[0] * b;
   out[1] = a[1] * b;
   out[2] = a[2] * b;
@@ -959,7 +946,7 @@ function mat2_multiplyScalar(out, a, b) {
  * @param {Number} scale the amount to scale b's elements by before adding
  * @returns {mat2} out
  */
-function mat2_multiplyScalarAndAdd(out, a, b, scale) {
+function multiplyScalarAndAdd(out, a, b, scale) {
   out[0] = a[0] + (b[0] * scale);
   out[1] = a[1] + (b[1] * scale);
   out[2] = a[2] + (b[2] * scale);
@@ -971,35 +958,15 @@ function mat2_multiplyScalarAndAdd(out, a, b, scale) {
  * Alias for {@link mat2.multiply}
  * @function
  */
-const mat2_mul = mat2_multiply;
+const mul = multiply;
 
 /**
  * Alias for {@link mat2.subtract}
  * @function
  */
-const mat2_sub = mat2_subtract;
+const sub = subtract;
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/mat2d.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -1236,7 +1203,7 @@ function mat2d_scale(out, a, v) {
  * @param {vec2} v the vec2 to translate the matrix by
  * @returns {mat2d} out
  **/
-function mat2d_translate(out, a, v) {
+function translate(out, a, v) {
   let a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
   let v0 = v[0], v1 = v[1];
   out[0] = a0;
@@ -1302,7 +1269,7 @@ function mat2d_fromScaling(out, v) {
  * @param {vec2} v Translation vector
  * @returns {mat2d} out
  */
-function mat2d_fromTranslation(out, v) {
+function fromTranslation(out, v) {
   out[0] = 1;
   out[1] = 0;
   out[2] = 0;
@@ -1448,26 +1415,6 @@ const mat2d_mul = mat2d_multiply;
 const mat2d_sub = mat2d_subtract;
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/mat3.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -1501,7 +1448,7 @@ function mat3_create() {
  * @param {mat4} a   the source 4x4 matrix
  * @returns {mat3} out
  */
-function mat3_fromMat4(out, a) {
+function fromMat4(out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -1934,7 +1881,7 @@ function mat3_fromScaling(out, v) {
  * @param {mat2d} a the matrix to copy
  * @returns {mat3} out
  **/
-function mat3_fromMat2d(out, a) {
+function fromMat2d(out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = 0;
@@ -1957,7 +1904,7 @@ function mat3_fromMat2d(out, a) {
 *
 * @returns {mat3} out
 */
-function mat3_fromQuat(out, q) {
+function fromQuat(out, q) {
   let x = q[0], y = q[1], z = q[2], w = q[3];
   let x2 = x + x;
   let y2 = y + y;
@@ -1996,7 +1943,7 @@ function mat3_fromQuat(out, q) {
 *
 * @returns {mat3} out
 */
-function mat3_normalFromMat4(out, a) {
+function normalFromMat4(out, a) {
   let a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
   let a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
   let a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -2046,7 +1993,7 @@ function mat3_normalFromMat4(out, a) {
  * @param {number} height Height of gl context
  * @returns {mat3} out
  */
-function mat3_projection(out, width, height) {
+function projection(out, width, height) {
     out[0] = 2 / width;
     out[1] = 0;
     out[2] = 0;
@@ -2215,30 +2162,10 @@ const mat3_mul = mat3_multiply;
 const mat3_sub = mat3_subtract;
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/mat4.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
- * 4x4 Matrix
+ * 4x4 Matrix<br>Format: column-major, when typed out it looks like row-major<br>The matrices are being post multiplied.
  * @module mat4
  */
 
@@ -2724,7 +2651,7 @@ function mat4_rotate(out, a, rad, axis) {
   let b10, b11, b12;
   let b20, b21, b22;
 
-  if (Math.abs(len) < EPSILON) { return null; }
+  if (len < EPSILON) { return null; }
 
   len = 1 / len;
   x *= len;
@@ -2775,7 +2702,7 @@ function mat4_rotate(out, a, rad, axis) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_rotateX(out, a, rad) {
+function rotateX(out, a, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
   let a10 = a[4];
@@ -2818,7 +2745,7 @@ function mat4_rotateX(out, a, rad) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_rotateY(out, a, rad) {
+function rotateY(out, a, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
   let a00 = a[0];
@@ -2861,7 +2788,7 @@ function mat4_rotateY(out, a, rad) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_rotateZ(out, a, rad) {
+function rotateZ(out, a, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
   let a00 = a[0];
@@ -2975,7 +2902,7 @@ function mat4_fromRotation(out, rad, axis) {
   let len = Math.sqrt(x * x + y * y + z * z);
   let s, c, t;
 
-  if (Math.abs(len) < EPSILON) { return null; }
+  if (len < EPSILON) { return null; }
 
   len = 1 / len;
   x *= len;
@@ -3017,7 +2944,7 @@ function mat4_fromRotation(out, rad, axis) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_fromXRotation(out, rad) {
+function fromXRotation(out, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
 
@@ -3052,7 +2979,7 @@ function mat4_fromXRotation(out, rad) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_fromYRotation(out, rad) {
+function fromYRotation(out, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
 
@@ -3087,7 +3014,7 @@ function mat4_fromYRotation(out, rad) {
  * @param {Number} rad the angle to rotate the matrix by
  * @returns {mat4} out
  */
-function mat4_fromZRotation(out, rad) {
+function fromZRotation(out, rad) {
   let s = Math.sin(rad);
   let c = Math.cos(rad);
 
@@ -3126,7 +3053,7 @@ function mat4_fromZRotation(out, rad) {
  * @param {vec3} v Translation vector
  * @returns {mat4} out
  */
-function mat4_fromRotationTranslation(out, q, v) {
+function fromRotationTranslation(out, q, v) {
   // Quaternion math
   let x = q[0], y = q[1], z = q[2], w = q[3];
   let x2 = x + x;
@@ -3164,6 +3091,33 @@ function mat4_fromRotationTranslation(out, q, v) {
 }
 
 /**
+ * Creates a new mat4 from a dual quat.
+ *
+ * @param {mat4} out Matrix
+ * @param {quat2} a Dual Quaternion
+ * @returns {mat4} mat4 receiving operation result
+ */
+function fromQuat2(out, a) {
+  let translation = new ARRAY_TYPE(3);
+  let bx = -a[0], by = -a[1], bz = -a[2], bw = a[3],
+  ax = a[4], ay = a[5], az = a[6], aw = a[7];
+
+  let magnitude = bx * bx + by * by + bz * bz + bw * bw;
+  //Only scale if it makes sense
+  if (magnitude > 0) {
+    translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2 / magnitude;
+    translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2 / magnitude;
+    translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2 / magnitude;
+  } else {
+    translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+    translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+    translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+  }
+  fromRotationTranslation(out, a, translation);
+  return out;
+}
+
+/**
  * Returns the translation vector component of a transformation
  *  matrix. If a matrix is built with fromRotationTranslation,
  *  the returned vector will be the same as the translation vector
@@ -3172,7 +3126,7 @@ function mat4_fromRotationTranslation(out, q, v) {
  * @param  {mat4} mat Matrix to be decomposed (input)
  * @return {vec3} out
  */
-function mat4_getTranslation(out, mat) {
+function getTranslation(out, mat) {
   out[0] = mat[12];
   out[1] = mat[13];
   out[2] = mat[14];
@@ -3190,7 +3144,7 @@ function mat4_getTranslation(out, mat) {
  * @param  {mat4} mat Matrix to be decomposed (input)
  * @return {vec3} out
  */
-function mat4_getScaling(out, mat) {
+function getScaling(out, mat) {
   let m11 = mat[0];
   let m12 = mat[1];
   let m13 = mat[2];
@@ -3217,7 +3171,7 @@ function mat4_getScaling(out, mat) {
  * @param {mat4} mat Matrix to be decomposed (input)
  * @return {quat} out
  */
-function mat4_getRotation(out, mat) {
+function getRotation(out, mat) {
   // Algorithm taken from http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
   let trace = mat[0] + mat[5] + mat[10];
   let S = 0;
@@ -3228,7 +3182,7 @@ function mat4_getRotation(out, mat) {
     out[0] = (mat[6] - mat[9]) / S;
     out[1] = (mat[8] - mat[2]) / S;
     out[2] = (mat[1] - mat[4]) / S;
-  } else if ((mat[0] > mat[5])&(mat[0] > mat[10])) {
+  } else if ((mat[0] > mat[5]) && (mat[0] > mat[10])) {
     S = Math.sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2;
     out[3] = (mat[6] - mat[9]) / S;
     out[0] = 0.25 * S;
@@ -3268,7 +3222,7 @@ function mat4_getRotation(out, mat) {
  * @param {vec3} s Scaling vector
  * @returns {mat4} out
  */
-function mat4_fromRotationTranslationScale(out, q, v, s) {
+function fromRotationTranslationScale(out, q, v, s) {
   // Quaternion math
   let x = q[0], y = q[1], z = q[2], w = q[3];
   let x2 = x + x;
@@ -3328,7 +3282,7 @@ function mat4_fromRotationTranslationScale(out, q, v, s) {
  * @param {vec3} o The origin vector around which to scale and rotate
  * @returns {mat4} out
  */
-function mat4_fromRotationTranslationScaleOrigin(out, q, v, s, o) {
+function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
   // Quaternion math
   let x = q[0], y = q[1], z = q[2], w = q[3];
   let x2 = x + x;
@@ -3353,21 +3307,31 @@ function mat4_fromRotationTranslationScaleOrigin(out, q, v, s, o) {
   let oy = o[1];
   let oz = o[2];
 
-  out[0] = (1 - (yy + zz)) * sx;
-  out[1] = (xy + wz) * sx;
-  out[2] = (xz - wy) * sx;
+  let out0 = (1 - (yy + zz)) * sx;
+  let out1 = (xy + wz) * sx;
+  let out2 = (xz - wy) * sx;
+  let out4 = (xy - wz) * sy;
+  let out5 = (1 - (xx + zz)) * sy;
+  let out6 = (yz + wx) * sy;
+  let out8 = (xz + wy) * sz;
+  let out9 = (yz - wx) * sz;
+  let out10 = (1 - (xx + yy)) * sz;
+
+  out[0] = out0;
+  out[1] = out1;
+  out[2] = out2;
   out[3] = 0;
-  out[4] = (xy - wz) * sy;
-  out[5] = (1 - (xx + zz)) * sy;
-  out[6] = (yz + wx) * sy;
+  out[4] = out4;
+  out[5] = out5;
+  out[6] = out6;
   out[7] = 0;
-  out[8] = (xz + wy) * sz;
-  out[9] = (yz - wx) * sz;
-  out[10] = (1 - (xx + yy)) * sz;
+  out[8] = out8;
+  out[9] = out9;
+  out[10] = out10;
   out[11] = 0;
-  out[12] = v[0] + ox - (out[0] * ox + out[4] * oy + out[8] * oz);
-  out[13] = v[1] + oy - (out[1] * ox + out[5] * oy + out[9] * oz);
-  out[14] = v[2] + oz - (out[2] * ox + out[6] * oy + out[10] * oz);
+  out[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
+  out[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
+  out[14] = v[2] + oz - (out2 * ox + out6 * oy + out10 * oz);
   out[15] = 1;
 
   return out;
@@ -3432,7 +3396,7 @@ function mat4_fromQuat(out, q) {
  * @param {Number} far Far bound of the frustum
  * @returns {mat4} out
  */
-function mat4_frustum(out, left, right, bottom, top, near, far) {
+function frustum(out, left, right, bottom, top, near, far) {
   let rl = 1 / (right - left);
   let tb = 1 / (top - bottom);
   let nf = 1 / (near - far);
@@ -3465,7 +3429,7 @@ function mat4_frustum(out, left, right, bottom, top, near, far) {
  * @param {number} far Far bound of the frustum
  * @returns {mat4} out
  */
-function mat4_perspective(out, fovy, aspect, near, far) {
+function perspective(out, fovy, aspect, near, far) {
   let f = 1.0 / Math.tan(fovy / 2);
   let nf = 1 / (near - far);
   out[0] = f / aspect;
@@ -3498,7 +3462,7 @@ function mat4_perspective(out, fovy, aspect, near, far) {
  * @param {number} far Far bound of the frustum
  * @returns {mat4} out
  */
-function mat4_perspectiveFromFieldOfView(out, fov, near, far) {
+function perspectiveFromFieldOfView(out, fov, near, far) {
   let upTan = Math.tan(fov.upDegrees * Math.PI/180.0);
   let downTan = Math.tan(fov.downDegrees * Math.PI/180.0);
   let leftTan = Math.tan(fov.leftDegrees * Math.PI/180.0);
@@ -3537,7 +3501,7 @@ function mat4_perspectiveFromFieldOfView(out, fov, near, far) {
  * @param {number} far Far bound of the frustum
  * @returns {mat4} out
  */
-function mat4_ortho(out, left, right, bottom, top, near, far) {
+function ortho(out, left, right, bottom, top, near, far) {
   let lr = 1 / (left - right);
   let bt = 1 / (bottom - top);
   let nf = 1 / (near - far);
@@ -3561,7 +3525,8 @@ function mat4_ortho(out, left, right, bottom, top, near, far) {
 }
 
 /**
- * Generates a look-at matrix with the given eye position, focal point, and up axis
+ * Generates a look-at matrix with the given eye position, focal point, and up axis.
+ * If you want a matrix that actually makes an object look at another object, you should use targetTo instead.
  *
  * @param {mat4} out mat4 frustum matrix will be written into
  * @param {vec3} eye Position of the viewer
@@ -3569,7 +3534,7 @@ function mat4_ortho(out, left, right, bottom, top, near, far) {
  * @param {vec3} up vec3 pointing up
  * @returns {mat4} out
  */
-function mat4_lookAt(out, eye, center, up) {
+function lookAt(out, eye, center, up) {
   let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
   let eyex = eye[0];
   let eyey = eye[1];
@@ -3584,7 +3549,7 @@ function mat4_lookAt(out, eye, center, up) {
   if (Math.abs(eyex - centerx) < EPSILON &&
       Math.abs(eyey - centery) < EPSILON &&
       Math.abs(eyez - centerz) < EPSILON) {
-    return mat4.identity(out);
+    return mat4_identity(out);
   }
 
   z0 = eyex - centerx;
@@ -3656,7 +3621,7 @@ function mat4_lookAt(out, eye, center, up) {
  * @param {vec3} up vec3 pointing up
  * @returns {mat4} out
  */
-function mat4_targetTo(out, eye, target, up) {
+function targetTo(out, eye, target, up) {
   let eyex = eye[0],
       eyey = eye[1],
       eyez = eye[2],
@@ -3679,6 +3644,14 @@ function mat4_targetTo(out, eye, target, up) {
   let x0 = upy * z2 - upz * z1,
       x1 = upz * z0 - upx * z2,
       x2 = upx * z1 - upy * z0;
+
+  len = x0*x0 + x1*x1 + x2*x2;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    x0 *= len;
+    x1 *= len;
+    x2 *= len;
+  }
 
   out[0] = x0;
   out[1] = x1;
@@ -3898,26 +3871,6 @@ const mat4_mul = mat4_multiply;
 const mat4_sub = mat4_subtract;
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/vec3.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -4064,7 +4017,7 @@ function vec3_multiply(out, a, b) {
  * @param {vec3} b the second operand
  * @returns {vec3} out
  */
-function vec3_divide(out, a, b) {
+function divide(out, a, b) {
   out[0] = a[0] / b[0];
   out[1] = a[1] / b[1];
   out[2] = a[2] / b[2];
@@ -4078,7 +4031,7 @@ function vec3_divide(out, a, b) {
  * @param {vec3} a vector to ceil
  * @returns {vec3} out
  */
-function vec3_ceil(out, a) {
+function ceil(out, a) {
   out[0] = Math.ceil(a[0]);
   out[1] = Math.ceil(a[1]);
   out[2] = Math.ceil(a[2]);
@@ -4092,7 +4045,7 @@ function vec3_ceil(out, a) {
  * @param {vec3} a vector to floor
  * @returns {vec3} out
  */
-function vec3_floor(out, a) {
+function floor(out, a) {
   out[0] = Math.floor(a[0]);
   out[1] = Math.floor(a[1]);
   out[2] = Math.floor(a[2]);
@@ -4107,7 +4060,7 @@ function vec3_floor(out, a) {
  * @param {vec3} b the second operand
  * @returns {vec3} out
  */
-function vec3_min(out, a, b) {
+function min(out, a, b) {
   out[0] = Math.min(a[0], b[0]);
   out[1] = Math.min(a[1], b[1]);
   out[2] = Math.min(a[2], b[2]);
@@ -4122,7 +4075,7 @@ function vec3_min(out, a, b) {
  * @param {vec3} b the second operand
  * @returns {vec3} out
  */
-function vec3_max(out, a, b) {
+function max(out, a, b) {
   out[0] = Math.max(a[0], b[0]);
   out[1] = Math.max(a[1], b[1]);
   out[2] = Math.max(a[2], b[2]);
@@ -4136,7 +4089,7 @@ function vec3_max(out, a, b) {
  * @param {vec3} a vector to round
  * @returns {vec3} out
  */
-function vec3_round(out, a) {
+function round(out, a) {
   out[0] = Math.round(a[0]);
   out[1] = Math.round(a[1]);
   out[2] = Math.round(a[2]);
@@ -4167,7 +4120,7 @@ function vec3_scale(out, a, b) {
  * @param {Number} scale the amount to scale b by before adding
  * @returns {vec3} out
  */
-function vec3_scaleAndAdd(out, a, b, scale) {
+function scaleAndAdd(out, a, b, scale) {
   out[0] = a[0] + (b[0] * scale);
   out[1] = a[1] + (b[1] * scale);
   out[2] = a[2] + (b[2] * scale);
@@ -4181,7 +4134,7 @@ function vec3_scaleAndAdd(out, a, b, scale) {
  * @param {vec3} b the second operand
  * @returns {Number} distance between a and b
  */
-function vec3_distance(a, b) {
+function distance(a, b) {
   let x = b[0] - a[0];
   let y = b[1] - a[1];
   let z = b[2] - a[2];
@@ -4195,7 +4148,7 @@ function vec3_distance(a, b) {
  * @param {vec3} b the second operand
  * @returns {Number} squared distance between a and b
  */
-function vec3_squaredDistance(a, b) {
+function squaredDistance(a, b) {
   let x = b[0] - a[0];
   let y = b[1] - a[1];
   let z = b[2] - a[2];
@@ -4208,7 +4161,7 @@ function vec3_squaredDistance(a, b) {
  * @param {vec3} a vector to calculate squared length of
  * @returns {Number} squared length of a
  */
-function vec3_squaredLength(a) {
+function squaredLength(a) {
   let x = a[0];
   let y = a[1];
   let z = a[2];
@@ -4222,7 +4175,7 @@ function vec3_squaredLength(a) {
  * @param {vec3} a vector to negate
  * @returns {vec3} out
  */
-function vec3_negate(out, a) {
+function negate(out, a) {
   out[0] = -a[0];
   out[1] = -a[1];
   out[2] = -a[2];
@@ -4236,7 +4189,7 @@ function vec3_negate(out, a) {
  * @param {vec3} a vector to invert
  * @returns {vec3} out
  */
-function vec3_inverse(out, a) {
+function inverse(out, a) {
   out[0] = 1.0 / a[0];
   out[1] = 1.0 / a[1];
   out[2] = 1.0 / a[2];
@@ -4250,7 +4203,7 @@ function vec3_inverse(out, a) {
  * @param {vec3} a vector to normalize
  * @returns {vec3} out
  */
-function vec3_normalize(out, a) {
+function normalize(out, a) {
   let x = a[0];
   let y = a[1];
   let z = a[2];
@@ -4284,7 +4237,7 @@ function vec3_dot(a, b) {
  * @param {vec3} b the second operand
  * @returns {vec3} out
  */
-function vec3_cross(out, a, b) {
+function cross(out, a, b) {
   let ax = a[0], ay = a[1], az = a[2];
   let bx = b[0], by = b[1], bz = b[2];
 
@@ -4300,10 +4253,10 @@ function vec3_cross(out, a, b) {
  * @param {vec3} out the receiving vector
  * @param {vec3} a the first operand
  * @param {vec3} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
-function vec3_lerp(out, a, b, t) {
+function lerp(out, a, b, t) {
   let ax = a[0];
   let ay = a[1];
   let az = a[2];
@@ -4321,10 +4274,10 @@ function vec3_lerp(out, a, b, t) {
  * @param {vec3} b the second operand
  * @param {vec3} c the third operand
  * @param {vec3} d the fourth operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
-function vec3_hermite(out, a, b, c, d, t) {
+function hermite(out, a, b, c, d, t) {
   let factorTimes2 = t * t;
   let factor1 = factorTimes2 * (2 * t - 3) + 1;
   let factor2 = factorTimes2 * (t - 2) + t;
@@ -4346,10 +4299,10 @@ function vec3_hermite(out, a, b, c, d, t) {
  * @param {vec3} b the second operand
  * @param {vec3} c the third operand
  * @param {vec3} d the fourth operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
-function vec3_bezier(out, a, b, c, d, t) {
+function bezier(out, a, b, c, d, t) {
   let inverseFactor = 1 - t;
   let inverseFactorTimesTwo = inverseFactor * inverseFactor;
   let factorTimes2 = t * t;
@@ -4372,7 +4325,7 @@ function vec3_bezier(out, a, b, c, d, t) {
  * @param {Number} [scale] Length of the resulting vector. If ommitted, a unit vector will be returned
  * @returns {vec3} out
  */
-function vec3_random(out, scale) {
+function random(out, scale) {
   scale = scale || 1.0;
 
   let r = RANDOM() * 2.0 * Math.PI;
@@ -4394,7 +4347,7 @@ function vec3_random(out, scale) {
  * @param {mat4} m matrix to transform with
  * @returns {vec3} out
  */
-function vec3_transformMat4(out, a, m) {
+function transformMat4(out, a, m) {
   let x = a[0], y = a[1], z = a[2];
   let w = m[3] * x + m[7] * y + m[11] * z + m[15];
   w = w || 1.0;
@@ -4412,7 +4365,7 @@ function vec3_transformMat4(out, a, m) {
  * @param {mat3} m the 3x3 matrix to transform with
  * @returns {vec3} out
  */
-function vec3_transformMat3(out, a, m) {
+function transformMat3(out, a, m) {
   let x = a[0], y = a[1], z = a[2];
   out[0] = x * m[0] + y * m[3] + z * m[6];
   out[1] = x * m[1] + y * m[4] + z * m[7];
@@ -4422,29 +4375,40 @@ function vec3_transformMat3(out, a, m) {
 
 /**
  * Transforms the vec3 with a quat
+ * Can also be used for dual quaternions. (Multiply it with the real part)
  *
  * @param {vec3} out the receiving vector
  * @param {vec3} a the vector to transform
  * @param {quat} q quaternion to transform with
  * @returns {vec3} out
  */
-function vec3_transformQuat(out, a, q) {
-  // benchmarks: http://jsperf.com/quaternion-transform-vec3-implementations
-
-  let x = a[0], y = a[1], z = a[2];
-  let qx = q[0], qy = q[1], qz = q[2], qw = q[3];
-
-  // calculate quat * vec
-  let ix = qw * x + qy * z - qz * y;
-  let iy = qw * y + qz * x - qx * z;
-  let iz = qw * z + qx * y - qy * x;
-  let iw = -qx * x - qy * y - qz * z;
-
-  // calculate result * inverse quat
-  out[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-  out[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-  out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-  return out;
+function transformQuat(out, a, q) {
+    // benchmarks: https://jsperf.com/quaternion-transform-vec3-implementations-fixed
+    let qx = q[0], qy = q[1], qz = q[2], qw = q[3];
+    let x = a[0], y = a[1], z = a[2];
+    // var qvec = [qx, qy, qz];
+    // var uv = vec3.cross([], qvec, a);
+    let uvx = qy * z - qz * y,
+        uvy = qz * x - qx * z,
+        uvz = qx * y - qy * x;
+    // var uuv = vec3.cross([], qvec, uv);
+    let uuvx = qy * uvz - qz * uvy,
+        uuvy = qz * uvx - qx * uvz,
+        uuvz = qx * uvy - qy * uvx;
+    // vec3.scale(uv, uv, 2 * w);
+    let w2 = qw * 2;
+    uvx *= w2;
+    uvy *= w2;
+    uvz *= w2;
+    // vec3.scale(uuv, uuv, 2);
+    uuvx *= 2;
+    uuvy *= 2;
+    uuvz *= 2;
+    // return vec3.add(out, a, vec3.add(out, uv, uuv));
+    out[0] = x + uvx + uuvx;
+    out[1] = y + uvy + uuvy;
+    out[2] = z + uvz + uuvz;
+    return out;
 }
 
 /**
@@ -4537,12 +4501,12 @@ function vec3_rotateZ(out, a, b, c){
  * @param {vec3} b The second operand
  * @returns {Number} The angle in radians
  */
-function vec3_angle(a, b) {
+function angle(a, b) {
   let tempA = vec3_fromValues(a[0], a[1], a[2]);
   let tempB = vec3_fromValues(b[0], b[1], b[2]);
 
-  vec3_normalize(tempA, tempA);
-  vec3_normalize(tempB, tempB);
+  normalize(tempA, tempA);
+  normalize(tempB, tempB);
 
   let cosine = vec3_dot(tempA, tempB);
 
@@ -4608,19 +4572,19 @@ const vec3_mul = vec3_multiply;
  * Alias for {@link vec3.divide}
  * @function
  */
-const vec3_div = vec3_divide;
+const div = divide;
 
 /**
  * Alias for {@link vec3.distance}
  * @function
  */
-const vec3_dist = vec3_distance;
+const dist = distance;
 
 /**
  * Alias for {@link vec3.squaredDistance}
  * @function
  */
-const vec3_sqrDist = vec3_squaredDistance;
+const sqrDist = squaredDistance;
 
 /**
  * Alias for {@link vec3.length}
@@ -4632,7 +4596,7 @@ const vec3_len = vec3_length;
  * Alias for {@link vec3.squaredLength}
  * @function
  */
-const vec3_sqrLen = vec3_squaredLength;
+const sqrLen = squaredLength;
 
 /**
  * Perform some operation over an array of vec3s.
@@ -4646,7 +4610,7 @@ const vec3_sqrLen = vec3_squaredLength;
  * @returns {Array} a
  * @function
  */
-const vec3_forEach = (function() {
+const forEach = (function() {
   let vec = vec3_create();
 
   return function(a, stride, offset, count, fn, arg) {
@@ -4676,26 +4640,6 @@ const vec3_forEach = (function() {
 })();
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/vec4.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -5085,7 +5029,7 @@ function vec4_dot(a, b) {
  * @param {vec4} out the receiving vector
  * @param {vec4} a the first operand
  * @param {vec4} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec4} out
  */
 function vec4_lerp(out, a, b, t) {
@@ -5110,13 +5054,27 @@ function vec4_lerp(out, a, b, t) {
 function vec4_random(out, vectorScale) {
   vectorScale = vectorScale || 1.0;
 
-  //TODO: This is a pretty awful way of doing this. Find something better.
-  out[0] = RANDOM();
-  out[1] = RANDOM();
-  out[2] = RANDOM();
-  out[3] = RANDOM();
-  vec4_normalize(out, out);
-  vec4_scale(out, out, vectorScale);
+  // Marsaglia, George. Choosing a Point from the Surface of a
+  // Sphere. Ann. Math. Statist. 43 (1972), no. 2, 645--646.
+  // http://projecteuclid.org/euclid.aoms/1177692644;
+  var v1, v2, v3, v4;
+  var s1, s2;
+  do {
+    v1 = RANDOM() * 2 - 1;
+    v2 = RANDOM() * 2 - 1;
+    s1 = v1 * v1 + v2 * v2;
+  } while (s1 >= 1);
+  do {
+    v3 = RANDOM() * 2 - 1;
+    v4 = RANDOM() * 2 - 1;
+    s2 = v3 * v3 + v4 * v4;
+  } while (s2 >= 1);
+
+  var d = Math.sqrt((1 - s1) / s2);
+  out[0] = vec4_scale * v1;
+  out[1] = vec4_scale * v2;
+  out[2] = vec4_scale * v3 * d;
+  out[3] = vec4_scale * v4 * d;
   return out;
 }
 
@@ -5284,26 +5242,6 @@ const vec4_forEach = (function() {
 })();
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/quat.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 
@@ -5351,7 +5289,7 @@ function quat_identity(out) {
  * @param {Number} rad the angle in radians
  * @returns {quat} out
  **/
-function quat_setAxisAngle(out, axis, rad) {
+function setAxisAngle(out, axis, rad) {
   rad = rad * 0.5;
   let s = Math.sin(rad);
   out[0] = s * axis[0];
@@ -5374,7 +5312,7 @@ function quat_setAxisAngle(out, axis, rad) {
  * @param  {quat} q     Quaternion to be decomposed
  * @return {Number}     Angle, in radians, of the rotation
  */
-function quat_getAxisAngle(out_axis, q) {
+function getAxisAngle(out_axis, q) {
   let rad = Math.acos(q[3]) * 2.0;
   let s = Math.sin(rad / 2.0);
   if (s != 0.0) {
@@ -5481,7 +5419,7 @@ function quat_rotateZ(out, a, rad) {
  * @param {quat} a quat to calculate W component of
  * @returns {quat} out
  */
-function quat_calculateW(out, a) {
+function calculateW(out, a) {
   let x = a[0], y = a[1], z = a[2];
 
   out[0] = x;
@@ -5497,10 +5435,10 @@ function quat_calculateW(out, a) {
  * @param {quat} out the receiving quaternion
  * @param {quat} a the first operand
  * @param {quat} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  */
-function quat_slerp(out, a, b, t) {
+function slerp(out, a, b, t) {
   // benchmarks:
   //    http://jsperf.com/quaternion-slerp-implementations
   let ax = a[0], ay = a[1], az = a[2], aw = a[3];
@@ -5569,7 +5507,7 @@ function quat_invert(out, a) {
  * @param {quat} a quat to calculate conjugate of
  * @returns {quat} out
  */
-function quat_conjugate(out, a) {
+function conjugate(out, a) {
   out[0] = -a[0];
   out[1] = -a[1];
   out[2] = -a[2];
@@ -5588,7 +5526,7 @@ function quat_conjugate(out, a) {
  * @returns {quat} out
  * @function
  */
-function quat_fromMat3(out, m) {
+function fromMat3(out, m) {
   // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
   // article "Quaternion Calculus and Fast Animation".
   let fTrace = m[0] + m[4] + m[8];
@@ -5633,7 +5571,7 @@ function quat_fromMat3(out, m) {
  * @returns {quat} out
  * @function
  */
-function quat_fromEuler(out, x, y, z) {
+function fromEuler(out, x, y, z) {
     let halfToRad = 0.5 * Math.PI / 180.0;
     x *= halfToRad;
     y *= halfToRad;
@@ -5752,7 +5690,7 @@ const quat_dot = vec4_dot;
  * @param {quat} out the receiving quaternion
  * @param {quat} a the first operand
  * @param {quat} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  * @function
  */
@@ -5826,7 +5764,7 @@ const quat_equals = vec4_equals;
  * @param {vec3} b the destination vector
  * @returns {quat} out
  */
-const quat_rotationTo = (function() {
+const rotationTo = (function() {
   let tmpvec3 = vec3_create();
   let xUnitVec3 = vec3_fromValues(1,0,0);
   let yUnitVec3 = vec3_fromValues(0,1,0);
@@ -5834,11 +5772,11 @@ const quat_rotationTo = (function() {
   return function(out, a, b) {
     let dot = vec3_dot(a, b);
     if (dot < -0.999999) {
-      vec3_cross(tmpvec3, xUnitVec3, a);
+      cross(tmpvec3, xUnitVec3, a);
       if (vec3_len(tmpvec3) < 0.000001)
-        vec3_cross(tmpvec3, yUnitVec3, a);
-      vec3_normalize(tmpvec3, tmpvec3);
-      quat_setAxisAngle(out, tmpvec3, Math.PI);
+        cross(tmpvec3, yUnitVec3, a);
+      normalize(tmpvec3, tmpvec3);
+      setAxisAngle(out, tmpvec3, Math.PI);
       return out;
     } else if (dot > 0.999999) {
       out[0] = 0;
@@ -5847,7 +5785,7 @@ const quat_rotationTo = (function() {
       out[3] = 1;
       return out;
     } else {
-      vec3_cross(tmpvec3, a, b);
+      cross(tmpvec3, a, b);
       out[0] = tmpvec3[0];
       out[1] = tmpvec3[1];
       out[2] = tmpvec3[2];
@@ -5865,17 +5803,17 @@ const quat_rotationTo = (function() {
  * @param {quat} b the second operand
  * @param {quat} c the third operand
  * @param {quat} d the fourth operand
- * @param {Number} t interpolation amount
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  */
-const quat_sqlerp = (function () {
+const sqlerp = (function () {
   let temp1 = quat_create();
   let temp2 = quat_create();
 
   return function (out, a, b, c, d, t) {
-    quat_slerp(temp1, a, d, t);
-    quat_slerp(temp2, b, c, t);
-    quat_slerp(out, temp1, temp2, 2 * t * (1 - t));
+    slerp(temp1, a, d, t);
+    slerp(temp2, b, c, t);
+    slerp(out, temp1, temp2, 2 * t * (1 - t));
 
     return out;
   };
@@ -5891,7 +5829,7 @@ const quat_sqlerp = (function () {
  * @param {vec3} up    the vector representing the local "up" direction
  * @returns {quat} out
  */
-const quat_setAxes = (function() {
+const setAxes = (function() {
   let matr = mat3_create();
 
   return function(out, view, right, up) {
@@ -5907,31 +5845,851 @@ const quat_setAxes = (function() {
     matr[5] = -view[1];
     matr[8] = -view[2];
 
-    return quat_normalize(out, quat_fromMat3(out, matr));
+    return quat_normalize(out, fromMat3(out, matr));
   };
 })();
 
+// CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/quat2.js
+
+
+
+
+/**
+ * Dual Quaternion<br>
+ * Format: [real, dual]<br>
+ * Quaternion format: XYZW<br>
+ * Make sure to have normalized dual quaternions, otherwise the functions may not work as intended.<br>
+ * @module quat2
+ */
+
+
+/**
+ * Creates a new identity dual quat
+ *
+ * @returns {quat2} a new dual quaternion [real -> rotation, dual -> translation]
+ */
+function quat2_create() {
+  let dq = new ARRAY_TYPE(8);
+  dq[0] = 0;
+  dq[1] = 0;
+  dq[2] = 0;
+  dq[3] = 1;
+  dq[4] = 0;
+  dq[5] = 0;
+  dq[6] = 0;
+  dq[7] = 0;
+  return dq;
+}
+
+/**
+ * Creates a new quat initialized with values from an existing quaternion
+ *
+ * @param {quat2} a dual quaternion to clone
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function quat2_clone(a) {
+  let dq = new ARRAY_TYPE(8);
+  dq[0] = a[0];
+  dq[1] = a[1];
+  dq[2] = a[2];
+  dq[3] = a[3];
+  dq[4] = a[4];
+  dq[5] = a[5];
+  dq[6] = a[6];
+  dq[7] = a[7];
+  return dq;
+}
+
+/**
+ * Creates a new dual quat initialized with the given values
+ *
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component
+ * @param {Number} y2 Y component
+ * @param {Number} z2 Z component
+ * @param {Number} w2 W component
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function quat2_fromValues(x1, y1, z1, w1, x2, y2, z2, w2) {
+  let dq = new ARRAY_TYPE(8);
+  dq[0] = x1;
+  dq[1] = y1;
+  dq[2] = z1;
+  dq[3] = w1;
+  dq[4] = x2;
+  dq[5] = y2;
+  dq[6] = z2;
+  dq[7] = w2;
+  return dq;
+}
+
+/**
+ * Creates a new dual quat from the given values (quat and translation)
+ *
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component (translation)
+ * @param {Number} y2 Y component (translation)
+ * @param {Number} z2 Z component (translation)
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function fromRotationTranslationValues(x1, y1, z1, w1, x2, y2, z2) {
+  let dq = new ARRAY_TYPE(8);
+  dq[0] = x1;
+  dq[1] = y1;
+  dq[2] = z1;
+  dq[3] = w1;
+  let ax = x2 * 0.5,
+    ay = y2 * 0.5,
+    az = z2 * 0.5;
+  dq[4] = ax * w1 + ay * z1 - az * y1;
+  dq[5] = ay * w1 + az * x1 - ax * z1;
+  dq[6] = az * w1 + ax * y1 - ay * x1;
+  dq[7] = -ax * x1 - ay * y1 - az * z1;
+  return dq;
+}
+
+/**
+ * Creates a dual quat from a quaternion and a translation
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {quat} q quaternion
+ * @param {vec3} t tranlation vector
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function quat2_fromRotationTranslation(out, q, t) {
+  let ax = t[0] * 0.5,
+    ay = t[1] * 0.5,
+    az = t[2] * 0.5,
+    bx = q[0],
+    by = q[1],
+    bz = q[2],
+    bw = q[3];
+  out[0] = bx;
+  out[1] = by;
+  out[2] = bz;
+  out[3] = bw;
+  out[4] = ax * bw + ay * bz - az * by;
+  out[5] = ay * bw + az * bx - ax * bz;
+  out[6] = az * bw + ax * by - ay * bx;
+  out[7] = -ax * bx - ay * by - az * bz;
+  return out;
+}
+
+/**
+ * Creates a dual quat from a translation
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {vec3} t translation vector
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function quat2_fromTranslation(out, t) {
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  out[4] = t[0] * 0.5;
+  out[5] = t[1] * 0.5;
+  out[6] = t[2] * 0.5;
+  out[7] = 0;
+  return out;
+}
+
+/**
+ * Creates a dual quat from a quaternion
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {quat} q the quaternion
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function quat2_fromRotation(out, q) {
+  out[0] = q[0];
+  out[1] = q[1];
+  out[2] = q[2];
+  out[3] = q[3];
+  out[4] = 0;
+  out[5] = 0;
+  out[6] = 0;
+  out[7] = 0;
+  return out;
+}
+
+/**
+ * Creates a new dual quat from a matrix (4x4)
+ *
+ * @param {quat2} out the dual quaternion
+ * @param {mat4} a the matrix
+ * @returns {quat2} dual quat receiving operation result
+ * @function
+ */
+function quat2_fromMat4(out, a) {
+  //TODO Optimize this
+  let outer = quat_create();
+  getRotation(outer, a);
+  let t = new ARRAY_TYPE(3);
+  getTranslation(t, a);
+  quat2_fromRotationTranslation(out, outer, t);
+  return out;
+}
+
+/**
+ * Copy the values from one dual quat to another
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the source dual quaternion
+ * @returns {quat2} out
+ * @function
+ */
+function quat2_copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  out[7] = a[7];
+  return out;
+}
+
+/**
+ * Set a dual quat to the identity dual quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @returns {quat2} out
+ */
+function quat2_identity(out) {
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  out[4] = 0;
+  out[5] = 0;
+  out[6] = 0;
+  out[7] = 0;
+  return out;
+}
+
+/**
+ * Set the components of a dual quat to the given values
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component
+ * @param {Number} y2 Y component
+ * @param {Number} z2 Z component
+ * @param {Number} w2 W component
+ * @returns {quat2} out
+ * @function
+ */
+function quat2_set(out, x1, y1, z1, w1, x2, y2, z2, w2) {
+  out[0] = x1;
+  out[1] = y1;
+  out[2] = z1;
+  out[3] = w1;
+
+  out[4] = x2;
+  out[5] = y2;
+  out[6] = z2;
+  out[7] = w2;
+  return out;
+}
+
+/**
+ * Gets the real part of a dual quat
+ * @param  {quat} out real part
+ * @param  {quat2} a Dual Quaternion
+ * @return {quat} real part
+ */
+const getReal = quat_copy;
+
+/**
+ * Gets the dual part of a dual quat
+ * @param  {quat} out dual part
+ * @param  {quat2} a Dual Quaternion
+ * @return {quat} dual part
+ */
+function getDual(out, a) {
+  out[0] = a[4];
+  out[1] = a[5];
+  out[2] = a[6];
+  out[3] = a[7];
+  return out;
+}
+
+/**
+ * Set the real component of a dual quat to the given quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat} q a quaternion representing the real part
+ * @returns {quat2} out
+ * @function
+ */
+const setReal = quat_copy;
+
+/**
+ * Set the dual component of a dual quat to the given quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat} q a quaternion representing the dual part
+ * @returns {quat2} out
+ * @function
+ */
+function setDual(out, q) {
+  out[4] = q[0];
+  out[5] = q[1];
+  out[6] = q[2];
+  out[7] = q[3];
+  return out;
+}
+
+/**
+ * Gets the translation of a normalized dual quat
+ * @param  {vec3} out translation
+ * @param  {quat2} a Dual Quaternion to be decomposed
+ * @return {vec3} translation
+ */
+function quat2_getTranslation(out, a) {
+  let ax = a[4],
+    ay = a[5],
+    az = a[6],
+    aw = a[7],
+    bx = -a[0],
+    by = -a[1],
+    bz = -a[2],
+    bw = a[3];
+  out[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+  out[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+  out[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+  return out;
+}
+
+/**
+ * Translates a dual quat by the given vector
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to translate
+ * @param {vec3} v vector to translate by
+ * @returns {quat2} out
+ */
+function quat2_translate(out, a, v) {
+  let ax1 = a[0],
+    ay1 = a[1],
+    az1 = a[2],
+    aw1 = a[3],
+    bx1 = v[0] * 0.5,
+    by1 = v[1] * 0.5,
+    bz1 = v[2] * 0.5,
+    ax2 = a[4],
+    ay2 = a[5],
+    az2 = a[6],
+    aw2 = a[7];
+  out[0] = ax1;
+  out[1] = ay1;
+  out[2] = az1;
+  out[3] = aw1;
+  out[4] = aw1 * bx1 + ay1 * bz1 - az1 * by1 + ax2;
+  out[5] = aw1 * by1 + az1 * bx1 - ax1 * bz1 + ay2;
+  out[6] = aw1 * bz1 + ax1 * by1 - ay1 * bx1 + az2;
+  out[7] = -ax1 * bx1 - ay1 * by1 - az1 * bz1 + aw2;
+  return out;
+}
+
+/**
+ * Rotates a dual quat around the X axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function quat2_rotateX(out, a, rad) {
+  let bx = -a[0],
+    by = -a[1],
+    bz = -a[2],
+    bw = a[3],
+    ax = a[4],
+    ay = a[5],
+    az = a[6],
+    aw = a[7],
+    ax1 = ax * bw + aw * bx + ay * bz - az * by,
+    ay1 = ay * bw + aw * by + az * bx - ax * bz,
+    az1 = az * bw + aw * bz + ax * by - ay * bx,
+    aw1 = aw * bw - ax * bx - ay * by - az * bz;
+  quat_rotateX(out, a, rad);
+  bx = out[0];
+  by = out[1];
+  bz = out[2];
+  bw = out[3];
+  out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+  out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+  out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+  out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+  return out;
+}
+
+/**
+ * Rotates a dual quat around the Y axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function quat2_rotateY(out, a, rad) {
+  let bx = -a[0],
+    by = -a[1],
+    bz = -a[2],
+    bw = a[3],
+    ax = a[4],
+    ay = a[5],
+    az = a[6],
+    aw = a[7],
+    ax1 = ax * bw + aw * bx + ay * bz - az * by,
+    ay1 = ay * bw + aw * by + az * bx - ax * bz,
+    az1 = az * bw + aw * bz + ax * by - ay * bx,
+    aw1 = aw * bw - ax * bx - ay * by - az * bz;
+  quat_rotateY(out, a, rad);
+  bx = out[0];
+  by = out[1];
+  bz = out[2];
+  bw = out[3];
+  out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+  out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+  out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+  out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+  return out;
+}
+
+/**
+ * Rotates a dual quat around the Z axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function quat2_rotateZ(out, a, rad) {
+  let bx = -a[0],
+    by = -a[1],
+    bz = -a[2],
+    bw = a[3],
+    ax = a[4],
+    ay = a[5],
+    az = a[6],
+    aw = a[7],
+    ax1 = ax * bw + aw * bx + ay * bz - az * by,
+    ay1 = ay * bw + aw * by + az * bx - ax * bz,
+    az1 = az * bw + aw * bz + ax * by - ay * bx,
+    aw1 = aw * bw - ax * bx - ay * by - az * bz;
+  quat_rotateZ(out, a, rad);
+  bx = out[0];
+  by = out[1];
+  bz = out[2];
+  bw = out[3];
+  out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+  out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+  out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+  out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+  return out;
+}
+
+/**
+ * Rotates a dual quat by a given quaternion (a * q)
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {quat} q quaternion to rotate by
+ * @returns {quat2} out
+ */
+function rotateByQuatAppend(out, a, q) {
+  let qx = q[0],
+    qy = q[1],
+    qz = q[2],
+    qw = q[3],
+    ax = a[0],
+    ay = a[1],
+    az = a[2],
+    aw = a[3];
+
+  out[0] = ax * qw + aw * qx + ay * qz - az * qy;
+  out[1] = ay * qw + aw * qy + az * qx - ax * qz;
+  out[2] = az * qw + aw * qz + ax * qy - ay * qx;
+  out[3] = aw * qw - ax * qx - ay * qy - az * qz;
+  ax = a[4];
+  ay = a[5];
+  az = a[6];
+  aw = a[7];
+  out[4] = ax * qw + aw * qx + ay * qz - az * qy;
+  out[5] = ay * qw + aw * qy + az * qx - ax * qz;
+  out[6] = az * qw + aw * qz + ax * qy - ay * qx;
+  out[7] = aw * qw - ax * qx - ay * qy - az * qz;
+  return out;
+}
+
+/**
+ * Rotates a dual quat by a given quaternion (q * a)
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat} q quaternion to rotate by
+ * @param {quat2} a the dual quaternion to rotate
+ * @returns {quat2} out
+ */
+function rotateByQuatPrepend(out, q, a) {
+  let qx = q[0],
+    qy = q[1],
+    qz = q[2],
+    qw = q[3],
+    bx = a[0],
+    by = a[1],
+    bz = a[2],
+    bw = a[3];
+
+  out[0] = qx * bw + qw * bx + qy * bz - qz * by;
+  out[1] = qy * bw + qw * by + qz * bx - qx * bz;
+  out[2] = qz * bw + qw * bz + qx * by - qy * bx;
+  out[3] = qw * bw - qx * bx - qy * by - qz * bz;
+  bx = a[4];
+  by = a[5];
+  bz = a[6];
+  bw = a[7];
+  out[4] = qx * bw + qw * bx + qy * bz - qz * by;
+  out[5] = qy * bw + qw * by + qz * bx - qx * bz;
+  out[6] = qz * bw + qw * bz + qx * by - qy * bx;
+  out[7] = qw * bw - qx * bx - qy * by - qz * bz;
+  return out;
+}
+
+/**
+ * Rotates a dual quat around a given axis. Does the normalisation automatically
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {vec3} axis the axis to rotate around
+ * @param {Number} rad how far the rotation should be
+ * @returns {quat2} out
+ */
+function rotateAroundAxis(out, a, axis, rad) {
+  //Special case for rad = 0
+  if (Math.abs(rad) < EPSILON) {
+    return quat2_copy(out, a);
+  }
+  let axisLength = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+
+  rad = rad * 0.5;
+  let s = Math.sin(rad);
+  let bx = s * axis[0] / axisLength;
+  let by = s * axis[1] / axisLength;
+  let bz = s * axis[2] / axisLength;
+  let bw = Math.cos(rad);
+
+  let ax1 = a[0],
+    ay1 = a[1],
+    az1 = a[2],
+    aw1 = a[3];
+  out[0] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+  out[1] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+  out[2] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+  out[3] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+
+  let ax = a[4],
+    ay = a[5],
+    az = a[6],
+    aw = a[7];
+  out[4] = ax * bw + aw * bx + ay * bz - az * by;
+  out[5] = ay * bw + aw * by + az * bx - ax * bz;
+  out[6] = az * bw + aw * bz + ax * by - ay * bx;
+  out[7] = aw * bw - ax * bx - ay * by - az * bz;
+
+  return out;
+}
+
+/**
+ * Adds two dual quat's
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {quat2} out
+ * @function
+ */
+function quat2_add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  out[4] = a[4] + b[4];
+  out[5] = a[5] + b[5];
+  out[6] = a[6] + b[6];
+  out[7] = a[7] + b[7];
+  return out;
+}
+
+/**
+ * Multiplies two dual quat's
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {quat2} out
+ */
+function quat2_multiply(out, a, b) {
+  let ax0 = a[0],
+    ay0 = a[1],
+    az0 = a[2],
+    aw0 = a[3],
+    bx1 = b[4],
+    by1 = b[5],
+    bz1 = b[6],
+    bw1 = b[7],
+    ax1 = a[4],
+    ay1 = a[5],
+    az1 = a[6],
+    aw1 = a[7],
+    bx0 = b[0],
+    by0 = b[1],
+    bz0 = b[2],
+    bw0 = b[3];
+  out[0] = ax0 * bw0 + aw0 * bx0 + ay0 * bz0 - az0 * by0;
+  out[1] = ay0 * bw0 + aw0 * by0 + az0 * bx0 - ax0 * bz0;
+  out[2] = az0 * bw0 + aw0 * bz0 + ax0 * by0 - ay0 * bx0;
+  out[3] = aw0 * bw0 - ax0 * bx0 - ay0 * by0 - az0 * bz0;
+  out[4] = ax0 * bw1 + aw0 * bx1 + ay0 * bz1 - az0 * by1 + ax1 * bw0 + aw1 * bx0 + ay1 * bz0 - az1 * by0;
+  out[5] = ay0 * bw1 + aw0 * by1 + az0 * bx1 - ax0 * bz1 + ay1 * bw0 + aw1 * by0 + az1 * bx0 - ax1 * bz0;
+  out[6] = az0 * bw1 + aw0 * bz1 + ax0 * by1 - ay0 * bx1 + az1 * bw0 + aw1 * bz0 + ax1 * by0 - ay1 * bx0;
+  out[7] = aw0 * bw1 - ax0 * bx1 - ay0 * by1 - az0 * bz1 + aw1 * bw0 - ax1 * bx0 - ay1 * by0 - az1 * bz0;
+  return out;
+}
+
+/**
+ * Alias for {@link quat2.multiply}
+ * @function
+ */
+const quat2_mul = quat2_multiply;
+
+/**
+ * Scales a dual quat by a scalar number
+ *
+ * @param {quat2} out the receiving dual quat
+ * @param {quat2} a the dual quat to scale
+ * @param {Number} b amount to scale the dual quat by
+ * @returns {quat2} out
+ * @function
+ */
+function quat2_scale(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  out[4] = a[4] * b;
+  out[5] = a[5] * b;
+  out[6] = a[6] * b;
+  out[7] = a[7] * b;
+  return out;
+}
+
+/**
+ * Calculates the dot product of two dual quat's (The dot product of the real parts)
+ *
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {Number} dot product of a and b
+ * @function
+ */
+const quat2_dot = quat_dot;
+
+/**
+ * Performs a linear interpolation between two dual quats's
+ * NOTE: The resulting dual quaternions won't always be normalized (The error is most noticeable when t = 0.5)
+ *
+ * @param {quat2} out the receiving dual quat
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {quat2} out
+ */
+function quat2_lerp(out, a, b, t) {
+  let mt = 1 - t;
+  if (quat2_dot(a, b) < 0) t = -t;
+
+  out[0] = a[0] * mt + b[0] * t;
+  out[1] = a[1] * mt + b[1] * t;
+  out[2] = a[2] * mt + b[2] * t;
+  out[3] = a[3] * mt + b[3] * t;
+  out[4] = a[4] * mt + b[4] * t;
+  out[5] = a[5] * mt + b[5] * t;
+  out[6] = a[6] * mt + b[6] * t;
+  out[7] = a[7] * mt + b[7] * t;
+
+  return out;
+}
+
+/**
+ * Calculates the inverse of a dual quat. If they are normalized, conjugate is cheaper
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a dual quat to calculate inverse of
+ * @returns {quat2} out
+ */
+function quat2_invert(out, a) {
+  let sqlen = quat2_squaredLength(a);
+  out[0] = -a[0] / sqlen;
+  out[1] = -a[1] / sqlen;
+  out[2] = -a[2] / sqlen;
+  out[3] = a[3] / sqlen;
+  out[4] = -a[4] / sqlen;
+  out[5] = -a[5] / sqlen;
+  out[6] = -a[6] / sqlen;
+  out[7] = a[7] / sqlen;
+  return out;
+}
+
+/**
+ * Calculates the conjugate of a dual quat
+ * If the dual quaternion is normalized, this function is faster than quat2.inverse and produces the same result.
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat2} a quat to calculate conjugate of
+ * @returns {quat2} out
+ */
+function quat2_conjugate(out, a) {
+  out[0] = -a[0];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  out[3] = a[3];
+  out[4] = -a[4];
+  out[5] = -a[5];
+  out[6] = -a[6];
+  out[7] = a[7];
+  return out;
+}
+
+/**
+ * Calculates the length of a dual quat
+ *
+ * @param {quat2} a dual quat to calculate length of
+ * @returns {Number} length of a
+ * @function
+ */
+const quat2_length = quat_length;
+
+/**
+ * Alias for {@link quat2.length}
+ * @function
+ */
+const quat2_len = quat2_length;
+
+/**
+ * Calculates the squared length of a dual quat
+ *
+ * @param {quat2} a dual quat to calculate squared length of
+ * @returns {Number} squared length of a
+ * @function
+ */
+const quat2_squaredLength = quat_squaredLength;
+
+/**
+ * Alias for {@link quat2.squaredLength}
+ * @function
+ */
+const quat2_sqrLen = quat2_squaredLength;
+
+/**
+ * Normalize a dual quat
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a dual quaternion to normalize
+ * @returns {quat2} out
+ * @function
+ */
+function quat2_normalize(out, a) {
+  let magnitude = quat2_squaredLength(a);
+  if (magnitude > 0) {
+    magnitude = Math.sqrt(magnitude);
+    out[0] = a[0] / magnitude;
+    out[1] = a[1] / magnitude;
+    out[2] = a[2] / magnitude;
+    out[3] = a[3] / magnitude;
+    out[4] = a[4] / magnitude;
+    out[5] = a[5] / magnitude;
+    out[6] = a[6] / magnitude;
+    out[7] = a[7] / magnitude;
+  }
+  return out;
+}
+
+/**
+ * Returns a string representation of a dual quatenion
+ *
+ * @param {quat2} a dual quaternion to represent as a string
+ * @returns {String} string representation of the dual quat
+ */
+function quat2_str(a) {
+  return 'quat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' +
+    a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ')';
+}
+
+/**
+ * Returns whether or not the dual quaternions have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {quat2} a the first dual quaternion.
+ * @param {quat2} b the second dual quaternion.
+ * @returns {Boolean} true if the dual quaternions are equal, false otherwise.
+ */
+function quat2_exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] &&
+    a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7];
+}
+
+/**
+ * Returns whether or not the dual quaternions have approximately the same elements in the same position.
+ *
+ * @param {quat2} a the first dual quat.
+ * @param {quat2} b the second dual quat.
+ * @returns {Boolean} true if the dual quats are equal, false otherwise.
+ */
+function quat2_equals(a, b) {
+  let a0 = a[0],
+    a1 = a[1],
+    a2 = a[2],
+    a3 = a[3],
+    a4 = a[4],
+    a5 = a[5],
+    a6 = a[6],
+    a7 = a[7];
+  let b0 = b[0],
+    b1 = b[1],
+    b2 = b[2],
+    b3 = b[3],
+    b4 = b[4],
+    b5 = b[5],
+    b6 = b[6],
+    b7 = b[7];
+  return (Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+    Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+    Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+    Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+    Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+    Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+    Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+    Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)));
+}
+
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/vec2.js
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-
 
 
 /**
@@ -6045,7 +6803,7 @@ function vec2_multiply(out, a, b) {
   out[0] = a[0] * b[0];
   out[1] = a[1] * b[1];
   return out;
-};
+}
 
 /**
  * Divides two vec2's
@@ -6059,7 +6817,7 @@ function vec2_divide(out, a, b) {
   out[0] = a[0] / b[0];
   out[1] = a[1] / b[1];
   return out;
-};
+}
 
 /**
  * Math.ceil the components of a vec2
@@ -6072,7 +6830,7 @@ function vec2_ceil(out, a) {
   out[0] = Math.ceil(a[0]);
   out[1] = Math.ceil(a[1]);
   return out;
-};
+}
 
 /**
  * Math.floor the components of a vec2
@@ -6085,7 +6843,7 @@ function vec2_floor(out, a) {
   out[0] = Math.floor(a[0]);
   out[1] = Math.floor(a[1]);
   return out;
-};
+}
 
 /**
  * Returns the minimum of two vec2's
@@ -6099,7 +6857,7 @@ function vec2_min(out, a, b) {
   out[0] = Math.min(a[0], b[0]);
   out[1] = Math.min(a[1], b[1]);
   return out;
-};
+}
 
 /**
  * Returns the maximum of two vec2's
@@ -6113,7 +6871,7 @@ function vec2_max(out, a, b) {
   out[0] = Math.max(a[0], b[0]);
   out[1] = Math.max(a[1], b[1]);
   return out;
-};
+}
 
 /**
  * Math.round the components of a vec2
@@ -6126,7 +6884,7 @@ function vec2_round (out, a) {
   out[0] = Math.round(a[0]);
   out[1] = Math.round(a[1]);
   return out;
-};
+}
 
 /**
  * Scales a vec2 by a scalar number
@@ -6140,7 +6898,7 @@ function vec2_scale(out, a, b) {
   out[0] = a[0] * b;
   out[1] = a[1] * b;
   return out;
-};
+}
 
 /**
  * Adds two vec2's after scaling the second operand by a scalar value
@@ -6155,7 +6913,7 @@ function vec2_scaleAndAdd(out, a, b, scale) {
   out[0] = a[0] + (b[0] * scale);
   out[1] = a[1] + (b[1] * scale);
   return out;
-};
+}
 
 /**
  * Calculates the euclidian distance between two vec2's
@@ -6168,7 +6926,7 @@ function vec2_distance(a, b) {
   var x = b[0] - a[0],
     y = b[1] - a[1];
   return Math.sqrt(x*x + y*y);
-};
+}
 
 /**
  * Calculates the squared euclidian distance between two vec2's
@@ -6181,7 +6939,7 @@ function vec2_squaredDistance(a, b) {
   var x = b[0] - a[0],
     y = b[1] - a[1];
   return x*x + y*y;
-};
+}
 
 /**
  * Calculates the length of a vec2
@@ -6193,7 +6951,7 @@ function vec2_length(a) {
   var x = a[0],
     y = a[1];
   return Math.sqrt(x*x + y*y);
-};
+}
 
 /**
  * Calculates the squared length of a vec2
@@ -6205,7 +6963,7 @@ function vec2_squaredLength (a) {
   var x = a[0],
     y = a[1];
   return x*x + y*y;
-};
+}
 
 /**
  * Negates the components of a vec2
@@ -6218,7 +6976,7 @@ function vec2_negate(out, a) {
   out[0] = -a[0];
   out[1] = -a[1];
   return out;
-};
+}
 
 /**
  * Returns the inverse of the components of a vec2
@@ -6231,7 +6989,7 @@ function vec2_inverse(out, a) {
   out[0] = 1.0 / a[0];
   out[1] = 1.0 / a[1];
   return out;
-};
+}
 
 /**
  * Normalize a vec2
@@ -6251,7 +7009,7 @@ function vec2_normalize(out, a) {
     out[1] = a[1] * len;
   }
   return out;
-};
+}
 
 /**
  * Calculates the dot product of two vec2's
@@ -6262,7 +7020,7 @@ function vec2_normalize(out, a) {
  */
 function vec2_dot(a, b) {
   return a[0] * b[0] + a[1] * b[1];
-};
+}
 
 /**
  * Computes the cross product of two vec2's
@@ -6278,7 +7036,7 @@ function vec2_cross(out, a, b) {
   out[0] = out[1] = 0;
   out[2] = z;
   return out;
-};
+}
 
 /**
  * Performs a linear interpolation between two vec2's
@@ -6286,7 +7044,7 @@ function vec2_cross(out, a, b) {
  * @param {vec2} out the receiving vector
  * @param {vec2} a the first operand
  * @param {vec2} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec2} out
  */
 function vec2_lerp(out, a, b, t) {
@@ -6295,7 +7053,7 @@ function vec2_lerp(out, a, b, t) {
   out[0] = ax + t * (b[0] - ax);
   out[1] = ay + t * (b[1] - ay);
   return out;
-};
+}
 
 /**
  * Generates a random vector with the given scale
@@ -6310,7 +7068,7 @@ function vec2_random(out, scale) {
   out[0] = Math.cos(r) * scale;
   out[1] = Math.sin(r) * scale;
   return out;
-};
+}
 
 /**
  * Transforms the vec2 with a mat2
@@ -6320,13 +7078,13 @@ function vec2_random(out, scale) {
  * @param {mat2} m matrix to transform with
  * @returns {vec2} out
  */
-function vec2_transformMat2(out, a, m) {
+function transformMat2(out, a, m) {
   var x = a[0],
     y = a[1];
   out[0] = m[0] * x + m[2] * y;
   out[1] = m[1] * x + m[3] * y;
   return out;
-};
+}
 
 /**
  * Transforms the vec2 with a mat2d
@@ -6336,13 +7094,13 @@ function vec2_transformMat2(out, a, m) {
  * @param {mat2d} m matrix to transform with
  * @returns {vec2} out
  */
-function vec2_transformMat2d(out, a, m) {
+function transformMat2d(out, a, m) {
   var x = a[0],
     y = a[1];
   out[0] = m[0] * x + m[2] * y + m[4];
   out[1] = m[1] * x + m[3] * y + m[5];
   return out;
-};
+}
 
 /**
  * Transforms the vec2 with a mat3
@@ -6359,7 +7117,7 @@ function vec2_transformMat3(out, a, m) {
   out[0] = m[0] * x + m[3] * y + m[6];
   out[1] = m[1] * x + m[4] * y + m[7];
   return out;
-};
+}
 
 /**
  * Transforms the vec2 with a mat4
@@ -6377,6 +7135,65 @@ function vec2_transformMat4(out, a, m) {
   out[0] = m[0] * x + m[4] * y + m[12];
   out[1] = m[1] * x + m[5] * y + m[13];
   return out;
+}
+
+/**
+ * Rotate a 2D vector
+ * @param {vec2} out The receiving vec2
+ * @param {vec2} a The vec2 point to rotate
+ * @param {vec2} b The origin of the rotation
+ * @param {Number} c The angle of rotation
+ * @returns {vec2} out
+ */
+function vec2_rotate(out, a, b, c) {
+  //Translate point to the origin
+  let p0 = a[0] - b[0],
+  p1 = a[1] - b[1],
+  sinC = Math.sin(c),
+  cosC = Math.cos(c);
+  
+  //perform rotation and translate to correct position
+  out[0] = p0*cosC - p1*sinC + b[0];
+  out[1] = p0*sinC + p1*cosC + b[1];
+
+  return out;
+}
+
+/**
+ * Get the angle between two 2D vectors
+ * @param {vec2} a The first operand
+ * @param {vec2} b The second operand
+ * @returns {Number} The angle in radians
+ */
+function vec2_angle(a, b) {
+  let x1 = a[0],
+    y1 = a[1],
+    x2 = b[0],
+    y2 = b[1];
+  
+  let len1 = x1*x1 + y1*y1;
+  if (len1 > 0) {
+    //TODO: evaluate use of glm_invsqrt here?
+    len1 = 1 / Math.sqrt(len1);
+  }
+  
+  let len2 = x2*x2 + y2*y2;
+  if (len2 > 0) {
+    //TODO: evaluate use of glm_invsqrt here?
+    len2 = 1 / Math.sqrt(len2);
+  }
+  
+  let cosine = (x1 * x2 + y1 * y2) * len1 * len2;
+  
+  
+  if(cosine > 1.0) {
+    return 0;
+  }
+  else if(cosine < -1.0) {
+    return Math.PI;
+  } else {
+    return Math.acos(cosine);
+  }
 }
 
 /**
@@ -6498,33 +7315,7 @@ const vec2_forEach = (function() {
 })();
 
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix.js
-/**
- * @fileoverview gl-matrix - High performance matrix and vector operations
- * @author Brandon Jones
- * @author Colin MacKenzie IV
- * @version 2.4.0
- */
 
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-// END HEADER
 
 
 
@@ -6757,7 +7548,7 @@ class AttributePointer{
 
 
 
-class vertex_Vertex{
+class Vertex{
     constructor(vertex, normal, uv){
         this.position = vertex || [0.0, 0.0, 0.0];
         this.normal = normal || [0.0, 1.0, 0.0];
@@ -6771,15 +7562,15 @@ class vertex_Vertex{
     }
 }
 
-let vertex_attributes = [
+let attributes = [
     {name: "a_position", elements: 3 },
     {name: "a_normal", elements: 3 },
     {name: "a_texCoords", elements: 2 }
 ]
 
-let vertex_bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+let bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
 
-function vertex_calculateElements(attribs){
+function calculateElements(attribs){
     let result = 0;
     for(let attrib of attribs) {
         result += attrib.elements;
@@ -6787,15 +7578,15 @@ function vertex_calculateElements(attribs){
     return result;
 }
 
-function vertex_toBytes(value){
-    return value * vertex_bytesPerElement;
+function toBytes(value){
+    return value * bytesPerElement;
 }
 
-let vertex_elementsPerVertex = vertex_calculateElements(vertex_attributes);
+let elementsPerVertex = calculateElements(attributes);
 
-function vertex_createLayout(attribs) {
+function createLayout(attribs) {
     let result = [];
-    let stride = vertex_toBytes(vertex_elementsPerVertex);
+    let stride = toBytes(elementsPerVertex);
     let offset = 0;
     for(let i = 0; i < attribs.length ; i++) {
         let attrib = attribs[i];
@@ -6804,13 +7595,13 @@ function vertex_createLayout(attribs) {
             name: attrib.name,
             attribute: new AttributePointer(location, attrib.elements, gl.FLOAT, false, stride, offset)
         });
-        offset += vertex_toBytes(attrib.elements);
+        offset += toBytes(attrib.elements);
     }
     return result;
 }
 
 
-let vertex_VERTEX_LAYOUT = vertex_createLayout(vertex_attributes);
+let VERTEX_LAYOUT = createLayout(attributes);
 // CONCATENATED MODULE: ./src/Render/shader.js
 
 
@@ -6828,7 +7619,7 @@ class shader_Shader{
         this.program = undefined;
 
         this.attributeNames = [];
-        for(let attr of vertex_VERTEX_LAYOUT) {
+        for(let attr of VERTEX_LAYOUT) {
             this.attributeNames.push( attr.name );
         }
 
@@ -7062,8 +7853,8 @@ class shader_Shader{
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
 
-        for(let i = 0; i < vertex_VERTEX_LAYOUT.length; i++){
-            gl.bindAttribLocation(program, i, vertex_VERTEX_LAYOUT[i].name );
+        for(let i = 0; i < VERTEX_LAYOUT.length; i++){
+            gl.bindAttribLocation(program, i, VERTEX_LAYOUT[i].name );
         }
 
         gl.linkProgram(program);
@@ -7128,7 +7919,7 @@ class vertexArray_VertexArray{
     }
 
     push(vertex) {
-        if(vertex instanceof vertex_Vertex){
+        if(vertex instanceof Vertex){
             this.vertices.push(vertex);
         }
     }
@@ -7220,32 +8011,32 @@ class mesh_Mesh{
 
 
 
-let geometry_Geometry = {
+let Geometry = {
     Triangle: function(size){
         const halfS = size * 0.5 || 0.5;
         let vertices = [
             //position                          normal              color
-            new vertex_Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0]),
-            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]),
-            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0])
+            new Vertex([0.0, halfS, 0.0],       [0.0, 0.0, 1.0]),
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0]),
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0])
         ];
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray);
     },
     Quad: function(size){
         const halfS = size * 0.5 || 0.5
         let vertices = [
             //position                           normal             uv
-            new vertex_Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0], [1.0, 1.0]), // top right
-            new vertex_Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0], [1.0, 0.0]), // bottom right
-            new vertex_Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0], [0.0, 0.0]), // bottom left
-            new vertex_Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0], [0.0, 1.0]) // top left
+            new Vertex([halfS, halfS, 0.0],     [0.0, 0.0, 1.0], [1.0, 1.0]), // top right
+            new Vertex([halfS, -halfS, 0.0],    [0.0, 0.0, 1.0], [1.0, 0.0]), // bottom right
+            new Vertex([-halfS, -halfS, 0.0],   [0.0, 0.0, 1.0], [0.0, 0.0]), // bottom left
+            new Vertex([-halfS, halfS, 0.0],    [0.0, 0.0, 1.0], [0.0, 1.0]) // top left
         ];
         let indices = [
             0, 3, 1,
             1, 3, 2
         ]
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray, indices);
     },
     Box: function(sizeX, sizeY, sizeZ){
@@ -7254,50 +8045,50 @@ let geometry_Geometry = {
         const halfZ = sizeZ * 0.5 || 0.5;
 
         let vertices = [
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  0.0]), 
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]), 
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  1.0]), 
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]), 
+           new Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]),
+           new Vertex([ halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  0.0]), 
+           new Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]),
+           new Vertex([ halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [1.0,  1.0]), 
+           new Vertex([-halfX,  halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  1.0]), 
+           new Vertex([-halfX, -halfY, -halfZ], [0.0,  0.0, -1.0], [0.0,  0.0]), 
        
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  1.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
+           new Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
+           new Vertex([ halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  0.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [1.0,  1.0]),
+           new Vertex([-halfX,  halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  1.0]),
+           new Vertex([-halfX, -halfY,  halfZ], [0.0,  0.0, 1.0], [0.0,  0.0]),
        
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0], [1.0,  1.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0], [0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
+           new Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
+           new Vertex([-halfX,  halfY, -halfZ], [-1.0,  0.0,  0.0], [1.0,  1.0]),
+           new Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
+           new Vertex([-halfX, -halfY, -halfZ], [-1.0,  0.0,  0.0], [0.0,  1.0]),
+           new Vertex([-halfX, -halfY,  halfZ], [-1.0,  0.0,  0.0], [0.0,  0.0]),
+           new Vertex([-halfX,  halfY,  halfZ], [-1.0,  0.0,  0.0], [1.0,  0.0]),
        
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0], [1.0,  1.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0], [0.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
+           new Vertex([ halfX,  halfY, -halfZ], [ 1.0,  0.0,  0.0], [1.0,  1.0]),
+           new Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
+           new Vertex([ halfX, -halfY, -halfZ], [ 1.0,  0.0,  0.0], [0.0,  1.0]),
+           new Vertex([ halfX, -halfY,  halfZ], [ 1.0,  0.0,  0.0], [0.0,  0.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [ 1.0,  0.0,  0.0], [1.0,  0.0]),
        
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [1.0,  1.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [0.0,  0.0]),
-           new vertex_Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
+           new Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
+           new Vertex([ halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [1.0,  1.0]),
+           new Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
+           new Vertex([ halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [1.0,  0.0]),
+           new Vertex([-halfX, -halfY,  halfZ], [ 0.0, -1.0,  0.0], [0.0,  0.0]),
+           new Vertex([-halfX, -halfY, -halfZ], [ 0.0, -1.0,  0.0], [0.0,  1.0]),
        
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0]),
-           new vertex_Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [1.0,  1.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [0.0,  0.0]),
-           new vertex_Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0])
+           new Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0]),
+           new Vertex([ halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [1.0,  1.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
+           new Vertex([ halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [1.0,  0.0]),
+           new Vertex([-halfX,  halfY,  halfZ], [ 0.0,  1.0,  0.0], [0.0,  0.0]),
+           new Vertex([-halfX,  halfY, -halfZ], [ 0.0,  1.0,  0.0], [0.0,  1.0])
         ];
 
-        let vertexArray = new vertexArray_VertexArray(vertices, vertex_VERTEX_LAYOUT);
+        let vertexArray = new vertexArray_VertexArray(vertices, VERTEX_LAYOUT);
         return new mesh_Mesh(vertexArray);
     }
     
@@ -7353,14 +8144,14 @@ class resourceManager_ResourceManager{
 }
 
 
-let resourceManager_RM = new resourceManager_ResourceManager();
+let RM = new resourceManager_ResourceManager();
 // CONCATENATED MODULE: ./src/Render/Materials/baseMaterial.js
 //import { Shader } from './shader'
 
 
 
 
-let baseMaterial_MaterialTag = {
+let MaterialTag = {
     'none': 0,
     'unlit': 1,
     'lit': 2,
@@ -7368,7 +8159,7 @@ let baseMaterial_MaterialTag = {
     'postprocess': 4,
 }
 
-Object.freeze(baseMaterial_MaterialTag);
+Object.freeze(MaterialTag);
 
 class baseMaterial_BaseMaterial {
     constructor(shader, vargs) {
@@ -7377,7 +8168,7 @@ class baseMaterial_BaseMaterial {
         this.drawMode = args['drawMode'] || gl.TRIANGLES;
         this.culling = args['culling'] || { enable: false, mode: gl.BACK };
         this.depthTest = args['depthTest'] || true;
-        this.tag = args['tag'] || baseMaterial_MaterialTag.none;
+        this.tag = args['tag'] || MaterialTag.none;
         this.uniformType = gl.FLOAT;
 
         this.mModel;
@@ -7402,8 +8193,8 @@ class baseMaterial_BaseMaterial {
         this.mModel = mModel;
         this.mView = mView;
         this.mPerspective = mPerspective;
-        if(this.tag == baseMaterial_MaterialTag.lit ||
-            this.tag == baseMaterial_MaterialTag.translucent) {
+        if(this.tag == MaterialTag.lit ||
+            this.tag == MaterialTag.translucent) {
             if(!this.mNormal) this.mNormal = mat4_namespaceObject.create();
             lux.mat4.invert(this.mNormal, mModel);
             lux.mat4.transpose(this.mNormal, this.mNormal);
@@ -7412,8 +8203,8 @@ class baseMaterial_BaseMaterial {
 
     update(){ 
         this.shader.setMatrixUniforms(this.mModel, this.mView, this.mPerspective);
-        if(this.tag == baseMaterial_MaterialTag.lit ||
-            this.tag == baseMaterial_MaterialTag.translucent) {
+        if(this.tag == MaterialTag.lit ||
+            this.tag == MaterialTag.translucent) {
             if(!this.mNormal) this.mNormal = mat4_namespaceObject.create();
             this.shader.setMatrix('u_mNormal', this.mNormal);
         }
@@ -7421,7 +8212,7 @@ class baseMaterial_BaseMaterial {
 
     use(){
         if(!this.shader.binded){
-            resourceManager_RM.bindShader(this.shader);
+            RM.bindShader(this.shader);
             this.setup();
         }
         this.update();
@@ -7443,16 +8234,16 @@ class renderGroups_RenderGroups {
         if( !meshRenderer instanceof meshRenderer_MeshRenderer) return;
 
         switch (meshRenderer.material.tag) {
-            case baseMaterial_MaterialTag.none :
+            case MaterialTag.none :
                 this.unlit.push(meshRenderer);
                 break;
-            case baseMaterial_MaterialTag.unlit:
+            case MaterialTag.unlit:
                 this.unlit.push(meshRenderer);
                 break;
-            case baseMaterial_MaterialTag.lit:
+            case MaterialTag.lit:
                 this.lit.push(meshRenderer);
                 break;
-            case baseMaterial_MaterialTag.translucent:
+            case MaterialTag.translucent:
                 this.translucent.push(meshRenderer);
                 break;
             default:
@@ -7502,8 +8293,10 @@ class forwardRenderer_ForwardRenderer {
             this._renderUnlit(mr, camera);
         }
 
-        for (let mr of this.renderGroups.lit) {
-            this._renderLit(mr, camera);
+        for(let light of scene.lights) {
+            for (let mr of this.renderGroups.lit) {
+                this._renderLit(mr, camera, light);
+            }
         }
 
         for (let mr of this.renderGroups.translucent) {
@@ -7547,9 +8340,10 @@ class forwardRenderer_ForwardRenderer {
         }
     }
 
-    _renderLit(mr, camera) {
+    _renderLit(mr, camera, light) {
         if (mr.gameObject.active) {
             mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+            mr.material.light = light;
             this._useMaterial(mr.material);
             mr.render();
         }
@@ -7570,13 +8364,13 @@ class forwardRenderer_ForwardRenderer {
 
 
 
-
-
 class gameObject_GameObject{
     constructor(parent){
         this.parent = parent || undefined;
+        this.scene = undefined;
         this.transform = new transform_Transform();
         if (this.parent) {
+            this.scene = this.parent.scene;
             this.transform.setParent(this.parent.transform);
         }
 
@@ -7585,6 +8379,8 @@ class gameObject_GameObject{
 
         this.input = undefined;
         this.active = true;
+        this.tag = 'gameobject';
+        this.name = 'gameobject';
     }
 
     awake() {
@@ -7635,6 +8431,39 @@ class gameObject_GameObject{
         this.transform.parent = parent.transform;
     }
 
+    findObjectWithName(name) {
+        let result = undefined;
+        if( this.name == name ) result = this;
+        else {
+            for(let child of this.children) {
+                if( child.name == name ){
+                    result = child;
+                    break;
+                }
+                else{
+                    result = child.findObjectWithName(name);
+                    if( result ) break;
+                }
+            }
+        }
+        return result;
+    }
+
+    findObjectsWithTag(tag) {
+        let result = [];
+        if( this.tag == tag ) result.push(this);
+        
+        for(let child of this.children) {
+            if( child.tag == tag ) 
+                result.push(child);
+            
+            let objects = child.findObjectsWithTag(tag);
+            result = result.concat(objects);
+        }
+        
+        return result;
+    }
+
     getComponent(type) {
         for (let c of this.components) {
             if (c instanceof type) return c;
@@ -7677,7 +8506,10 @@ class gameObject_GameObject{
 
     clone() {
         let cloned = new gameObject_GameObject();
-        cloned.parent = this.parent;
+        if(this.parent){
+            cloned.parent = this.parent;
+            cloned.scene = this.scene;
+        }
         cloned.transform.position = vec3_namespaceObject.clone(this.transform.position);
         cloned.transform.rotation = quat_namespaceObject.clone(this.transform.rotation);
         cloned.transform.scale = vec3_namespaceObject.clone(this.transform.scale);
@@ -7761,14 +8593,41 @@ class scene_Scene {
 
     add(object) {
         if ( object instanceof gameObject_GameObject) { 
-            this.gameObjects.push(object);
-            if(this.isPlaying){
-                object.awake();
-                object.start();
+            if(!object.scene){
+                object.scene = scene;
+                this.gameObjects.push(object);
+                if(this.isPlaying){
+                    object.awake();
+                    object.start();
+                }
+            }
+            else {
+                console.warn("Scene: Can't add gameobjec to scene, it is already in this scene");
             }
         }
         else if ( object instanceof PointLight) this.lights.push(object);
         else if ( object instanceof camera_Camera)     this.cameras.push(object);
+    }
+
+    findObjectWithName(name) {
+        let result = undefined;
+        for(let go of this.gameObjects) {
+            result = go.findObjectWithName(name);
+            if(result)
+                break;
+        }
+        return result;
+    }
+
+    findObjectsWithTag(tag) {
+        let result = [];
+
+        for(let go of this.gameObjects) {
+            let objects = go.findObjectsWithTag(tag);
+            result = result.concat(objects);
+        }
+        
+        return result;
     }
 
 }
@@ -7883,8 +8742,8 @@ class core_Core {
 	}
 }
 
-let core_luxCore = new core_Core();
-let core_physicsSimulation = core_luxCore.physicsSimulation;
+let luxCore = new core_Core();
+let physicsSimulation = luxCore.physicsSimulation;
 // CONCATENATED MODULE: ./src/Physics/Components/rigidbody.js
 
 
@@ -7896,6 +8755,16 @@ class rigidbody_Rigidbody extends PhysicsComponent{
         this.gravityMultiplier = 1.0;
         this.velocity = vec3_namespaceObject.create();
         this.aceleration = vec3_namespaceObject.create();
+    }
+
+    clone() {
+        let cloned = new this.constructor();
+        cloned = Object.assign(cloned, this);
+        cloned.gameObject = undefined;
+        cloned.transform = undefined;
+        cloned.velocity = vec3_namespaceObject.create();
+        cloned.aceleration = vec3_namespaceObject.create();
+        return cloned;
     }
 
     awake() {
@@ -7914,6 +8783,7 @@ class rigidbody_Rigidbody extends PhysicsComponent{
     }
 
     simulate(time) {
+        
         vec3_namespaceObject.scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.deltaTime);
         vec3_namespaceObject.scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.deltaTime);
         vec3_namespaceObject.set(this.aceleration, 0, 0, 0);
@@ -7941,7 +8811,7 @@ class texture_TextureFormat {
 
 }
 
-let texture_TexturePresets = {
+let TexturePresets = {
     RGB: () => { return new texture_TextureFormat() },
     sRGB: () => { return new texture_TextureFormat() }, // TODO: Make sRGB texture preset
     FB_COLOR: () => { 
@@ -7993,9 +8863,9 @@ let texture_TexturePresets = {
     },
 }
 
-Object.freeze(texture_TexturePresets);
+Object.freeze(TexturePresets);
 
-const texture_TEXTUREUNITMAX = 15;
+const TEXTUREUNITMAX = 15;
 
 class texture_Texture {
     constructor(width, height, textureFormat, data){
@@ -8004,7 +8874,7 @@ class texture_Texture {
         
         this.data = data;
 
-        this.textureFormat = textureFormat || texture_TexturePresets.RGB();
+        this.textureFormat = textureFormat || TexturePresets.RGB();
 
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
@@ -8023,7 +8893,7 @@ class texture_Texture {
     use(textureUnit) {
         let unit = textureUnit || 0;
         if(unit < 0) unit = 0;
-        if(unit > texture_TEXTUREUNITMAX) unit = texture_TEXTUREUNITMAX;
+        if(unit > TEXTUREUNITMAX) unit = TEXTUREUNITMAX;
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
     }
@@ -8036,7 +8906,7 @@ class texture_Texture {
 
 
 
-const framebuffer_COLORATTACHMENTMAX = 15;
+const COLORATTACHMENTMAX = 15;
 
 class framebuffer_Framebuffer{
     constructor(width, height){
@@ -8052,7 +8922,7 @@ class framebuffer_Framebuffer{
             depthStencil: undefined,
         };
 
-        this.colorFormat = texture_TexturePresets.FB_COLOR();
+        this.colorFormat = TexturePresets.FB_COLOR();
 
         this.fbo = gl.createFramebuffer();
     }
@@ -8060,8 +8930,8 @@ class framebuffer_Framebuffer{
     addColor(colorFormat){
         let attachmentOffset = this.textures.color.length;
         let overflow = false;
-        if(attachmentOffset > framebuffer_COLORATTACHMENTMAX) {
-            attachmentOffset = framebuffer_COLORATTACHMENTMAX;
+        if(attachmentOffset > COLORATTACHMENTMAX) {
+            attachmentOffset = COLORATTACHMENTMAX;
             overflow = true;
         }
         
@@ -8083,7 +8953,7 @@ class framebuffer_Framebuffer{
 
     addDepth(){
         this.bind();
-        this.depthFormat = texture_TexturePresets.FB_DEPTH();
+        this.depthFormat = TexturePresets.FB_DEPTH();
         this.textures.depth = new texture_Texture(this.width, this.height, this.depthFormat, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.textures.depth.texture, 0);
         this.bind();
@@ -8139,7 +9009,7 @@ class framebuffer_Framebuffer{
 
 
 
-let basicMaterial_basicShaderSource = {
+let basicShaderSource = {
     vs: 
         `#version 300 es
         in vec3 a_position;
@@ -8176,8 +9046,8 @@ let basicMaterial_basicShaderSource = {
 class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
-        let shader = resourceManager_RM.createShader('basic-shader', basicMaterial_basicShaderSource.vs, basicMaterial_basicShaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.unlit;
+        let shader = RM.createShader('basic-shader', basicShaderSource.vs, basicShaderSource.ps);
         super(shader, args);
 
         this.color = args['color'] || [1.0, 1.0, 1.0];
@@ -8200,7 +9070,7 @@ class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
 
 
 
-let normalMaterial_shaderSource = {
+let shaderSource = {
     vs: 
         `#version 300 es
         in vec3 a_position;
@@ -8237,8 +9107,8 @@ let normalMaterial_shaderSource = {
 class normalMaterial_NormalMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
-        let shader = resourceManager_RM.createShader('normal-shader', normalMaterial_shaderSource.vs, normalMaterial_shaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.unlit;
+        let shader = RM.createShader('normal-shader', shaderSource.vs, shaderSource.ps);
         super(shader, args);
         this.mNormal;
     }
@@ -8289,10 +9159,8 @@ let lambertMaterial_shaderSource = {
 
         struct Light{
             vec3 position;
-
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
+            vec3 color;
+            float intensity;
         };
         
         struct Material{
@@ -8307,23 +9175,27 @@ let lambertMaterial_shaderSource = {
         void main(void) {
 
             // Ambient color
-            vec3 ambient = u_light.ambient * u_material.ambient;
+            vec3 ambient = u_light.intensity * u_light.color * u_material.ambient;
 
             // Light direction
             vec3 norm = normalize(normal);
-            vec3 lightDir = normalize(u_light.position - fragPos);
+            
+            vec3 lightDir = (u_light.position - fragPos);
+            float lightDistance = length(lightDir);
+            lightDir = normalize(lightDir); 
 
             // diffuse color
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+            vec3 diffuse = u_light.intensity * u_light.color * (diff * u_material.diffuse);
+
+            // Attenuation
+            //float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            float attenuation = 1.0 / (lightDistance * lightDistance);
+            ambient *= attenuation;
+            diffuse *= attenuation;
 
             vec3 result = ambient + diffuse;
-
             outputColor = vec4(result, 1.0);
-
-            // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
         }`,
 }
 
@@ -8331,8 +9203,8 @@ let lambertMaterial_shaderSource = {
 class lambertMaterial_LambertMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.lit;
-        let shader = resourceManager_RM.createShader('lambert-shader', lambertMaterial_shaderSource.vs, lambertMaterial_shaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.lit;
+        let shader = RM.createShader('lambert-shader', lambertMaterial_shaderSource.vs, lambertMaterial_shaderSource.ps);
         super(shader, args);
 
         this.light = args['light'];
@@ -8392,9 +9264,7 @@ let phongMaterial_shaderSource = {
 
         struct Light{
             vec3 position;
-            
             vec3 color;
-
             float intensity;
         };
         
@@ -8465,8 +9335,8 @@ let phongMaterial_shaderSource = {
 class phongMaterial_PhongMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.lit;
-        let shader = resourceManager_RM.createShader('phong-shader', phongMaterial_shaderSource.vs, phongMaterial_shaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.lit;
+        let shader = RM.createShader('phong-shader', phongMaterial_shaderSource.vs, phongMaterial_shaderSource.ps);
         super(shader, args);
 
         this.light = args['light'];
@@ -8556,8 +9426,8 @@ let texturedMaterial_shaderSource = {
 class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.unlit;
-        let shader = resourceManager_RM.createShader('textured-shader', texturedMaterial_shaderSource.vs, texturedMaterial_shaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.unlit;
+        let shader = RM.createShader('textured-shader', texturedMaterial_shaderSource.vs, texturedMaterial_shaderSource.ps);
         super(shader, args);
         this.textures = 1;
         this.exposure = 1.0
@@ -8623,8 +9493,8 @@ let hdrMaterial_shaderSource = {
 class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
     constructor(vargs){
         let args = vargs || {};
-        args['tag'] = args['tag'] || baseMaterial_MaterialTag.postprocess;
-        let shader = resourceManager_RM.createShader('hdr-shader', hdrMaterial_shaderSource.vs, hdrMaterial_shaderSource.ps);
+        args['tag'] = args['tag'] || MaterialTag.postprocess;
+        let shader = RM.createShader('hdr-shader', hdrMaterial_shaderSource.vs, hdrMaterial_shaderSource.ps);
         super(shader, args);
         this.exposure = 1.0;
     }
@@ -8640,9 +9510,9 @@ class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
     }
 } 
 // CONCATENATED MODULE: ./src/lux.js
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "luxCore", function() { return core_luxCore; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "physicsSimulation", function() { return core_physicsSimulation; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RM", function() { return resourceManager_RM; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "luxCore", function() { return luxCore; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "physicsSimulation", function() { return physicsSimulation; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RM", function() { return RM; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return gameObject_GameObject; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Component", function() { return Component; });
@@ -8668,18 +9538,18 @@ class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glLoop", function() { return glLoop; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return AttributePointer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return vertex_Vertex; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return vertex_VERTEX_LAYOUT; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return Vertex; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return VERTEX_LAYOUT; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VertexArray", function() { return vertexArray_VertexArray; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mesh", function() { return mesh_Mesh; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return geometry_Geometry; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Geometry", function() { return Geometry; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Texture", function() { return texture_Texture; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TextureFormat", function() { return texture_TextureFormat; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TexturePresets", function() { return texture_TexturePresets; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TexturePresets", function() { return TexturePresets; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Framebuffer", function() { return framebuffer_Framebuffer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return baseMaterial_BaseMaterial; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return baseMaterial_MaterialTag; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return MaterialTag; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BasicMaterial", function() { return basicMaterial_BasicMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return normalMaterial_NormalMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return lambertMaterial_LambertMaterial; });

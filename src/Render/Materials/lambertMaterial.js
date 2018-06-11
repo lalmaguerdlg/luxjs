@@ -31,10 +31,8 @@ let shaderSource = {
 
         struct Light{
             vec3 position;
-
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
+            vec3 color;
+            float intensity;
         };
         
         struct Material{
@@ -49,23 +47,27 @@ let shaderSource = {
         void main(void) {
 
             // Ambient color
-            vec3 ambient = u_light.ambient * u_material.ambient;
+            vec3 ambient = u_light.intensity * u_light.color * u_material.ambient;
 
             // Light direction
             vec3 norm = normalize(normal);
-            vec3 lightDir = normalize(u_light.position - fragPos);
+            
+            vec3 lightDir = (u_light.position - fragPos);
+            float lightDistance = length(lightDir);
+            lightDir = normalize(lightDir); 
 
             // diffuse color
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = u_light.diffuse * (diff * u_material.diffuse);
+            vec3 diffuse = u_light.intensity * u_light.color * (diff * u_material.diffuse);
+
+            // Attenuation
+            //float attenuation = 1.0 / (u_light.constant + u_light.linear * lightDistance + u_light.quadratic * (lightDistance * lightDistance));
+            float attenuation = 1.0 / (lightDistance * lightDistance);
+            ambient *= attenuation;
+            diffuse *= attenuation;
 
             vec3 result = ambient + diffuse;
-
             outputColor = vec4(result, 1.0);
-
-            // Gamma correction
-            float gamma = 2.2;
-            outputColor.rgb = pow(outputColor.rgb, vec3(1.0/gamma));
         }`,
 }
 

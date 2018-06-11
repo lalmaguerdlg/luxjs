@@ -27,8 +27,10 @@ export class ForwardRenderer {
             this._renderUnlit(mr, camera);
         }
 
-        for (let mr of this.renderGroups.lit) {
-            this._renderLit(mr, camera);
+        for(let light of scene.lights) {
+            for (let mr of this.renderGroups.lit) {
+                this._renderLit(mr, camera, light);
+            }
         }
 
         for (let mr of this.renderGroups.translucent) {
@@ -72,9 +74,11 @@ export class ForwardRenderer {
         }
     }
 
-    _renderLit(mr, camera) {
+    _renderLit(mr, camera, light) {
         if (mr.gameObject.active) {
             mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+            mr.material.viewPos = camera.transform.position;
+            mr.material.light = light;
             this._useMaterial(mr.material);
             mr.render();
         }

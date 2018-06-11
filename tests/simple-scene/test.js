@@ -1,11 +1,6 @@
 let gl;
 
 let scene;
-let forwardRenderer;
-
-let cube;
-let cube2;
-let cube3;
 
 function main() {
 
@@ -14,19 +9,19 @@ function main() {
     $('#canvasContainer').append(lux.webgl.domElement);
     gl = lux.gl;
 
-    forwardRenderer = new lux.ForwardRenderer();
     scene = new lux.Scene();
 
-    basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
+    let basicMaterial = new lux.BasicMaterial( { color: [1.0, 0.0, 0.0] });
+
+    let lambertMaterial = new lux.LambertMaterial({
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2]
+    });
 
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
-    let light = new lux.PointLight({
-        position: [0.0, 0.0, 0.0],
-        color: [1.0, 0.0, 0.0],
-    });
-
-    cube = new lux.GameObject();
+    let cube = new lux.GameObject();
+    cube.name = 'cube';
     //cube2 = new lux.GameObject();
     //cube3 = new lux.GameObject();
 
@@ -39,8 +34,12 @@ function main() {
     //cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
     //cube3.attach(new lux.Rigidbody());
 
-    cube2 = cube.clone();
+    let cube2 = cube.clone();
+    cube2.name = 'cube2';
+    cube2.getComponent(lux.MeshRenderer).material = lambertMaterial;
     cube2.transform.position[0] = 2;
+    //cube2.transform.position[1] = 2;
+    //cube2.transform.position[2] = 2;
     //cube3.transform.position[1] = 2;
 
 
@@ -54,6 +53,16 @@ function main() {
     //cube2.transform.setScale([0.5, 0.5, 0.5]);
 
 
+    let light = new lux.PointLight({
+        position: [0.0, 2.0, 0.0],
+        color: [1.0, 1.0, 1.0],
+    });
+
+    let light2 = new lux.PointLight({
+        position: [0.0, 0.0, 2.0],
+        color: [1.0, 1.0, 1.0],
+    });
+
     let camera = new lux.Camera();
 
     lux.mat4.identity(camera.mView);
@@ -66,25 +75,41 @@ function main() {
 
     scene.add(cube);
     scene.add(light);
+    scene.add(light2);
     scene.add(camera);
-    
+
+    cube.getComponent(lux.Rigidbody).applyForce([-5.0, 20.0, 0.0]);
+    cube2.getComponent(lux.Rigidbody).applyForce([5.0, 20.0, 0.0]);
+
     lux.luxCore.useScene(scene);
 
-    lux.physicsSimulation.gravity = lux.vec3.create();
+    //lux.physicsSimulation.gravity = lux.vec3.create();
     lux.luxCore.run();
 
-    //lux.glLoop(render);
+    lux.glLoop(render);
 }
 
 let t = 0;
 
 function render(dt){
     t += dt;
-    lux.vec3.set(cube.transform.position, Math.sin(t), 0, 0);
-    cube.transform.setEuler(0, t * 90, 0);
-    lux.vec3.set(cube2.transform.position, Math.sin(t) + 2, 0, 0);
+
+    let cube = scene.findObjectWithName('cube');
+    let cube2 = scene.findObjectWithName('cube2');
+/*
+    let distance = lux.vec3.create();
+    lux.vec3.sub(distance, cube2.transform.position, cube.transform.position);
+    cube.getComponent(lux.Rigidbody).applyForce(distance);
+
+    lux.vec3.sub(distance, cube.transform.position,cube2.transform.position);
+    cube2.getComponent(lux.Rigidbody).applyForce(distance);
+*/
+
+
+    //lux.vec3.set(cube.transform.position, Math.sin(t), 0, 0);
+    //cube.transform.setEuler(0, t * 90, 0);
+    //lux.vec3.set(cube2.transform.position, Math.sin(t) + 2, 0, 0);
     //cube2.transform.setEuler(0, t * -90, 0);
-    forwardRenderer.render(scene);
 }
 
 
