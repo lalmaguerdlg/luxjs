@@ -2,7 +2,7 @@ import { PhysicsComponent } from "../../Core/component";
 import { vec3 } from "gl-matrix";
 
 
-export class Rigidbody extends PhysicsComponent{
+export class Rigidbody extends PhysicsComponent {
     constructor(){
         super();
         this.gravityMultiplier = 1.0;

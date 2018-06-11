@@ -24,17 +24,23 @@ export class ForwardRenderer {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         for (let mr of this.renderGroups.unlit) {
-            this._renderUnlit(mr, camera);
+            if(mr.gameObject.active && mr.active) {
+                this._renderUnlit(mr, camera);
+            }
         }
 
         for(let light of scene.lights) {
             for (let mr of this.renderGroups.lit) {
-                this._renderLit(mr, camera, light);
+                if(mr.gameObject.active && mr.active) {
+                    this._renderLit(mr, camera, light);
+                }
             }
         }
 
         for (let mr of this.renderGroups.translucent) {
-            this._renderTranslucent(mr, camera);
+            if(mr.gameObject.active && mr.active) {
+                this._renderTranslucent(mr, camera);
+            }
         }
 
     }
@@ -67,29 +73,23 @@ export class ForwardRenderer {
     }
 
     _renderUnlit(mr, camera){
-        if(mr.gameObject.active){
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
     _renderLit(mr, camera, light) {
-        if (mr.gameObject.active) {
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            mr.material.viewPos = camera.transform.position;
-            mr.material.light = light;
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        mr.material.viewPos = camera.transform.position;
+        mr.material.light = light;
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
     _renderTranslucent(mr, camera) {
-        if (mr.gameObject.active) {
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
     

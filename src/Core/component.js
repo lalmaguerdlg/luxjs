@@ -4,7 +4,16 @@ export class Component {
     constructor(){
         this.gameObject = undefined;
         this.transform = undefined;
+        this.active = true;
     }
+    enable() {
+        this.active = true;
+    }
+
+    disable() {
+        this.active = false;
+    }
+
     setOwner(gameObject){
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;

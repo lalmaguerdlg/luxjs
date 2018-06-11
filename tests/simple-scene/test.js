@@ -58,10 +58,10 @@ function main() {
         color: [1.0, 1.0, 1.0],
     });
 
-    let light2 = new lux.PointLight({
+    /*let light2 = new lux.PointLight({
         position: [0.0, 0.0, 2.0],
         color: [1.0, 1.0, 1.0],
-    });
+    });*/
 
     let camera = new lux.Camera();
 
@@ -75,15 +75,15 @@ function main() {
 
     scene.add(cube);
     scene.add(light);
-    scene.add(light2);
+    //scene.add(light2);
     scene.add(camera);
 
-    cube.getComponent(lux.Rigidbody).applyForce([-5.0, 20.0, 0.0]);
-    cube2.getComponent(lux.Rigidbody).applyForce([5.0, 20.0, 0.0]);
+    //cube.getComponent(lux.Rigidbody).applyForce([-5.0, 20.0, 0.0]);
+    //cube2.getComponent(lux.Rigidbody).applyForce([5.0, 20.0, 0.0]);
 
     lux.luxCore.useScene(scene);
 
-    //lux.physicsSimulation.gravity = lux.vec3.create();
+    lux.physicsSimulation.gravity = lux.vec3.create();
     lux.luxCore.run();
 
     lux.glLoop(render);

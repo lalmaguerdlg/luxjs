@@ -39,7 +39,7 @@ class Core {
 		}
 	}
 
-	start() { 
+	coreStart() { 
 		for (let go of this.currentScene.gameObjects) {
 			go.awake();
 			go.start();
@@ -56,8 +56,10 @@ class Core {
 			for (let go of this.currentScene.gameObjects) {
 				let components = go.getComponentsList([PhysicsComponent, BehaviourComponent]);
 				for(let c of components) {
-					if (c instanceof PhysicsComponent) physics.push(c);
-					else if (c instanceof BehaviourComponent) behaviours.push(c);
+					if(c.active) {
+						if (c instanceof PhysicsComponent) physics.push(c);
+						else if (c instanceof BehaviourComponent) behaviours.push(c);
+					}
 				}
 			}
 
@@ -76,7 +78,7 @@ class Core {
 	run() {
 		let lastTime = 0;
 		let self = this;
-		this.start();
+		this.coreStart();
 		function _loop(nowTime) {
 			nowTime *= 0.001; // Convert time to seconds
 			let deltaTime = nowTime - lastTime;
