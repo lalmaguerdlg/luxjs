@@ -34,19 +34,14 @@ function main() {
     //cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
     //cube3.attach(new lux.Rigidbody());
 
+
     let cube2 = cube.clone();
     cube2.name = 'cube2';
     cube2.getComponent(lux.MeshRenderer).material = lambertMaterial;
-    cube2.transform.position[0] = 2;
-    //cube2.transform.position[1] = 2;
-    //cube2.transform.position[2] = 2;
-    //cube3.transform.position[1] = 2;
 
-
-    cube.add(cube2);
-    //cube2.add(cube3);
-
-    //cube.getComponent(lux.Rigidbody).applyForce([5.0, 5.0, 0.0]);
+    lux.vec3.set(cube.transform.position, 0, 0, 0);
+    lux.vec3.set(cube2.transform.position, 0, 1.0, 0.5);
+    //cube.transform.position[2] = 2;
 
     cube.transform.setEuler(0, 180, 0);
     //cube.transform.setScale([1.0, 0.5, 1.0]);
@@ -55,13 +50,13 @@ function main() {
 
     let light = new lux.PointLight({
         position: [0.0, 2.0, 0.0],
-        color: [1.0, 1.0, 1.0],
+        color: [1.0, 0.0, 1.0],
     });
 
-    /*let light2 = new lux.PointLight({
-        position: [0.0, 0.0, 2.0],
-        color: [1.0, 1.0, 1.0],
-    });*/
+    let light2 = new lux.PointLight({
+        position: [0.0, 0.0, 0.0],
+        color: [0.0, 1.0, 1.0],
+    });
 
     let camera = new lux.Camera();
 
@@ -74,8 +69,9 @@ function main() {
     lux.mat4.lookAt(camera.mView, camera.transform.position, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
     scene.add(cube);
+    scene.add(cube2);
     scene.add(light);
-    //scene.add(light2);
+    scene.add(light2);
     scene.add(camera);
 
     //cube.getComponent(lux.Rigidbody).applyForce([-5.0, 20.0, 0.0]);
@@ -83,7 +79,7 @@ function main() {
 
     lux.luxCore.useScene(scene);
 
-    lux.physicsSimulation.gravity = lux.vec3.create();
+    lux.physicsSimulation.useGravity = false;
     lux.luxCore.run();
 
     lux.glLoop(render);
@@ -96,14 +92,15 @@ function render(dt){
 
     let cube = scene.findObjectWithName('cube');
     let cube2 = scene.findObjectWithName('cube2');
-/*
+    
+    /*
     let distance = lux.vec3.create();
     lux.vec3.sub(distance, cube2.transform.position, cube.transform.position);
     cube.getComponent(lux.Rigidbody).applyForce(distance);
 
     lux.vec3.sub(distance, cube.transform.position,cube2.transform.position);
     cube2.getComponent(lux.Rigidbody).applyForce(distance);
-*/
+    */
 
 
     //lux.vec3.set(cube.transform.position, Math.sin(t), 0, 0);

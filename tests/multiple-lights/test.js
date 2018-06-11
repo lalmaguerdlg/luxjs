@@ -107,7 +107,6 @@ let cameraPos = lux.vec3.create();
 function render(dt){
     
     framebuffer.bind();
-
     t += dt;
     lux.webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -141,7 +140,7 @@ function render(dt){
         gl.disable(gl.BLEND);
         lux.vec3.set(light.position, 
             Math.cos(t + 1 * -(index % 3)) * lightTravel + 5.0, 
-            Math.sin(t + 1 * (index % 3)) * lightTravel + 5.0, 
+            Math.sin(t + 1 * (index % 3)) * lightTravel - 5.0, 
             Math.sin(t + 1 * -(index % 3)) * lightTravel + 5.0);            
 
         lux.mat4.identity(mModel);

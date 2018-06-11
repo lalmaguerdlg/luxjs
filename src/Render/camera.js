@@ -6,5 +6,6 @@ export class Camera {
 		this.transform = new Transform();
 		this.mPerspective = mat4.create();
 		this.mView = mat4.create();
+		this.exposure = 1.0;
 	}
 }

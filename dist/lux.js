@@ -7462,7 +7462,16 @@ class Component {
     constructor(){
         this.gameObject = undefined;
         this.transform = undefined;
+        this.active = true;
     }
+    enable() {
+        this.active = true;
+    }
+
+    disable() {
+        this.active = false;
+    }
+
     setOwner(gameObject){
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;
@@ -8171,9 +8180,9 @@ class baseMaterial_BaseMaterial {
         this.tag = args['tag'] || MaterialTag.none;
         this.uniformType = gl.FLOAT;
 
-        this.mModel;
-        this.mView;
-        this.mPerspective;
+        this.mModel = mat4_namespaceObject.create();
+        this.mView = mat4_namespaceObject.create();
+        this.mPerspective = mat4_namespaceObject.create();
     }
 
     setup(){
@@ -8261,9 +8270,298 @@ class camera_Camera {
 		this.transform = new transform_Transform();
 		this.mPerspective = mat4_namespaceObject.create();
 		this.mView = mat4_namespaceObject.create();
+		this.exposure = 1.0;
 	}
 }
+// CONCATENATED MODULE: ./src/Render/Textures/texture.js
+
+
+class texture_TextureFormat {
+    constructor(format, filtering, wrap){
+        this.level = format['level'] || 0;
+        this.internalFormat = format['internalFormat'] || gl.RGB;
+        this.border = format['border'] || 0;
+        this.format = format['format'] || gl.RGB;
+        this.type = format['type'] || gl.UNSIGNED_BYTE;
+
+        this.wrap = {S: gl.REPEAT, T: gl.REPEAT };
+        this.filtering = { min: gl.NEAREST, mag: gl.LINEAR };
+
+        this.wrap.S = wrap['S'] || this.wrap.S;
+        this.wrap.T = wrap['T'] || this.wrap.T;
+        this.filtering.min = filtering['min'] || this.filtering.min;
+        this.filtering.mag = filtering['mag'] || this.filtering.mag;
+    }
+
+}
+
+let TexturePresets = {
+    RGB: () => { return new texture_TextureFormat() },
+    sRGB: () => { return new texture_TextureFormat() }, // TODO: Make sRGB texture preset
+    FB_COLOR: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE}); 
+    },
+    FB_HDR_COLOR: () => {
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA16F,
+            format: gl.RGBA,
+            type: gl.FLOAT,
+        },
+        { min: gl.NEAREST, mag: gl.NEAREST},
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    
+    FB_DEPTH: () => { 
+        
+        return new texture_TextureFormat({
+            internalFormat: gl.DEPTH_COMPONENT24,
+            format: gl.DEPTH_COMPONENT,
+            type: gl.UNSIGNED_INT,
+        }, 
+        { min: gl.NEAREST, mag: gl.NEAREST },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    FB_STENCIL: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+    FB_DEPTH_STENCIL: () => { 
+        return new texture_TextureFormat({
+            internalFormat: gl.RGBA,
+            format: gl.RGBA,
+            type: gl.UNSIGNED_BYTE,
+        }, 
+        { min: gl.LINEAR, mag: gl.LINEAR },
+        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
+    },
+}
+
+Object.freeze(TexturePresets);
+
+const TEXTUREUNITMAX = 15;
+
+class texture_Texture {
+    constructor(width, height, textureFormat, data){
+        this.width = width || 256;
+        this.height = height || 256;
+        
+        this.data = data;
+
+        this.textureFormat = textureFormat || TexturePresets.RGB();
+
+        this.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.texImage2D(gl.TEXTURE_2D, this.textureFormat.level, this.textureFormat.internalFormat, 
+                        this.width, this.height, this.textureFormat.border, 
+                        this.textureFormat.format, this.textureFormat.type, this.data);
+        
+        //TODO: MIPMAPing 
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.textureFormat.filtering.min);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.textureFormat.filtering.mag);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.textureFormat.wrap.S);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.textureFormat.wrap.T);
+
+    }
+
+    use(textureUnit) {
+        let unit = textureUnit || 0;
+        if(unit < 0) unit = 0;
+        if(unit > TEXTUREUNITMAX) unit = TEXTUREUNITMAX;
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    }
+
+    dispose(){
+        gl.deleteTexture(this.texture);
+    }
+}
+// CONCATENATED MODULE: ./src/Render/Textures/framebuffer.js
+
+
+
+const COLORATTACHMENTMAX = 15;
+
+class framebuffer_Framebuffer{
+    constructor(width, height){
+        this.binded = false;
+        this.aspect = width / height;
+        this.width = width;
+        this.height = height;
+
+        this.textures = {
+            color: [],
+            depth: undefined,
+            stencil: undefined,
+            depthStencil: undefined,
+        };
+
+        this.colorFormat = TexturePresets.FB_COLOR();
+
+        this.fbo = gl.createFramebuffer();
+        this.bind();
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, this.width, this.height);
+        this.unbind();
+    }
+
+    addColor(colorFormat){
+        let attachmentOffset = this.textures.color.length;
+        let overflow = false;
+        if(attachmentOffset > COLORATTACHMENTMAX) {
+            attachmentOffset = COLORATTACHMENTMAX;
+            overflow = true;
+        }
+        
+        let usedColorFormat = colorFormat || this.colorFormat;
+
+        this.bind();
+        let colorTexture = new texture_Texture(this.width, this.height, usedColorFormat, null);
+        if(!overflow)
+            this.textures.color.push(colorTexture);
+        else {
+            this.textures.color[attachmentOffset].dispose();
+            this.textures.color[attachmentOffset] = colorTexture;
+        }
+            
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + attachmentOffset, gl.TEXTURE_2D, colorTexture.texture, 0);
+        this.unbind();
+
+    }
+
+    addDepth(){
+        this.bind();
+        this.depthFormat = TexturePresets.FB_DEPTH();
+        this.textures.depth = new texture_Texture(this.width, this.height, this.depthFormat, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.textures.depth.texture, 0);
+        this.bind();
+    }
+
+    addStencil(){
+        // TODO: stencil texture
+    }
+
+    addDepthStencil() {
+        // TODO: Create depth and stencil combined texture
+    }
+
+    dispose(){
+        for(let textureT in this.textures){
+            let t = this.textures[this.textureT]
+            if(t){
+                if(Array.isArray(t)){
+                    for(let tex of t){
+                        tex.dispose();
+                    }
+                }
+                else {
+                    t.dispose();
+                }
+            }
+        }
+        gl.deleteFramebuffer(this.fbo);
+    }
+
+    bind(){
+        if(!this.binded){
+            this.binded = true;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+            let drawBuffers = [];
+            for(let i = 0; i < this.textures.color.length; i++){
+                drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
+            }
+            gl.drawBuffers(drawBuffers);
+        }
+    }
+
+    unbind(){
+        if(this.binded){
+            this.binded = false;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gl.drawBuffers([gl.BACK]);
+        }
+    }
+}
+// CONCATENATED MODULE: ./src/Render/Materials/Post Process/hdrMaterial.js
+
+
+
+
+let shaderSource = {
+    vs: 
+        `#version 300 es
+        in vec3 a_position;
+        in vec2 a_texCoords;
+    
+        uniform mat4 u_model;
+
+        out vec2 texCoords;
+        void main(void) {
+            gl_Position = u_model * vec4(a_position.xy, 0.0, 1.0);
+            texCoords = a_texCoords;
+        }`,
+    ps: 
+        `#version 300 es
+        precision mediump float;
+
+        in vec2 texCoords;
+
+        uniform sampler2D u_texture;
+        uniform float u_exposure;
+
+        out vec4 outColor;
+        void main(void) {
+            const float gamma = 2.2;
+
+            vec3 hdrColor = texture(u_texture, texCoords).rgb;
+
+            //Reinhard tone mapping
+            //vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
+            
+            // Exposure tone mapping
+            vec3 mapped = vec3(1.0) - exp(-hdrColor * u_exposure);
+            
+            // Gamma correction 
+            mapped = pow(mapped, vec3(1.0 / gamma));
+          
+            outColor = vec4(mapped, 1.0);
+        }`,
+}
+
+
+class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
+    constructor(vargs){
+        let args = vargs || {};
+        args['tag'] = args['tag'] || MaterialTag.postprocess;
+        let shader = RM.createShader('hdr-shader', shaderSource.vs, shaderSource.ps);
+        super(shader, args);
+        this.exposure = 1.0;
+    }
+
+    setup(){
+        super.setup();
+    }
+
+    update() {
+        super.update();
+        this.shader.setInt('u_texture', 0);
+        this.shader.setFloat('u_exposure', this.exposure);
+    }
+} 
 // CONCATENATED MODULE: ./src/Render/Renderers/forwardRenderer.js
+
+
+
+
 
 
 
@@ -8277,7 +8575,32 @@ class forwardRenderer_ForwardRenderer {
         this.defaultCamera = new camera_Camera;
 
         this.renderGroups = new renderGroups_RenderGroups();
+
+        this.mainfbo = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        let fbFormat = TexturePresets.FB_HDR_COLOR();
+        this.mainfbo.addColor(fbFormat);
+        this.mainfbo.addDepth();
+
+        let hdrMaterial = new hdrMaterial_HDRMaterial();
+        let quad = new Geometry.Quad(2.0);
+
+        this.screenQuad = new meshRenderer_MeshRenderer(quad, hdrMaterial);
+
+        let self = this;
+        function _onWindowResize(){
+            if(self.mainfbo) self.mainfbo.dispose();
+            self.mainfbo = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            
+            let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
+        
+            self.mainfbo.addColor(fbFormat);
+            self.mainfbo.addDepth();
+        }
+
+        webgl.onResizeCallback = _onWindowResize;
     }
+
+    
 
     render(scene) {
         let camera = this.defaultCamera;
@@ -8286,22 +8609,60 @@ class forwardRenderer_ForwardRenderer {
         
         this._setupGroups(scene);
 
-        webgl.setClearColor(0.0, 0.0, 0.0, 1.0);
+        this.mainfbo.bind();
+
+        webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        for (let mr of this.renderGroups.unlit) {
-            this._renderUnlit(mr, camera);
-        }
+        let firstPass = true;
 
-        for(let light of scene.lights) {
-            for (let mr of this.renderGroups.lit) {
-                this._renderLit(mr, camera, light);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+        gl.disable(gl.BLEND);
+
+        for (let mr of this.renderGroups.unlit) {
+            if(mr.gameObject.active && mr.active) {
+                this._renderUnlit(mr, camera);
             }
         }
 
-        for (let mr of this.renderGroups.translucent) {
-            this._renderTranslucent(mr, camera);
+        for(let light of scene.lights) {
+
+            if(!firstPass){
+                gl.enable(gl.BLEND);
+                //gl.disable(gl.DEPTH_TEST);
+                gl.blendFunc(gl.ONE, gl.ONE);
+                gl.depthFunc(gl.EQUAL);
+            }
+
+            for (let mr of this.renderGroups.lit) {
+                if(mr.gameObject.active && mr.active) {
+                    this._renderLit(mr, camera, light);
+                }
+            }
+
+            for (let mr of this.renderGroups.translucent) {
+                if(mr.gameObject.active && mr.active) {
+                    this._renderTranslucent(mr, camera);
+                }
+            }
+            
+            if(firstPass) firstPass = false;
         }
+
+        this.mainfbo.unbind();
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+        gl.disable(gl.BLEND);
+        webgl.setClearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        
+        this.screenQuad.material.exposure = camera.exposure;
+        this._useMaterial(this.screenQuad.material);
+        this.mainfbo.textures.color[0].use(0);
+        this.screenQuad.render();
 
     }
 
@@ -8333,31 +8694,25 @@ class forwardRenderer_ForwardRenderer {
     }
 
     _renderUnlit(mr, camera){
-        if(mr.gameObject.active){
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
     _renderLit(mr, camera, light) {
-        if (mr.gameObject.active) {
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            mr.material.light = light;
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        mr.material.viewPos = camera.transform.position;
+        mr.material.light = light;
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
     _renderTranslucent(mr, camera) {
-        if (mr.gameObject.active) {
-            mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
-            this._useMaterial(mr.material);
-            mr.render();
-        }
+        mr.material.setMatrices(mr.transform.toWorldMatrix(), camera.mView, camera.mPerspective);
+        this._useMaterial(mr.material);
+        mr.render();
     }
 
-    
 }
 // CONCATENATED MODULE: ./src/Core/gameObject.js
 
@@ -8638,13 +8993,16 @@ class scene_Scene {
 
 class physicsSimulation_PhysicsSimulation{
     constructor() {
+        this.useGravity = true;
         this.gravity = vec3_namespaceObject.create();
         vec3_namespaceObject.set(this.gravity, 0.0, -9.8, 0.0);
     }
 
     simulate(time, bodies) {
         for(let b of bodies) {
-            b.applyGravity(this.gravity);
+            if(this.useGravity) {
+                b.applyGravity(this.gravity);
+            }
             b.simulate(time);
         }
 
@@ -8693,7 +9051,7 @@ class core_Core {
 		}
 	}
 
-	start() { 
+	coreStart() { 
 		for (let go of this.currentScene.gameObjects) {
 			go.awake();
 			go.start();
@@ -8710,8 +9068,10 @@ class core_Core {
 			for (let go of this.currentScene.gameObjects) {
 				let components = go.getComponentsList([PhysicsComponent, BehaviourComponent]);
 				for(let c of components) {
-					if (c instanceof PhysicsComponent) physics.push(c);
-					else if (c instanceof BehaviourComponent) behaviours.push(c);
+					if(c.active) {
+						if (c instanceof PhysicsComponent) physics.push(c);
+						else if (c instanceof BehaviourComponent) behaviours.push(c);
+					}
 				}
 			}
 
@@ -8730,7 +9090,7 @@ class core_Core {
 	run() {
 		let lastTime = 0;
 		let self = this;
-		this.start();
+		this.coreStart();
 		function _loop(nowTime) {
 			nowTime *= 0.001; // Convert time to seconds
 			let deltaTime = nowTime - lastTime;
@@ -8749,7 +9109,7 @@ let physicsSimulation = luxCore.physicsSimulation;
 
 
 
-class rigidbody_Rigidbody extends PhysicsComponent{
+class rigidbody_Rigidbody extends PhysicsComponent {
     constructor(){
         super();
         this.gravityMultiplier = 1.0;
@@ -8787,221 +9147,6 @@ class rigidbody_Rigidbody extends PhysicsComponent{
         vec3_namespaceObject.scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.deltaTime);
         vec3_namespaceObject.scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.deltaTime);
         vec3_namespaceObject.set(this.aceleration, 0, 0, 0);
-    }
-}
-// CONCATENATED MODULE: ./src/Render/Textures/texture.js
-
-
-class texture_TextureFormat {
-    constructor(format, filtering, wrap){
-        this.level = format['level'] || 0;
-        this.internalFormat = format['internalFormat'] || gl.RGB;
-        this.border = format['border'] || 0;
-        this.format = format['format'] || gl.RGB;
-        this.type = format['type'] || gl.UNSIGNED_BYTE;
-
-        this.wrap = {S: gl.REPEAT, T: gl.REPEAT };
-        this.filtering = { min: gl.NEAREST, mag: gl.LINEAR };
-
-        this.wrap.S = wrap['S'] || this.wrap.S;
-        this.wrap.T = wrap['T'] || this.wrap.T;
-        this.filtering.min = filtering['min'] || this.filtering.min;
-        this.filtering.mag = filtering['mag'] || this.filtering.mag;
-    }
-
-}
-
-let TexturePresets = {
-    RGB: () => { return new texture_TextureFormat() },
-    sRGB: () => { return new texture_TextureFormat() }, // TODO: Make sRGB texture preset
-    FB_COLOR: () => { 
-        return new texture_TextureFormat({
-            internalFormat: gl.RGBA,
-            format: gl.RGBA,
-            type: gl.UNSIGNED_BYTE,
-        }, 
-        { min: gl.LINEAR, mag: gl.LINEAR },
-        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE}); 
-    },
-    FB_HDR_COLOR: () => {
-        return new texture_TextureFormat({
-            internalFormat: gl.RGBA16F,
-            format: gl.RGBA,
-            type: gl.FLOAT,
-        },
-        { min: gl.NEAREST, mag: gl.NEAREST},
-        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
-    },
-    
-    FB_DEPTH: () => { 
-        
-        return new texture_TextureFormat({
-            internalFormat: gl.DEPTH_COMPONENT24,
-            format: gl.DEPTH_COMPONENT,
-            type: gl.UNSIGNED_INT,
-        }, 
-        { min: gl.NEAREST, mag: gl.NEAREST },
-        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
-    },
-    FB_STENCIL: () => { 
-        return new texture_TextureFormat({
-            internalFormat: gl.RGBA,
-            format: gl.RGBA,
-            type: gl.UNSIGNED_BYTE,
-        }, 
-        { min: gl.LINEAR, mag: gl.LINEAR },
-        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
-    },
-    FB_DEPTH_STENCIL: () => { 
-        return new texture_TextureFormat({
-            internalFormat: gl.RGBA,
-            format: gl.RGBA,
-            type: gl.UNSIGNED_BYTE,
-        }, 
-        { min: gl.LINEAR, mag: gl.LINEAR },
-        { S: gl.CLAMP_TO_EDGE, T: gl.CLAMP_TO_EDGE});
-    },
-}
-
-Object.freeze(TexturePresets);
-
-const TEXTUREUNITMAX = 15;
-
-class texture_Texture {
-    constructor(width, height, textureFormat, data){
-        this.width = width || 256;
-        this.height = height || 256;
-        
-        this.data = data;
-
-        this.textureFormat = textureFormat || TexturePresets.RGB();
-
-        this.texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.texImage2D(gl.TEXTURE_2D, this.textureFormat.level, this.textureFormat.internalFormat, 
-                        this.width, this.height, this.textureFormat.border, 
-                        this.textureFormat.format, this.textureFormat.type, this.data);
-        
-        //TODO: MIPMAPing 
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.textureFormat.filtering.min);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.textureFormat.filtering.mag);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.textureFormat.wrap.S);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.textureFormat.wrap.T);
-
-    }
-
-    use(textureUnit) {
-        let unit = textureUnit || 0;
-        if(unit < 0) unit = 0;
-        if(unit > TEXTUREUNITMAX) unit = TEXTUREUNITMAX;
-        gl.activeTexture(gl.TEXTURE0 + unit);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    }
-
-    dispose(){
-        gl.deleteTexture(this.texture);
-    }
-}
-// CONCATENATED MODULE: ./src/Render/Textures/framebuffer.js
-
-
-
-const COLORATTACHMENTMAX = 15;
-
-class framebuffer_Framebuffer{
-    constructor(width, height){
-        this.binded = false;
-        this.aspect = width / height;
-        this.width = width;
-        this.height = height;
-
-        this.textures = {
-            color: [],
-            depth: undefined,
-            stencil: undefined,
-            depthStencil: undefined,
-        };
-
-        this.colorFormat = TexturePresets.FB_COLOR();
-
-        this.fbo = gl.createFramebuffer();
-    }
-
-    addColor(colorFormat){
-        let attachmentOffset = this.textures.color.length;
-        let overflow = false;
-        if(attachmentOffset > COLORATTACHMENTMAX) {
-            attachmentOffset = COLORATTACHMENTMAX;
-            overflow = true;
-        }
-        
-        let usedColorFormat = colorFormat || this.colorFormat;
-
-        this.bind();
-        let colorTexture = new texture_Texture(this.width, this.height, usedColorFormat, null);
-        if(!overflow)
-            this.textures.color.push(colorTexture);
-        else {
-            this.textures.color[attachmentOffset].dispose();
-            this.textures.color[attachmentOffset] = colorTexture;
-        }
-            
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + attachmentOffset, gl.TEXTURE_2D, colorTexture.texture, 0);
-        this.unbind();
-
-    }
-
-    addDepth(){
-        this.bind();
-        this.depthFormat = TexturePresets.FB_DEPTH();
-        this.textures.depth = new texture_Texture(this.width, this.height, this.depthFormat, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.textures.depth.texture, 0);
-        this.bind();
-    }
-
-    addStencil(){
-        // TODO: stencil texture
-    }
-
-    addDepthStencil() {
-        // TODO: Create depth and stencil combined texture
-    }
-
-    dispose(){
-        for(let textureT in this.textures){
-            let t = this.textures[this.textureT]
-            if(t){
-                if(Array.isArray(t)){
-                    for(let tex of t){
-                        tex.dispose();
-                    }
-                }
-                else {
-                    t.dispose();
-                }
-            }
-        }
-        gl.deleteFramebuffer(this.fbo);
-    }
-
-    bind(){
-        if(!this.binded){
-            this.binded = true;
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
-            let drawBuffers = [];
-            for(let i = 0; i < this.textures.color.length; i++){
-                drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
-            }
-            gl.drawBuffers(drawBuffers);
-        }
-    }
-
-    unbind(){
-        if(this.binded){
-            this.binded = false;
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            gl.drawBuffers([gl.BACK]);
-        }
     }
 }
 // CONCATENATED MODULE: ./src/Render/Materials/basicMaterial.js
@@ -9070,7 +9215,7 @@ class basicMaterial_BasicMaterial extends baseMaterial_BaseMaterial{
 
 
 
-let shaderSource = {
+let normalMaterial_shaderSource = {
     vs: 
         `#version 300 es
         in vec3 a_position;
@@ -9108,7 +9253,7 @@ class normalMaterial_NormalMaterial extends baseMaterial_BaseMaterial{
     constructor(vargs){
         let args = vargs || {};
         args['tag'] = args['tag'] || MaterialTag.unlit;
-        let shader = RM.createShader('normal-shader', shaderSource.vs, shaderSource.ps);
+        let shader = RM.createShader('normal-shader', normalMaterial_shaderSource.vs, normalMaterial_shaderSource.ps);
         super(shader, args);
         this.mNormal;
     }
@@ -9438,72 +9583,6 @@ class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
     }
 
     update() { 
-        super.update();
-        this.shader.setInt('u_texture', 0);
-        this.shader.setFloat('u_exposure', this.exposure);
-    }
-} 
-// CONCATENATED MODULE: ./src/Render/Materials/Post Process/hdrMaterial.js
-
-
-
-
-let hdrMaterial_shaderSource = {
-    vs: 
-        `#version 300 es
-        in vec3 a_position;
-        in vec2 a_texCoords;
-    
-        uniform mat4 u_model;
-
-        out vec2 texCoords;
-        void main(void) {
-            gl_Position = u_model * vec4(a_position.xy, 0.0, 1.0);
-            texCoords = a_texCoords;
-        }`,
-    ps: 
-        `#version 300 es
-        precision mediump float;
-
-        in vec2 texCoords;
-
-        uniform sampler2D u_texture;
-        uniform float u_exposure;
-
-        out vec4 outColor;
-        void main(void) {
-            const float gamma = 2.2;
-
-            vec3 hdrColor = texture(u_texture, texCoords).rgb;
-
-            //Reinhard tone mapping
-            //vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
-            
-            // Exposure tone mapping
-            vec3 mapped = vec3(1.0) - exp(-hdrColor * u_exposure);
-            
-            // Gamma correction 
-            mapped = pow(mapped, vec3(1.0 / gamma));
-          
-            outColor = vec4(mapped, 1.0);
-        }`,
-}
-
-
-class hdrMaterial_HDRMaterial extends baseMaterial_BaseMaterial {
-    constructor(vargs){
-        let args = vargs || {};
-        args['tag'] = args['tag'] || MaterialTag.postprocess;
-        let shader = RM.createShader('hdr-shader', hdrMaterial_shaderSource.vs, hdrMaterial_shaderSource.ps);
-        super(shader, args);
-        this.exposure = 1.0;
-    }
-
-    setup(){
-        super.setup();
-    }
-
-    update() {
         super.update();
         this.shader.setInt('u_texture', 0);
         this.shader.setFloat('u_exposure', this.exposure);

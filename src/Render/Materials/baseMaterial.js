@@ -23,9 +23,9 @@ export class BaseMaterial {
         this.tag = args['tag'] || MaterialTag.none;
         this.uniformType = gl.FLOAT;
 
-        this.mModel;
-        this.mView;
-        this.mPerspective;
+        this.mModel = mat4.create();
+        this.mView = mat4.create();
+        this.mPerspective = mat4.create();
     }
 
     setup(){

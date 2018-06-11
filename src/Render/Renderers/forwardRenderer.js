@@ -2,6 +2,10 @@ import { gl, webgl } from '../webgl'
 import { MeshRenderer } from '../Components/meshRenderer'
 import { RenderGroups } from './renderGroups'
 import { Camera } from '../camera';
+import { TexturePresets } from '../Textures/texture'
+import { Framebuffer } from '../Textures/framebuffer';
+import { Geometry } from '../Geometry/geometry';
+import { HDRMaterial } from '../Materials/Post Process/hdrMaterial';
 
 
 export class ForwardRenderer {
@@ -11,7 +15,32 @@ export class ForwardRenderer {
         this.defaultCamera = new Camera;
 
         this.renderGroups = new RenderGroups();
+
+        this.mainfbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        let fbFormat = TexturePresets.FB_HDR_COLOR();
+        this.mainfbo.addColor(fbFormat);
+        this.mainfbo.addDepth();
+
+        let hdrMaterial = new HDRMaterial();
+        let quad = new Geometry.Quad(2.0);
+
+        this.screenQuad = new MeshRenderer(quad, hdrMaterial);
+
+        let self = this;
+        function _onWindowResize(){
+            if(self.mainfbo) self.mainfbo.dispose();
+            self.mainfbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            
+            let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
+        
+            self.mainfbo.addColor(fbFormat);
+            self.mainfbo.addDepth();
+        }
+
+        webgl.onResizeCallback = _onWindowResize;
     }
+
+    
 
     render(scene) {
         let camera = this.defaultCamera;
@@ -20,8 +49,16 @@ export class ForwardRenderer {
         
         this._setupGroups(scene);
 
-        webgl.setClearColor(0.0, 0.0, 0.0, 1.0);
+        this.mainfbo.bind();
+
+        webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        let firstPass = true;
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+        gl.disable(gl.BLEND);
 
         for (let mr of this.renderGroups.unlit) {
             if(mr.gameObject.active && mr.active) {
@@ -30,18 +67,42 @@ export class ForwardRenderer {
         }
 
         for(let light of scene.lights) {
+
+            if(!firstPass){
+                gl.enable(gl.BLEND);
+                //gl.disable(gl.DEPTH_TEST);
+                gl.blendFunc(gl.ONE, gl.ONE);
+                gl.depthFunc(gl.EQUAL);
+            }
+
             for (let mr of this.renderGroups.lit) {
                 if(mr.gameObject.active && mr.active) {
                     this._renderLit(mr, camera, light);
                 }
             }
+
+            for (let mr of this.renderGroups.translucent) {
+                if(mr.gameObject.active && mr.active) {
+                    this._renderTranslucent(mr, camera);
+                }
+            }
+            
+            if(firstPass) firstPass = false;
         }
 
-        for (let mr of this.renderGroups.translucent) {
-            if(mr.gameObject.active && mr.active) {
-                this._renderTranslucent(mr, camera);
-            }
-        }
+        this.mainfbo.unbind();
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+        gl.disable(gl.BLEND);
+        webgl.setClearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        
+        this.screenQuad.material.exposure = camera.exposure;
+        this._useMaterial(this.screenQuad.material);
+        this.mainfbo.textures.color[0].use(0);
+        this.screenQuad.render();
 
     }
 
@@ -92,5 +153,4 @@ export class ForwardRenderer {
         mr.render();
     }
 
-    
 }
