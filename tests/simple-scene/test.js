@@ -27,24 +27,30 @@ function main() {
     });
 
     cube = new lux.GameObject();
-    cube2 = new lux.GameObject();
-    cube3 = new lux.GameObject();
+    //cube2 = new lux.GameObject();
+    //cube3 = new lux.GameObject();
 
     cube.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
     cube.attach(new lux.Rigidbody());
-    cube2.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
-    cube2.attach(new lux.Rigidbody());
-    cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
-    cube3.attach(new lux.Rigidbody());
 
+
+    //cube2.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
+    //cube2.attach(new lux.Rigidbody());
+    //cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
+    //cube3.attach(new lux.Rigidbody());
+
+    cube2 = cube.clone();
     cube2.transform.position[0] = 2;
-    cube3.transform.position[1] = 2;
+    //cube3.transform.position[1] = 2;
+
 
     cube.add(cube2);
-    cube2.add(cube3);
+    //cube2.add(cube3);
+
+    //cube.getComponent(lux.Rigidbody).applyForce([5.0, 5.0, 0.0]);
 
     cube.transform.setEuler(0, 180, 0);
-    cube.transform.setScale([1.0, 0.5, 1.0]);
+    //cube.transform.setScale([1.0, 0.5, 1.0]);
     //cube2.transform.setScale([0.5, 0.5, 0.5]);
 
 

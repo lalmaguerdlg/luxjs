@@ -15,10 +15,6 @@ export class Rigidbody extends PhysicsComponent{
             this.gameObject.transform.detach();
     }
 
-    /*onAttach() {
-        detach();
-    }*/
-
     applyGravity(gravity) {
         let force = vec3.clone(gravity);
         vec3.scale(force, force, this.gravityMultiplier);

@@ -6668,7 +6668,10 @@ class transform_Transform {
 
 
 class Component {
-    constructor(){}
+    constructor(){
+        this.gameObject = undefined;
+        this.transform = undefined;
+    }
     setOwner(gameObject){
         this.gameObject = gameObject;
         this.transform = this.gameObject.transform;
@@ -6682,7 +6685,13 @@ class Component {
     onAttach() {}
     awake() { }
     start() { }
-    clone(){ return new Component(); }
+    clone(){ 
+        let cloned = new this.constructor();
+        cloned = Object.assign(cloned, this);
+        cloned.gameObject = undefined;
+        cloned.transform = undefined;
+        return cloned;
+    }
 }
 
 class PhysicsComponent extends Component {
@@ -6717,6 +6726,16 @@ class meshRenderer_MeshRenderer extends RenderComponent{
         super();
         this.mesh = mesh;
         this.material = material;
+    }
+
+    clone() {
+        let cloned = new this.constructor();
+        cloned = Object.assign(cloned, this);
+        cloned.gameObject = undefined;
+        cloned.transform = undefined;
+        cloned.material = new this.material.constructor();
+        cloned.material = Object.assign(cloned.material, this.material);
+        return cloned;
     }
 
     render(){
@@ -7550,6 +7569,9 @@ class forwardRenderer_ForwardRenderer {
 
 
 
+
+
+
 class gameObject_GameObject{
     constructor(parent){
         this.parent = parent || undefined;
@@ -7653,6 +7675,26 @@ class gameObject_GameObject{
         }
     }
 
+    clone() {
+        let cloned = new gameObject_GameObject();
+        cloned.parent = this.parent;
+        cloned.transform.position = vec3_namespaceObject.clone(this.transform.position);
+        cloned.transform.rotation = quat_namespaceObject.clone(this.transform.rotation);
+        cloned.transform.scale = vec3_namespaceObject.clone(this.transform.scale);
+        
+        for(let c of this.components) {
+            let clonedComponent = c.clone();
+            cloned.attach(clonedComponent);
+        }
+
+        for(let child of this.children) { 
+            let clonedChild = child.clone();
+            cloned.add(clonedChild);
+        }
+
+        return cloned;
+    }
+
     _addChild(gameObject) {
         if (!gameObject instanceof gameObject_GameObject) return;
         let duplicated = false;
@@ -7670,7 +7712,8 @@ class gameObject_GameObject{
     }
 
     _addComponent(component) {
-        if ( !component instanceof Component) return;
+        if ( !component instanceof Component ) return;
+        if ( component.gameObject ) return;
         let componentType = component.constructor.name;
         let duplicated = false;
         for(let c of this.components){
@@ -7859,10 +7902,6 @@ class rigidbody_Rigidbody extends PhysicsComponent{
         if(!this.kinematic)
             this.gameObject.transform.detach();
     }
-
-    /*onAttach() {
-        detach();
-    }*/
 
     applyGravity(gravity) {
         let force = vec3_namespaceObject.clone(gravity);

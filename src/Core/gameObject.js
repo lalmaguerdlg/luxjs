@@ -1,5 +1,8 @@
 import { Transform } from './transform'
 import { Component, BehaviourComponent } from './component'
+import { vec3, quat } from 'gl-matrix';
+
+
 
 export class GameObject{
     constructor(parent){
@@ -104,6 +107,26 @@ export class GameObject{
         }
     }
 
+    clone() {
+        let cloned = new GameObject();
+        cloned.parent = this.parent;
+        cloned.transform.position = vec3.clone(this.transform.position);
+        cloned.transform.rotation = quat.clone(this.transform.rotation);
+        cloned.transform.scale = vec3.clone(this.transform.scale);
+        
+        for(let c of this.components) {
+            let clonedComponent = c.clone();
+            cloned.attach(clonedComponent);
+        }
+
+        for(let child of this.children) { 
+            let clonedChild = child.clone();
+            cloned.add(clonedChild);
+        }
+
+        return cloned;
+    }
+
     _addChild(gameObject) {
         if (!gameObject instanceof GameObject) return;
         let duplicated = false;
@@ -121,7 +144,8 @@ export class GameObject{
     }
 
     _addComponent(component) {
-        if ( !component instanceof Component) return;
+        if ( !component instanceof Component ) return;
+        if ( component.gameObject ) return;
         let componentType = component.constructor.name;
         let duplicated = false;
         for(let c of this.components){
