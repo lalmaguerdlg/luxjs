@@ -3,9 +3,10 @@ import { MeshRenderer } from '../Components/meshRenderer'
 import { RenderGroups } from './renderGroups'
 import { Camera } from '../camera';
 import { TexturePresets } from '../Textures/texture'
-import { Framebuffer } from '../Textures/framebuffer';
+import { Framebuffer, AttachmentType } from '../Textures/framebuffer';
 import { Geometry } from '../Geometry/geometry';
 import { HDRMaterial } from '../Materials/Post Process/hdrMaterial';
+import { RenderBufferFormat } from '../Textures/renderbuffer';
 
 
 export class ForwardRenderer {
@@ -16,10 +17,22 @@ export class ForwardRenderer {
 
         this.renderGroups = new RenderGroups();
 
-        this.mainfbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.msaa = {
+            enabled: true,
+            samples: 4,
+            fbo: undefined,
+        }
+
+        if (this.msaa.enabled) {
+            this.msaa.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            this.msaa.fbo.addColor(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.RGBA8, true, this.msaa.samples));
+            this.msaa.fbo.addDepth(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
+        }
+
+        this.mainFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
         let fbFormat = TexturePresets.FB_HDR_COLOR();
-        this.mainfbo.addColor(fbFormat);
-        this.mainfbo.addDepth();
+        this.mainFBO.addColor(AttachmentType.TEXTURE, fbFormat);
+        this.mainFBO.addDepth(AttachmentType.TEXTURE);
 
         let hdrMaterial = new HDRMaterial();
         let quad = new Geometry.Quad(2.0);
@@ -28,13 +41,13 @@ export class ForwardRenderer {
 
         let self = this;
         function _onWindowResize(){
-            if(self.mainfbo) self.mainfbo.dispose();
-            self.mainfbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            if(self.mainFBO) self.mainFBO.dispose();
+            self.mainFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
             
             let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
         
-            self.mainfbo.addColor(fbFormat);
-            self.mainfbo.addDepth();
+            self.mainFBO.addColor(AttachmentType.TEXTURE, fbFormat);
+            self.mainFBO.addDepth(AttachmentType.TEXTURE);
         }
 
         webgl.onResizeCallback = _onWindowResize;
@@ -49,7 +62,7 @@ export class ForwardRenderer {
         
         this._setupGroups(scene);
 
-        this.mainfbo.bind();
+        this.mainFBO.bind();
 
         webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -90,7 +103,7 @@ export class ForwardRenderer {
             if(firstPass) firstPass = false;
         }
 
-        this.mainfbo.unbind();
+        this.mainFBO.unbind();
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
@@ -101,7 +114,7 @@ export class ForwardRenderer {
         
         this.screenQuad.material.exposure = camera.exposure;
         this._useMaterial(this.screenQuad.material);
-        this.mainfbo.textures.color[0].use(0);
+        this.mainFBO.textures.color[0].use(0);
         this.screenQuad.render();
 
     }

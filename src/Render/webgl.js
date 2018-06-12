@@ -5,8 +5,8 @@ class WebGLConfig{
         this.domElement = canvas || document.createElement('CANVAS');
         this.context = this.domElement.getContext("webgl2");
         this.viewport = {
-            width: this.domElement.innerWidth,
-            height: this.domElement.innerHeight,
+            width: window.innerWidth,
+            height: window.innerHeight,
             aspect: () => { self.viewport.width / self.viewport.height }
         }
 
@@ -18,7 +18,7 @@ class WebGLConfig{
             console.error('Your browser does not support webgl 2.')
         }
 
-        this.isFullscreen = false;
+        this.isFullscreen = true;
 
         this.context.viewport(0, 0, this.viewport.width, this.viewport.height);
         this.onResizeCallback = () => {};

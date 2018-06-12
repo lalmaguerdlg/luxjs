@@ -9,9 +9,6 @@ export { Transform } from './Core/transform'
 export { GameObject } from './Core/gameObject'
 
 export { Component, PhysicsComponent, BehaviourComponent, RenderComponent } from './Core/component'
-export { MeshRenderer } from './Render/Components/meshRenderer'
-export { RenderGroups } from './Render/Renderers/renderGroups'
-export { ForwardRenderer } from './Render/Renderers/forwardRenderer'
 export { Scene } from './Core/scene'
 
 
@@ -41,6 +38,7 @@ export { Mesh } from './Render/Geometry/mesh';
 export { Geometry } from './Render/Geometry/geometry';
 
 export { Texture, TextureFormat, TexturePresets } from './Render/Textures/texture';
+export { RenderBuffer, RenderBufferFormat } from './Render/Textures/renderbuffer';
 export { Framebuffer } from './Render/Textures/framebuffer';
 
 export { Shader } from './Render/shader'
@@ -56,3 +54,7 @@ export { HDRMaterial } from './Render/Materials/Post Process/hdrMaterial'
 export { PointLight } from './Render/Lights/pointLight'
 
 export { Camera } from './Render/camera'
+
+export { MeshRenderer } from './Render/Components/meshRenderer'
+export { RenderGroups } from './Render/Renderers/renderGroups'
+export { ForwardRenderer } from './Render/Renderers/forwardRenderer'
