@@ -1,11 +1,20 @@
 import { gl } from '../webgl'
 import { AttributePointer } from './attributePointer';
+import { vec3, vec2 } from 'gl-matrix';
+
 
 export class Vertex{
     constructor(vertex, normal, uv){
-        this.position = vertex || [0.0, 0.0, 0.0];
-        this.normal = normal || [0.0, 1.0, 0.0];
-        this.uv = uv || [0.0, 0.0];
+        this.position = vertex || [0.0, 0.0, 0.0]; //vec3.create();
+        this.normal = normal || [0.0, 1.0, 0.0]; //vec3.fromValues(0.0, 1.0, 0.0);
+        this.uv = uv || [0.0, 0.0]; //vec2.create();
+    }
+    clone(){
+        let clone = new Vertex();
+        clone.position = this.position.slice();
+        clone.normal = this.normal.slice();
+        clone.uv = this.uv.slice();
+        return clone;
     }
     toArray(){
         let result = this.position;

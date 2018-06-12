@@ -16,6 +16,12 @@ function main() {
         diffuse: [1.0, 0.5, 0.2]
     });
 
+    let lambertMaterial2 = new lux.PhongMaterial({
+        //drawMode: gl.LINE_STRIP,
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2]
+    });
+
     cubeMesh = new lux.Geometry.Box(1, 1, 1);
 
     let cube = new lux.GameObject();
@@ -26,11 +32,11 @@ function main() {
     cube.attach(new lux.MeshRenderer(cubeMesh, lambertMaterial));
     cube.attach(new lux.Rigidbody());
 
-
-    //cube2.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
-    //cube2.attach(new lux.Rigidbody());
-    //cube3.attach(new lux.MeshRenderer(cubeMesh, basicMaterial));
-    //cube3.attach(new lux.Rigidbody());
+    let sphereMesh = new lux.Geometry.Sphere(1, 16, 16);
+    let sphere = new lux.GameObject();
+    sphere.attach(new lux.MeshRenderer(sphereMesh, lambertMaterial2));
+    sphere.transform.position[0] = 3.0;
+    sphere.name = 'sphere';
 
 
     let cube2 = cube.clone();
@@ -38,11 +44,8 @@ function main() {
 
     lux.vec3.set(cube.transform.position, 0, 0, 0);
     lux.vec3.set(cube2.transform.position, 0, 1.0, 0.5);
-    //cube.transform.position[2] = 2;
 
     cube.transform.setEuler(0, 180, 0);
-    //cube.transform.setScale([1.0, 0.5, 1.0]);
-    //cube2.transform.setScale([0.5, 0.5, 0.5]);
 
 
     let light = new lux.PointLight({
@@ -54,7 +57,7 @@ function main() {
     let light2 = new lux.PointLight({
         position: [0.0, 0.0, 0.0],
         color: [0.0, 1.0, 1.0],
-        intensity: 0.1
+        intensity: 0.3
     });
 
     let camera = new lux.Camera();
@@ -67,8 +70,9 @@ function main() {
     //lux.vec3.set(cameraPos, 5.0, 5.0, 20.0);
     lux.mat4.lookAt(camera.mView, camera.transform.position, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
-    scene.add(cube);
-    scene.add(cube2);
+    //scene.add(cube);
+    //scene.add(cube2);
+    scene.add(sphere);
     scene.add(light);
     scene.add(light2);
     scene.add(camera);
@@ -92,16 +96,19 @@ function render(dt){
 
     let cube = scene.findObjectWithName('cube');
     let cube2 = scene.findObjectWithName('cube2');
+    let sphere = scene.findObjectWithName('sphere');
     
-    
-    let distance = lux.vec3.create();
-    lux.vec3.sub(distance, cube2.transform.position, cube.transform.position);
-    cube.getComponent(lux.Rigidbody).applyForce(distance);
+    if(cube && cube2){
+        let distance = lux.vec3.create();
+        lux.vec3.sub(distance, cube2.transform.position, cube.transform.position);
+        cube.getComponent(lux.Rigidbody).applyForce(distance);
 
-    lux.vec3.sub(distance, cube.transform.position,cube2.transform.position);
-    cube2.getComponent(lux.Rigidbody).applyForce(distance);
-    
-
+        lux.vec3.sub(distance, cube.transform.position,cube2.transform.position);
+        cube2.getComponent(lux.Rigidbody).applyForce(distance);
+        
+    }
+    sphere.transform.setEuler(0, t * 90, 0);
+    lux.vec3.set(sphere.transform.position, Math.sin(t) + 2, 0, 0);
 
     //lux.vec3.set(cube.transform.position, Math.sin(t), 0, 0);
     //cube.transform.setEuler(0, t * 90, 0);

@@ -21,36 +21,22 @@ let shaderSource = {
 
         in vec2 texCoords;
 
-        uniform sampler2D u_texture;
-        uniform float u_exposure;
+        uniform sampler2D u_depthTexture;
 
         out vec4 outColor;
         void main(void) {
-            const float gamma = 2.2;
-
-            vec3 hdrColor = texture(u_texture, texCoords).rgb;
-
-            //Reinhard tone mapping
-            //vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
-            
-            // Exposure tone mapping
-            vec3 mapped = vec3(1.0) - exp(-hdrColor * u_exposure);
-            
-            // Gamma correction 
-            mapped = pow(mapped, vec3(1.0 / gamma));
-
-            outColor = vec4(mapped, 1.0);
+            float depthValue = texture(u_depthTexture, texCoords).r;
+            outColor = vec4(vec3(depthValue), 1.0);
         }`,
 }
 
 
-export class HDRMaterial extends BaseMaterial {
+export class DepthMaterial extends BaseMaterial {
     constructor(vargs){
         let args = vargs || {};
         args['tag'] = args['tag'] || MaterialTag.postprocess;
-        let shader = RM.createShader('hdr-shader', shaderSource.vs, shaderSource.ps);
+        let shader = RM.createShader('depth-shader', shaderSource.vs, shaderSource.ps);
         super(shader, args);
-        this.exposure = 1.0;
     }
 
     setup(){
@@ -59,7 +45,6 @@ export class HDRMaterial extends BaseMaterial {
 
     update() {
         super.update();
-        this.shader.setInt('u_texture', 0);
-        this.shader.setFloat('u_exposure', this.exposure);
+        this.shader.setInt('u_depthTexture', 0);
     }
 } 

@@ -42,7 +42,6 @@ export let TexturePresets = {
     },
     
     FB_DEPTH: () => { 
-        
         return new TextureFormat({
             internalFormat: gl.DEPTH_COMPONENT24,
             format: gl.DEPTH_COMPONENT,
