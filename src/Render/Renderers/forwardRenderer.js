@@ -41,6 +41,20 @@ export class ForwardRenderer {
         webgl.onResizeCallback = _onWindowResize;
     }
 
+    setMSAA(samples) {
+        if (samples <= 1) {
+            this.msaa.enabled = false;
+        }
+        else {
+            this.msaa.samples = samples;
+            if (this.msaa.samples > 8)
+                this.msaa.samples = 8;
+            this.msaa.enabled = true;
+        }
+
+        this._configureMSAA();
+    }
+
     _configureMSAA() {
         if (this.msaa.enabled) {
             if (this.msaa.fbo) this.msaa.fbo.dispose();
@@ -57,20 +71,6 @@ export class ForwardRenderer {
         this.hdrFBO.addColor(AttachmentType.TEXTURE, fbFormat);
         this.hdrFBO.addDepth(AttachmentType.TEXTURE);
     }
-
-    setMSAA(samples){
-        if(samples <= 1) {
-            this.msaa.enabled = false;
-        }
-        else{
-            this.msaa.samples = samples;
-            if (this.msaa.samples > 8)
-                this.msaa.samples = 8;
-            this.msaa.enabled = true;
-        }
-        
-        this._configureMSAA();
-    }    
 
     render(scene) {
         let camera = this.defaultCamera;
