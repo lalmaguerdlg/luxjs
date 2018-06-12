@@ -8,6 +8,7 @@
 - Add **Prefab** class or a way to store content
 - Add a way to clone Game Objects
 
+
 ## Rendering
 - ~~Add **Textures**~~
 - ~~Add **MeshRenderer** component class to combine Mesh and Material~~ and link Transform variables
@@ -28,6 +29,7 @@
 - ~~Add **RigidBody** component class to handle simple motion using netwon laws of motion.~~
 - Add simple collision logic
 - Communicate collision events to subscribed component methods
+- Fix my timestep
 
 ## Game
 - Add **Vehicle** component class to handle steering behaviour
