@@ -16,7 +16,7 @@ export class Framebuffer{
         this.width = width;
         this.height = height;
 
-        this.textures = {
+        this.attachments = {
             color: [],
             depth: undefined,
             stencil: undefined,
@@ -30,7 +30,7 @@ export class Framebuffer{
     }
 
     addColor(attachmentType, colorFormat){
-        let attachmentOffset = this.textures.color.length;
+        let attachmentOffset = this.attachments.color.length;
         let overflow = false;
         if(attachmentOffset > COLORATTACHMENTMAX) {
             attachmentOffset = COLORATTACHMENTMAX;
@@ -62,10 +62,10 @@ export class Framebuffer{
         }
 
         if (!overflow)
-            this.textures.color.push(attachment);
+            this.attachments.color.push(attachment);
         else {
-            this.textures.color[attachmentOffset].dispose();
-            this.textures.color[attachmentOffset] = attachment;
+            this.attachments.color[attachmentOffset].dispose();
+            this.attachments.color[attachmentOffset] = attachment;
         }
 
         this.unbind();
@@ -92,7 +92,7 @@ export class Framebuffer{
             attachment = new RenderBuffer(this.depthFormat, this.width, this.height);
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, attachment.buffer);
         }
-        this.textures.depth = attachment;
+        this.attachments.depth = attachment;
         this.bind();
     }
 
@@ -114,34 +114,34 @@ export class Framebuffer{
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this.fbo);
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target.fbo);
 
-        if (this.textures.color.length == 1) {
+        if (this.attachments.color.length == 1) {
             
             gl.blitFramebuffer(
-                0, 0, this.width, this.width,
+                0, 0, this.width, this.height,
                 0, 0, target.width, target.height,
                 bitMask, filtering);
         }
         else {
             let lastAttachment = 0;
-            for(let i = 0; i < this.textures.color.length; i++) {
-                if( i >= target.color.textures.length) return;
+            for(let i = 0; i < this.attachments.color.length; i++) {
+                if( i >= target.attachments.color.length) return;
                 gl.readBuffer(gl.COLOR_ATTACHMENT0 + i);
-                gl.drawBuffers([target.textures.color[i]]);
+                gl.drawBuffers([target.attachments.color[i]]);
                 gl.blitFramebuffer(
-                    0, 0, this.width, this.width,
+                    0, 0, this.width, this.height,
                     0, 0, target.width, target.height,
                     bitMask, filtering);
             }
             
-            if (this.textures.color.length < target.color.textures.length){
+            if (this.attachments.color.length < target.attachments.color.length){
                 gl.readBuffer(gl.COLOR_ATTACHMENT0 + lastAttachment);
                 let buffers = [];
-                for(let i = lastAttachment; i < target.textures.color.length; i++){
-                    buffers.push(target.textures.color[i]);
+                for(let i = lastAttachment; i < target.attachments.color.length; i++){
+                    buffers.push(target.attachments.color[i]);
                 }
                 gl.drawBuffers(buffers);
                 gl.blitFramebuffer(
-                    0, 0, this.width, this.width,
+                    0, 0, this.width, this.height,
                     0, 0, target.width, target.height,
                     bitMask, filtering);
                 
@@ -160,7 +160,7 @@ export class Framebuffer{
             this.binded = true;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
             let drawBuffers = [];
-            for(let i = 0; i < this.textures.color.length; i++){
+            for(let i = 0; i < this.attachments.color.length; i++){
                 drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
             }
             gl.drawBuffers(drawBuffers);
@@ -176,16 +176,16 @@ export class Framebuffer{
     }
 
     dispose() {
-        for (let textureT in this.textures) {
-            let t = this.textures[this.textureT]
-            if (t) {
-                if (Array.isArray(t)) {
-                    for (let tex of t) {
-                        tex.dispose();
+        for (let attachment in this.attachments) {
+            let a = this.attachments[attachment]
+            if (a) {
+                if (Array.isArray(a)) {
+                    for (let att of a) {
+                        att.dispose();
                     }
                 }
                 else {
-                    t.dispose();
+                    a.dispose();
                 }
             }
         }

@@ -466,20 +466,6 @@ class WebGLConfig{
 
 let webgl = new WebGLConfig();
 let gl = webgl.context;
-
-function glLoop(callback){
-    let lastTime = 0;
-    function _glLoop(nowTime){
-        nowTime *= 0.001; // Convert time to seconds
-        let deltaTime = nowTime - lastTime;
-        callback(deltaTime);
-        lastTime = nowTime;
-        requestAnimationFrame(_glLoop);
-    }
-    requestAnimationFrame(_glLoop);
-}
-
-
 // CONCATENATED MODULE: ./node_modules/gl-matrix/src/gl-matrix/common.js
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
@@ -7653,7 +7639,7 @@ class framebuffer_Framebuffer{
         this.width = width;
         this.height = height;
 
-        this.textures = {
+        this.attachments = {
             color: [],
             depth: undefined,
             stencil: undefined,
@@ -7667,7 +7653,7 @@ class framebuffer_Framebuffer{
     }
 
     addColor(attachmentType, colorFormat){
-        let attachmentOffset = this.textures.color.length;
+        let attachmentOffset = this.attachments.color.length;
         let overflow = false;
         if(attachmentOffset > framebuffer_COLORATTACHMENTMAX) {
             attachmentOffset = framebuffer_COLORATTACHMENTMAX;
@@ -7699,10 +7685,10 @@ class framebuffer_Framebuffer{
         }
 
         if (!overflow)
-            this.textures.color.push(attachment);
+            this.attachments.color.push(attachment);
         else {
-            this.textures.color[attachmentOffset].dispose();
-            this.textures.color[attachmentOffset] = attachment;
+            this.attachments.color[attachmentOffset].dispose();
+            this.attachments.color[attachmentOffset] = attachment;
         }
 
         this.unbind();
@@ -7729,7 +7715,7 @@ class framebuffer_Framebuffer{
             attachment = new renderbuffer_RenderBuffer(this.depthFormat, this.width, this.height);
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, attachment.buffer);
         }
-        this.textures.depth = attachment;
+        this.attachments.depth = attachment;
         this.bind();
     }
 
@@ -7751,34 +7737,34 @@ class framebuffer_Framebuffer{
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this.fbo);
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target.fbo);
 
-        if (this.textures.color.length == 1) {
+        if (this.attachments.color.length == 1) {
             
             gl.blitFramebuffer(
-                0, 0, this.width, this.width,
+                0, 0, this.width, this.height,
                 0, 0, target.width, target.height,
                 bitMask, filtering);
         }
         else {
             let lastAttachment = 0;
-            for(let i = 0; i < this.textures.color.length; i++) {
-                if( i >= target.color.textures.length) return;
+            for(let i = 0; i < this.attachments.color.length; i++) {
+                if( i >= target.attachments.color.length) return;
                 gl.readBuffer(gl.COLOR_ATTACHMENT0 + i);
-                gl.drawBuffers([target.textures.color[i]]);
+                gl.drawBuffers([target.attachments.color[i]]);
                 gl.blitFramebuffer(
-                    0, 0, this.width, this.width,
+                    0, 0, this.width, this.height,
                     0, 0, target.width, target.height,
                     bitMask, filtering);
             }
             
-            if (this.textures.color.length < target.color.textures.length){
+            if (this.attachments.color.length < target.attachments.color.length){
                 gl.readBuffer(gl.COLOR_ATTACHMENT0 + lastAttachment);
                 let buffers = [];
-                for(let i = lastAttachment; i < target.textures.color.length; i++){
-                    buffers.push(target.textures.color[i]);
+                for(let i = lastAttachment; i < target.attachments.color.length; i++){
+                    buffers.push(target.attachments.color[i]);
                 }
                 gl.drawBuffers(buffers);
                 gl.blitFramebuffer(
-                    0, 0, this.width, this.width,
+                    0, 0, this.width, this.height,
                     0, 0, target.width, target.height,
                     bitMask, filtering);
                 
@@ -7797,7 +7783,7 @@ class framebuffer_Framebuffer{
             this.binded = true;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
             let drawBuffers = [];
-            for(let i = 0; i < this.textures.color.length; i++){
+            for(let i = 0; i < this.attachments.color.length; i++){
                 drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
             }
             gl.drawBuffers(drawBuffers);
@@ -7813,16 +7799,16 @@ class framebuffer_Framebuffer{
     }
 
     dispose() {
-        for (let textureT in this.textures) {
-            let t = this.textures[this.textureT]
-            if (t) {
-                if (Array.isArray(t)) {
-                    for (let tex of t) {
-                        tex.dispose();
+        for (let attachment in this.attachments) {
+            let a = this.attachments[attachment]
+            if (a) {
+                if (Array.isArray(a)) {
+                    for (let att of a) {
+                        att.dispose();
                     }
                 }
                 else {
-                    t.dispose();
+                    a.dispose();
                 }
             }
         }
@@ -7915,43 +7901,60 @@ class forwardRenderer_ForwardRenderer {
 
         this.renderGroups = new renderGroups_RenderGroups();
 
-        this.msaa = {
-            enabled: true,
-            samples: 4,
-            fbo: undefined,
-        }
-
-        if (this.msaa.enabled) {
-            this.msaa.fbo = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
-            this.msaa.fbo.addColor(framebuffer_AttachmentType.RENDERBUFFER, new renderbuffer_RenderBufferFormat(gl.RGBA8, true, this.msaa.samples));
-            this.msaa.fbo.addDepth(framebuffer_AttachmentType.RENDERBUFFER, new renderbuffer_RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
-        }
-
-        this.mainFBO = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
-        let fbFormat = texture_TexturePresets.FB_HDR_COLOR();
-        this.mainFBO.addColor(framebuffer_AttachmentType.TEXTURE, fbFormat);
-        this.mainFBO.addDepth(framebuffer_AttachmentType.TEXTURE);
+        this._configureHDR();
 
         let hdrMaterial = new hdrMaterial_HDRMaterial();
         let quad = new geometry_Geometry.Quad(2.0);
 
         this.screenQuad = new meshRenderer_MeshRenderer(quad, hdrMaterial);
 
+        this.msaa = {
+            enabled: false,
+            samples: 4,
+            fbo: undefined,
+        }
+
+        this._configureMSAA();
+
         let self = this;
         function _onWindowResize(){
-            if(self.mainFBO) self.mainFBO.dispose();
-            self.mainFBO = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
-            
-            let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
-        
-            self.mainFBO.addColor(framebuffer_AttachmentType.TEXTURE, fbFormat);
-            self.mainFBO.addDepth(framebuffer_AttachmentType.TEXTURE);
+            self._configureHDR();
+            self._configureMSAA();
         }
 
         webgl.onResizeCallback = _onWindowResize;
     }
 
-    
+    _configureMSAA() {
+        if (this.msaa.enabled) {
+            if (this.msaa.fbo) this.msaa.fbo.dispose();
+            this.msaa.fbo = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            this.msaa.fbo.addColor(framebuffer_AttachmentType.RENDERBUFFER, new renderbuffer_RenderBufferFormat(gl.RGBA16F, true, this.msaa.samples));
+            this.msaa.fbo.addDepth(framebuffer_AttachmentType.RENDERBUFFER, new renderbuffer_RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
+        }
+    }
+
+    _configureHDR() {
+        let fbFormat = texture_TexturePresets.FB_HDR_COLOR();
+        if (this.hdrFBO) this.hdrFBO.dispose();
+        this.hdrFBO = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.hdrFBO.addColor(framebuffer_AttachmentType.TEXTURE, fbFormat);
+        this.hdrFBO.addDepth(framebuffer_AttachmentType.TEXTURE);
+    }
+
+    setMSAA(samples){
+        if(samples <= 1) {
+            this.msaa.enabled = false;
+        }
+        else{
+            this.msaa.samples = samples;
+            if (this.msaa.samples > 8)
+                this.msaa.samples = 8;
+            this.msaa.enabled = true;
+        }
+        
+        this._configureMSAA();
+    }    
 
     render(scene) {
         let camera = this.defaultCamera;
@@ -7960,7 +7963,12 @@ class forwardRenderer_ForwardRenderer {
         
         this._setupGroups(scene);
 
-        this.mainFBO.bind();
+        if(this.msaa.enabled){
+            this.msaa.fbo.bind();
+        }
+        else{
+            this.hdrFBO.bind();
+        }
 
         webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -8001,7 +8009,14 @@ class forwardRenderer_ForwardRenderer {
             if(firstPass) firstPass = false;
         }
 
-        this.mainFBO.unbind();
+        if (this.msaa.enabled) {
+            this.msaa.fbo.unbind();
+            this.msaa.fbo.blit(this.hdrFBO, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+        }
+        else {
+            this.hdrFBO.unbind();
+        }
+        
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
@@ -8012,7 +8027,7 @@ class forwardRenderer_ForwardRenderer {
         
         this.screenQuad.material.exposure = camera.exposure;
         this._useMaterial(this.screenQuad.material);
-        this.mainFBO.textures.color[0].use(0);
+        this.hdrFBO.attachments.color[0].use(0);
         this.screenQuad.render();
 
     }
@@ -8368,13 +8383,14 @@ class physicsSimulation_PhysicsSimulation{
 
 class core_Core {
 	constructor() {
-		this.physicsSimulation =  new physicsSimulation_PhysicsSimulation();
-		this.forwardRenderer = new forwardRenderer_ForwardRenderer();
+		this.simulation =  new physicsSimulation_PhysicsSimulation();
+		this.renderer = new forwardRenderer_ForwardRenderer();
 		this.currentScene = undefined;
 		this.time = {
 			deltaTime: 0,
 			elapsedTime: 0,
 		}
+		this.running = false;
 	}
 
 	useScene(scene) {
@@ -8427,14 +8443,14 @@ class core_Core {
 			}
 
 			// Physics
-			this.physicsSimulation.simulate(this.time, physics);
+			this.simulation.simulate(this.time, physics);
 
 			// Behaviours
 			this.update(behaviours);
 			this.lateUpdate(behaviours);
 
 			// Rendering
-			this.forwardRenderer.render(this.currentScene);
+			this.renderer.render(this.currentScene);
 		}
 	}
 
@@ -8453,8 +8469,34 @@ class core_Core {
 	}
 }
 
-let core_luxCore = new core_Core();
-let core_physicsSimulation = core_luxCore.physicsSimulation;
+let core_core = new core_Core();
+let core_simulation = core_core.simulation;
+let core_renderer = core_core.renderer;
+
+function core_useScene(scene) {
+	core_core.useScene(scene);
+}
+
+function core_swapScene(scene){
+	core_core.swapScene(scene);
+}
+
+function core_run() {
+	core_core.run();
+}
+
+function core_loop(callback) {
+	let lastTime = 0;
+	function _loop(nowTime) {
+		nowTime *= 0.001; // Convert time to seconds
+		let deltaTime = nowTime - lastTime;
+		callback(deltaTime);
+		lastTime = nowTime;
+		requestAnimationFrame(_loop);
+	}
+	requestAnimationFrame(_loop);
+}
+
 // CONCATENATED MODULE: ./src/Physics/Components/rigidbody.js
 
 
@@ -8940,8 +8982,13 @@ class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
     }
 } 
 // CONCATENATED MODULE: ./src/lux.js
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "luxCore", function() { return core_luxCore; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "physicsSimulation", function() { return core_physicsSimulation; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "core", function() { return core_core; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "simulation", function() { return core_simulation; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "renderer", function() { return core_renderer; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "useScene", function() { return core_useScene; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "swapScene", function() { return core_swapScene; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "run", function() { return core_run; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "loop", function() { return core_loop; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RM", function() { return resourceManager_RM; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Transform", function() { return transform_Transform; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GameObject", function() { return gameObject_GameObject; });
@@ -8963,7 +9010,7 @@ class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Rigidbody", function() { return rigidbody_Rigidbody; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "webgl", function() { return webgl; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "gl", function() { return gl; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glLoop", function() { return glLoop; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "glLoop", function() { return /* Cannot get final name for export "glLoop" in "./src/Render/webgl.js" (known exports: webgl gl, known reexports: ) */ undefined; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return AttributePointer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vertex", function() { return vertex_Vertex; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return vertex_VERTEX_LAYOUT; });
@@ -8976,6 +9023,7 @@ class texturedMaterial_TexturedMaterial extends baseMaterial_BaseMaterial{
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RenderBuffer", function() { return renderbuffer_RenderBuffer; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RenderBufferFormat", function() { return renderbuffer_RenderBufferFormat; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Framebuffer", function() { return framebuffer_Framebuffer; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return framebuffer_AttachmentType; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Shader", function() { return shader_Shader; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return baseMaterial_BaseMaterial; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return baseMaterial_MaterialTag; });

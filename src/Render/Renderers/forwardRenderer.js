@@ -17,43 +17,60 @@ export class ForwardRenderer {
 
         this.renderGroups = new RenderGroups();
 
-        this.msaa = {
-            enabled: true,
-            samples: 4,
-            fbo: undefined,
-        }
-
-        if (this.msaa.enabled) {
-            this.msaa.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
-            this.msaa.fbo.addColor(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.RGBA8, true, this.msaa.samples));
-            this.msaa.fbo.addDepth(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
-        }
-
-        this.mainFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
-        let fbFormat = TexturePresets.FB_HDR_COLOR();
-        this.mainFBO.addColor(AttachmentType.TEXTURE, fbFormat);
-        this.mainFBO.addDepth(AttachmentType.TEXTURE);
+        this._configureHDR();
 
         let hdrMaterial = new HDRMaterial();
         let quad = new Geometry.Quad(2.0);
 
         this.screenQuad = new MeshRenderer(quad, hdrMaterial);
 
+        this.msaa = {
+            enabled: false,
+            samples: 4,
+            fbo: undefined,
+        }
+
+        this._configureMSAA();
+
         let self = this;
         function _onWindowResize(){
-            if(self.mainFBO) self.mainFBO.dispose();
-            self.mainFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
-            
-            let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
-        
-            self.mainFBO.addColor(AttachmentType.TEXTURE, fbFormat);
-            self.mainFBO.addDepth(AttachmentType.TEXTURE);
+            self._configureHDR();
+            self._configureMSAA();
         }
 
         webgl.onResizeCallback = _onWindowResize;
     }
 
-    
+    _configureMSAA() {
+        if (this.msaa.enabled) {
+            if (this.msaa.fbo) this.msaa.fbo.dispose();
+            this.msaa.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            this.msaa.fbo.addColor(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.RGBA16F, true, this.msaa.samples));
+            this.msaa.fbo.addDepth(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
+        }
+    }
+
+    _configureHDR() {
+        let fbFormat = TexturePresets.FB_HDR_COLOR();
+        if (this.hdrFBO) this.hdrFBO.dispose();
+        this.hdrFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.hdrFBO.addColor(AttachmentType.TEXTURE, fbFormat);
+        this.hdrFBO.addDepth(AttachmentType.TEXTURE);
+    }
+
+    setMSAA(samples){
+        if(samples <= 1) {
+            this.msaa.enabled = false;
+        }
+        else{
+            this.msaa.samples = samples;
+            if (this.msaa.samples > 8)
+                this.msaa.samples = 8;
+            this.msaa.enabled = true;
+        }
+        
+        this._configureMSAA();
+    }    
 
     render(scene) {
         let camera = this.defaultCamera;
@@ -62,7 +79,12 @@ export class ForwardRenderer {
         
         this._setupGroups(scene);
 
-        this.mainFBO.bind();
+        if(this.msaa.enabled){
+            this.msaa.fbo.bind();
+        }
+        else{
+            this.hdrFBO.bind();
+        }
 
         webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -103,7 +125,14 @@ export class ForwardRenderer {
             if(firstPass) firstPass = false;
         }
 
-        this.mainFBO.unbind();
+        if (this.msaa.enabled) {
+            this.msaa.fbo.unbind();
+            this.msaa.fbo.blit(this.hdrFBO, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+        }
+        else {
+            this.hdrFBO.unbind();
+        }
+        
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LESS);
@@ -114,7 +143,7 @@ export class ForwardRenderer {
         
         this.screenQuad.material.exposure = camera.exposure;
         this._useMaterial(this.screenQuad.material);
-        this.mainFBO.textures.color[0].use(0);
+        this.hdrFBO.attachments.color[0].use(0);
         this.screenQuad.render();
 
     }

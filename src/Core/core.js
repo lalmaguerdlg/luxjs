@@ -5,13 +5,14 @@ import { PhysicsSimulation } from '../Physics/physicsSimulation';
 
 class Core {
 	constructor() {
-		this.physicsSimulation =  new PhysicsSimulation();
-		this.forwardRenderer = new ForwardRenderer();
+		this.simulation =  new PhysicsSimulation();
+		this.renderer = new ForwardRenderer();
 		this.currentScene = undefined;
 		this.time = {
 			deltaTime: 0,
 			elapsedTime: 0,
 		}
+		this.running = false;
 	}
 
 	useScene(scene) {
@@ -64,14 +65,14 @@ class Core {
 			}
 
 			// Physics
-			this.physicsSimulation.simulate(this.time, physics);
+			this.simulation.simulate(this.time, physics);
 
 			// Behaviours
 			this.update(behaviours);
 			this.lateUpdate(behaviours);
 
 			// Rendering
-			this.forwardRenderer.render(this.currentScene);
+			this.renderer.render(this.currentScene);
 		}
 	}
 
@@ -90,5 +91,30 @@ class Core {
 	}
 }
 
-export let luxCore = new Core();
-export let physicsSimulation = luxCore.physicsSimulation;
+export let core = new Core();
+export let simulation = core.simulation;
+export let renderer = core.renderer;
+
+export function useScene(scene) {
+	core.useScene(scene);
+}
+
+export function swapScene(scene){
+	core.swapScene(scene);
+}
+
+export function run() {
+	core.run();
+}
+
+export function loop(callback) {
+	let lastTime = 0;
+	function _loop(nowTime) {
+		nowTime *= 0.001; // Convert time to seconds
+		let deltaTime = nowTime - lastTime;
+		callback(deltaTime);
+		lastTime = nowTime;
+		requestAnimationFrame(_loop);
+	}
+	requestAnimationFrame(_loop);
+}

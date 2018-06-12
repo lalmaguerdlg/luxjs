@@ -1,6 +1,9 @@
 // --------------------------------- Core
 
-export { luxCore, physicsSimulation } from './Core/core';
+export { 
+    core, simulation, renderer,
+    useScene, swapScene, run, loop, 
+} from './Core/core';
 
 
 export { RM } from './Core/resourceManager' // this is sort of a hack for some things.
@@ -39,7 +42,7 @@ export { Geometry } from './Render/Geometry/geometry';
 
 export { Texture, TextureFormat, TexturePresets } from './Render/Textures/texture';
 export { RenderBuffer, RenderBufferFormat } from './Render/Textures/renderbuffer';
-export { Framebuffer } from './Render/Textures/framebuffer';
+export { Framebuffer, AttachmentType } from './Render/Textures/framebuffer';
 
 export { Shader } from './Render/shader'
 export { BaseMaterial, MaterialTag } from './Render/Materials/baseMaterial'

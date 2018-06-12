@@ -71,16 +71,3 @@ class WebGLConfig{
 
 export let webgl = new WebGLConfig();
 export let gl = webgl.context;
-
-export function glLoop(callback){
-    let lastTime = 0;
-    function _glLoop(nowTime){
-        nowTime *= 0.001; // Convert time to seconds
-        let deltaTime = nowTime - lastTime;
-        callback(deltaTime);
-        lastTime = nowTime;
-        requestAnimationFrame(_glLoop);
-    }
-    requestAnimationFrame(_glLoop);
-}
-

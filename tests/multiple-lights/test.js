@@ -15,10 +15,8 @@ function resize(){
     if(framebuffer) framebuffer.dispose();
     framebuffer = new lux.Framebuffer(lux.webgl.viewport.width, lux.webgl.viewport.height);
     let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
-
-    framebuffer.addColor(fbFormat);
-    framebuffer.addColor(fbFormat);
-    framebuffer.addDepth();
+    framebuffer.addColor(lux.AttachmentType.TEXTURE, fbFormat);
+    framebuffer.addDepth(lux.AttachmentType.TEXTURE);
 }
 
 function main() {
@@ -32,9 +30,8 @@ function main() {
     
     framebuffer = new lux.Framebuffer(lux.webgl.viewport.width, lux.webgl.viewport.height);
     let fbFormat = lux.TexturePresets.FB_HDR_COLOR();
-    framebuffer.addColor(fbFormat);
-    framebuffer.addColor(fbFormat);
-    framebuffer.addDepth();
+    framebuffer.addColor(lux.AttachmentType.TEXTURE, fbFormat);
+    framebuffer.addDepth(lux.AttachmentType.TEXTURE);
 
     screenQuad = new lux.Geometry.Quad(2.0);
 
@@ -87,7 +84,7 @@ function main() {
     });
     lights.push(light);
 
-    lux.glLoop(render);
+    lux.loop(render);
 }
 
 let t = 0;
@@ -190,7 +187,7 @@ function render(dt){
     hdrMaterial.setMatrices(mModel, mView, mPerspective);
     hdrMaterial.exposure = cameraExposure;
     hdrMaterial.use();
-    framebuffer.textures.color[0].use(0);
+    framebuffer.attachments.color[0].use(0);
     screenQuad.render(gl.TRIANGLES);
 
     /*
