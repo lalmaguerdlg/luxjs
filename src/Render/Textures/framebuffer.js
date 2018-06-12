@@ -20,9 +20,6 @@ export class Framebuffer{
         this.colorFormat = TexturePresets.FB_COLOR();
 
         this.fbo = gl.createFramebuffer();
-        this.bind();
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, this.width, this.height);
-        this.unbind();
     }
 
     addColor(colorFormat){
