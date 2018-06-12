@@ -16,20 +16,22 @@ export class ForwardRenderer {
         this.defaultCamera = new Camera;
 
         this.renderGroups = new RenderGroups();
-
+        
+        this.hdr = {
+            fbo: undefined,
+        }
         this._configureHDR();
-
         let hdrMaterial = new HDRMaterial();
         let quad = new Geometry.Quad(2.0);
-
         this.screenQuad = new MeshRenderer(quad, hdrMaterial);
+
 
         this.msaa = {
             enabled: false,
             samples: 4,
+            filter: gl.NEAREST,
             fbo: undefined,
-        }
-
+        }        
         this._configureMSAA();
 
         let self = this;
@@ -41,7 +43,7 @@ export class ForwardRenderer {
         webgl.onResizeCallback = _onWindowResize;
     }
 
-    setMSAA(samples) {
+    setMSAA(samples, filter) {
         if (samples <= 1) {
             this.msaa.enabled = false;
         }
@@ -51,6 +53,8 @@ export class ForwardRenderer {
                 this.msaa.samples = 8;
             this.msaa.enabled = true;
         }
+
+        this.msaa.filter = filter || gl.NEAREST;
 
         this._configureMSAA();
     }
@@ -66,10 +70,10 @@ export class ForwardRenderer {
 
     _configureHDR() {
         let fbFormat = TexturePresets.FB_HDR_COLOR();
-        if (this.hdrFBO) this.hdrFBO.dispose();
-        this.hdrFBO = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
-        this.hdrFBO.addColor(AttachmentType.TEXTURE, fbFormat);
-        this.hdrFBO.addDepth(AttachmentType.TEXTURE);
+        if (this.hdr.fbo) this.hdr.fbo.dispose();
+        this.hdr.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.hdr.fbo.addColor(AttachmentType.TEXTURE, fbFormat);
+        this.hdr.fbo.addDepth(AttachmentType.TEXTURE);
     }
 
     render(scene) {
@@ -83,7 +87,7 @@ export class ForwardRenderer {
             this.msaa.fbo.bind();
         }
         else{
-            this.hdrFBO.bind();
+            this.hdr.fbo.bind();
         }
 
         webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
@@ -127,10 +131,10 @@ export class ForwardRenderer {
 
         if (this.msaa.enabled) {
             this.msaa.fbo.unbind();
-            this.msaa.fbo.blit(this.hdrFBO, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+            this.msaa.fbo.blit(this.hdr.fbo, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
         }
         else {
-            this.hdrFBO.unbind();
+            this.hdr.fbo.unbind();
         }
         
 
@@ -143,7 +147,7 @@ export class ForwardRenderer {
         
         this.screenQuad.material.exposure = camera.exposure;
         this._useMaterial(this.screenQuad.material);
-        this.hdrFBO.attachments.color[0].use(0);
+        this.hdr.fbo.attachments.color[0].use(0);
         this.screenQuad.render();
 
     }
