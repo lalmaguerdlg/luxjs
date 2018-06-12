@@ -29,7 +29,6 @@ export class ForwardRenderer {
         this.msaa = {
             enabled: false,
             samples: 4,
-            filter: gl.NEAREST,
             fbo: undefined,
         }        
         this._configureMSAA();
@@ -43,7 +42,7 @@ export class ForwardRenderer {
         webgl.onResizeCallback = _onWindowResize;
     }
 
-    setMSAA(samples, filter) {
+    setMSAA(samples) {
         if (samples <= 1) {
             this.msaa.enabled = false;
         }
@@ -53,8 +52,6 @@ export class ForwardRenderer {
                 this.msaa.samples = 8;
             this.msaa.enabled = true;
         }
-
-        this.msaa.filter = filter || gl.NEAREST;
 
         this._configureMSAA();
     }
@@ -131,7 +128,7 @@ export class ForwardRenderer {
 
         if (this.msaa.enabled) {
             this.msaa.fbo.unbind();
-            this.msaa.fbo.blit(this.hdr.fbo, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+            this.msaa.fbo.blit(this.hdr.fbo, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);    
         }
         else {
             this.hdr.fbo.unbind();

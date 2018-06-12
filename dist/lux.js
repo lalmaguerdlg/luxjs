@@ -7900,20 +7900,21 @@ class forwardRenderer_ForwardRenderer {
         this.defaultCamera = new camera_Camera;
 
         this.renderGroups = new renderGroups_RenderGroups();
-
+        
+        this.hdr = {
+            fbo: undefined,
+        }
         this._configureHDR();
-
         let hdrMaterial = new hdrMaterial_HDRMaterial();
         let quad = new geometry_Geometry.Quad(2.0);
-
         this.screenQuad = new meshRenderer_MeshRenderer(quad, hdrMaterial);
+
 
         this.msaa = {
             enabled: false,
             samples: 4,
             fbo: undefined,
-        }
-
+        }        
         this._configureMSAA();
 
         let self = this;
@@ -7950,10 +7951,10 @@ class forwardRenderer_ForwardRenderer {
 
     _configureHDR() {
         let fbFormat = texture_TexturePresets.FB_HDR_COLOR();
-        if (this.hdrFBO) this.hdrFBO.dispose();
-        this.hdrFBO = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
-        this.hdrFBO.addColor(framebuffer_AttachmentType.TEXTURE, fbFormat);
-        this.hdrFBO.addDepth(framebuffer_AttachmentType.TEXTURE);
+        if (this.hdr.fbo) this.hdr.fbo.dispose();
+        this.hdr.fbo = new framebuffer_Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.hdr.fbo.addColor(framebuffer_AttachmentType.TEXTURE, fbFormat);
+        this.hdr.fbo.addDepth(framebuffer_AttachmentType.TEXTURE);
     }
 
     render(scene) {
@@ -7967,7 +7968,7 @@ class forwardRenderer_ForwardRenderer {
             this.msaa.fbo.bind();
         }
         else{
-            this.hdrFBO.bind();
+            this.hdr.fbo.bind();
         }
 
         webgl.setClearColor(0.0, 0.0, 0.0, 0.0);
@@ -8011,10 +8012,10 @@ class forwardRenderer_ForwardRenderer {
 
         if (this.msaa.enabled) {
             this.msaa.fbo.unbind();
-            this.msaa.fbo.blit(this.hdrFBO, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+            this.msaa.fbo.blit(this.hdr.fbo, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);    
         }
         else {
-            this.hdrFBO.unbind();
+            this.hdr.fbo.unbind();
         }
         
 
@@ -8027,7 +8028,7 @@ class forwardRenderer_ForwardRenderer {
         
         this.screenQuad.material.exposure = camera.exposure;
         this._useMaterial(this.screenQuad.material);
-        this.hdrFBO.attachments.color[0].use(0);
+        this.hdr.fbo.attachments.color[0].use(0);
         this.screenQuad.render();
 
     }
