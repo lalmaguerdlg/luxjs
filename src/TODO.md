@@ -22,6 +22,9 @@
 - Add **LineMaterial** class for rendering lines using geometry shader to expand lines using vertex normals.
 - Improve **Camera** class
 - Add **Particle Systems**
+- Add **Post proceess** pipeline.
+- Add **Bloom** effect.
+
 
 ## Physics
 - Add **Raycast**
