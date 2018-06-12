@@ -82,7 +82,7 @@ function main() {
     lux.run();
 
     lux.loop(render);
-    lux.renderer.setMSAA(false, 4);
+    lux.renderer.setMSAA(4);
 }
 
 let t = 0;
