@@ -1,4 +1,4 @@
 # Luxjs
 lux.js is a 3D rendering library.
 
-This is made for educational porpuses.
+This project was made for educational porpuses.
