@@ -70,8 +70,8 @@ function main() {
     //lux.vec3.set(cameraPos, 5.0, 5.0, 20.0);
     lux.mat4.lookAt(camera.mView, camera.transform.position, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
-    //scene.add(cube);
-    //scene.add(cube2);
+    scene.add(cube);
+    scene.add(cube2);
     scene.add(sphere);
     scene.add(light);
     scene.add(light2);

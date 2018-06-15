@@ -1,20 +1,26 @@
 {
   "name": "luxjs",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "lux.js is a 3D rendering library.",
   "main": "lux.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
+    "@types/gl-matrix": "^2.4.0",
     "gl-matrix": "^2.4.0",
     "webpack-cli": "^2.0.12"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.0.0",
+    "source-map-loader": "^0.2.3",
+    "typescript": "^2.9.2",
+    "typescript-tools": "^0.3.1",
     "webpack": "^4.1.1"
   },
   "scripts": {
     "build": "webpack",
+    "build-show-errors": "webpack --display-error-details",
     "build-min": "webpack --config webpack.config.min.js",
     "build-all": "webpack && webpack --config webpack.config.min.js"
   },
