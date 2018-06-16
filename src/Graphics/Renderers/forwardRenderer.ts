@@ -25,9 +25,7 @@ export class ForwardRenderer {
     private screenQuad : MeshRenderer
     private msaa : { enabled : boolean, samples : number, fbo ?: Framebuffer }
 
-    private _onWindowResize : () => void
-
-    private onResizeCallback : (viewport : Viewport) => void
+    private _onWindowResize: (viewport: Viewport) => void
 
     constructor(){
         this.defaultCamera = new Camera;
@@ -35,7 +33,7 @@ export class ForwardRenderer {
 
         this._configureHDR();
 
-        let hdrMaterial = new HDRMaterial({});
+        let hdrMaterial = new HDRMaterial();
         let quad = Geometry.Quad(2.0);
         this.screenQuad = new MeshRenderer(quad, hdrMaterial);
 
@@ -48,7 +46,7 @@ export class ForwardRenderer {
         this._configureMSAA();
 
         let self = this;
-        this._onWindowResize = () => {
+        this._onWindowResize = (viewport: Viewport) => {
             self._configureHDR();
             self._configureMSAA();
         }

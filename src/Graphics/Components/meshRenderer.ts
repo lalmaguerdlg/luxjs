@@ -6,7 +6,7 @@ export class MeshRenderer extends RenderComponent {
     mesh : Mesh;
     material : BaseMaterial;
 
-    constructor(mesh, material){
+    constructor(mesh : Mesh, material : BaseMaterial) {
         super();
         this.mesh = mesh;
         this.material = material;
