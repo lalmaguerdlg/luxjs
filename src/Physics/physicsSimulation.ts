@@ -3,7 +3,6 @@ import { ITime } from "../Core/time";
 import { PhysicsComponent } from "../Core/component";
 import { Rigidbody } from "./Components/rigidbody";
 
-
 export class PhysicsSimulation{
     useGravity : boolean = true;
     gravity : vec3 = vec3.create();

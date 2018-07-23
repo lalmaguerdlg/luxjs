@@ -1,8 +1,7 @@
+/*
 let gl;
-let basicMaterial;
-let vertexDispMaterial;
-
 let light;
+let camera;
 
 function main() {
 
@@ -103,5 +102,97 @@ function getShaderSource(id){
     return shaderText;
 }
 
+
+$(document).ready(main);
+*/
+
+let gl;
+let light;
+let scene;
+let camera;
+
+function main() {
+
+    lux.webgl.fullscreen(true);
+
+    $('#canvasContainer').append(lux.webgl.domElement);
+    gl = lux.gl;
+
+    scene = new lux.Scene();
+
+    light = new lux.PointLight({
+        position: [0.0, 2.0, 0.0],
+        color: [1.0, 1.0, 1.0],
+        intensity: 10.0
+    });
+
+    let basicMaterial = new lux.BasicMaterial();
+    let vertexDispMaterial = new VertexDispMaterial({
+        ambient: [1.0, 0.5, 0.2],
+        diffuse: [1.0, 0.5, 0.2],
+        specular: [1.0, 1.0, 1.0],
+        shininess: 16,
+        light: light,
+        influenceRange: 4.0
+    });
+
+    let cubeMesh = new lux.Geometry.Box(1.0, 1.0, 1.0);
+
+    let cubeGo = new lux.GameObject();
+    cubeGo.attach(new lux.MeshRenderer(cubeMesh, vertexDispMaterial));
+
+    for(let j = 0; j < 10; j++) {
+        for(let i = 0; i < 10; i++) {
+            let go = cubeGo.clone();
+            go.transform.position = [j, i, 0.0];
+            scene.add(go);
+        }
+    }
+    
+
+    let lightCube = cubeGo.clone();
+    lightCube.getComponent(lux.MeshRenderer).material = basicMaterial;
+    lightCube.transform.scale = [0.2, 0.2, 0.2];
+    lightCube.transform.position = light.position;
+    lightCube.name = "lightCube";
+
+
+    camera = new lux.Camera();
+
+    scene.add(camera);
+    scene.add(lightCube);
+    scene.add(light);
+
+    lux.useScene(scene);
+    lux.simulation.useGravity = false;
+    lux.run();
+    lux.loop(render);
+    lux.renderer.setMSAA(4);
+}
+
+let t = 0;
+
+let mModel = lux.mat4.create();
+let mView = lux.mat4.create();
+let mPerspective = lux.mat4.create();
+let mNormal = lux.mat4.create();
+
+let cameraPos = lux.vec3.create();
+
+function render(dt){
+    t += dt;
+
+    lux.mat4.identity(camera.mView);
+    lux.mat4.perspective(camera.mPerspective, 45, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
+    lux.vec3.set(camera.transform.position, Math.sin(t*0.5) * 20.0 + 5.0, 5.0, Math.cos(t*0.5) * 20.0);
+    lux.mat4.lookAt(camera.mView, camera.transform.position, [5.0,5.0,0.0], [0.0, 1.0, 0.0]);
+
+    
+    let lightTravel = 3.0;
+    let absSinT = Math.abs(Math.sin(t)) * lightTravel;
+    let absCosT = Math.abs(Math.cos(t)) * lightTravel;
+    lux.vec3.set(light.position, Math.cos(t) * lightTravel + 5.0, Math.sin(t) * lightTravel + 5.0, 2.0);//Math.sin(t*2.0)*5.0);
+       
+}
 
 $(document).ready(main);

@@ -26,9 +26,6 @@ function main() {
 
     let cube = new lux.GameObject();
     cube.name = 'cube';
-    //cube2 = new lux.GameObject();
-    //cube3 = new lux.GameObject();
-
     cube.attach(new lux.MeshRenderer(cubeMesh, lambertMaterial));
     cube.attach(new lux.Rigidbody());
 
@@ -61,13 +58,9 @@ function main() {
     });
 
     let camera = new lux.Camera();
-
     lux.mat4.identity(camera.mView);
-
     lux.mat4.perspective(camera.mPerspective, 45, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
-
     lux.vec3.set(camera.transform.position, 0, 5, 5);
-    //lux.vec3.set(cameraPos, 5.0, 5.0, 20.0);
     lux.mat4.lookAt(camera.mView, camera.transform.position, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
     scene.add(cube);
@@ -77,14 +70,9 @@ function main() {
     scene.add(light2);
     scene.add(camera);
 
-    //cube.getComponent(lux.Rigidbody).applyForce([-5.0, 20.0, 0.0]);
-    //cube2.getComponent(lux.Rigidbody).applyForce([5.0, 20.0, 0.0]);
-
     lux.useScene(scene);
-
     lux.simulation.useGravity = false;
     lux.run();
-
     lux.loop(render);
     lux.renderer.setMSAA(4);
 }
@@ -109,11 +97,6 @@ function render(dt){
     }
     sphere.transform.setEuler(0, t * 90, 0);
     lux.vec3.set(sphere.transform.position, Math.sin(t) + 2, 0, 0);
-
-    //lux.vec3.set(cube.transform.position, Math.sin(t), 0, 0);
-    //cube.transform.setEuler(0, t * 90, 0);
-    //lux.vec3.set(cube2.transform.position, Math.sin(t) + 2, 0, 0);
-    //cube2.transform.setEuler(0, t * -90, 0);
 }
 
 

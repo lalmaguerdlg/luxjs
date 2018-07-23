@@ -21,7 +21,7 @@ export class ForwardRenderer {
     defaultCamera : Camera;
 
     private renderGroups : RenderGroups
-    private hdr : { fbo : Framebuffer }
+    private hdr : { material: HDRMaterial, fbo ?: Framebuffer }
     private screenQuad : MeshRenderer
     private msaa : { enabled : boolean, samples : number, fbo ?: Framebuffer }
 
@@ -31,11 +31,13 @@ export class ForwardRenderer {
         this.defaultCamera = new Camera;
         this.renderGroups = new RenderGroups();
 
+        this.hdr = {
+            material : new HDRMaterial()
+        };
         this._configureHDR();
 
-        let hdrMaterial = new HDRMaterial();
         let quad = Geometry.Quad(2.0);
-        this.screenQuad = new MeshRenderer(quad, hdrMaterial);
+        this.screenQuad = new MeshRenderer(quad, this.hdr.material);
 
 
         this.msaa = {
@@ -136,9 +138,9 @@ export class ForwardRenderer {
         webgl.setClearColor(1.0, 1.0, 1.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        
-        (this.screenQuad.material as HDRMaterial).exposure = camera.exposure;
-        this._useMaterial(this.screenQuad.material);
+
+        this.hdr.material.exposure = camera.exposure;
+        this._useMaterial(this.hdr.material);
         this.hdr.fbo!.attachments.color[0].use(0);
         this.screenQuad.render();
 
@@ -159,7 +161,7 @@ export class ForwardRenderer {
         if(this.hdr) {
             if (this.hdr.fbo) this.hdr.fbo.dispose();
         }
-        this.hdr = { fbo: new Framebuffer(webgl.viewport.width, webgl.viewport.height) }
+        this.hdr.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
         this.hdr.fbo.addColor(AttachmentType.TEXTURE, fbFormat);
         this.hdr.fbo.addDepth(AttachmentType.TEXTURE);
     }

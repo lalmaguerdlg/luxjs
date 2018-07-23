@@ -46,17 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -85,55 +100,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!*************************************************!*\
   !*** ./node_modules/gl-matrix/src/gl-matrix.js ***!
   \*************************************************/
-/*! exports provided: glMatrix, mat2, mat2d, mat3, mat4, quat, vec2, vec3, vec4 */
+/*! exports provided: glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _gl_matrix_common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gl-matrix/common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return _gl_matrix_common__WEBPACK_IMPORTED_MODULE_0__; });
-/* harmony import */ var _gl_matrix_mat2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gl-matrix/mat2 */ "./node_modules/gl-matrix/src/gl-matrix/mat2.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return _gl_matrix_mat2__WEBPACK_IMPORTED_MODULE_1__; });
-/* harmony import */ var _gl_matrix_mat2d__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./gl-matrix/mat2d */ "./node_modules/gl-matrix/src/gl-matrix/mat2d.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return _gl_matrix_mat2d__WEBPACK_IMPORTED_MODULE_2__; });
-/* harmony import */ var _gl_matrix_mat3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./gl-matrix/mat3 */ "./node_modules/gl-matrix/src/gl-matrix/mat3.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return _gl_matrix_mat3__WEBPACK_IMPORTED_MODULE_3__; });
-/* harmony import */ var _gl_matrix_mat4__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gl-matrix/mat4 */ "./node_modules/gl-matrix/src/gl-matrix/mat4.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return _gl_matrix_mat4__WEBPACK_IMPORTED_MODULE_4__; });
-/* harmony import */ var _gl_matrix_quat__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gl-matrix/quat */ "./node_modules/gl-matrix/src/gl-matrix/quat.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return _gl_matrix_quat__WEBPACK_IMPORTED_MODULE_5__; });
-/* harmony import */ var _gl_matrix_vec2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gl-matrix/vec2 */ "./node_modules/gl-matrix/src/gl-matrix/vec2.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return _gl_matrix_vec2__WEBPACK_IMPORTED_MODULE_6__; });
-/* harmony import */ var _gl_matrix_vec3__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gl-matrix/vec3 */ "./node_modules/gl-matrix/src/gl-matrix/vec3.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return _gl_matrix_vec3__WEBPACK_IMPORTED_MODULE_7__; });
-/* harmony import */ var _gl_matrix_vec4__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./gl-matrix/vec4 */ "./node_modules/gl-matrix/src/gl-matrix/vec4.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return _gl_matrix_vec4__WEBPACK_IMPORTED_MODULE_8__; });
-/**
- * @fileoverview gl-matrix - High performance matrix and vector operations
- * @author Brandon Jones
- * @author Colin MacKenzie IV
- * @version 2.4.0
- */
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
+/* harmony import */ var _gl_matrix_common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gl-matrix/common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return _gl_matrix_common_js__WEBPACK_IMPORTED_MODULE_0__; });
+/* harmony import */ var _gl_matrix_mat2_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gl-matrix/mat2.js */ "./node_modules/gl-matrix/src/gl-matrix/mat2.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return _gl_matrix_mat2_js__WEBPACK_IMPORTED_MODULE_1__; });
+/* harmony import */ var _gl_matrix_mat2d_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./gl-matrix/mat2d.js */ "./node_modules/gl-matrix/src/gl-matrix/mat2d.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return _gl_matrix_mat2d_js__WEBPACK_IMPORTED_MODULE_2__; });
+/* harmony import */ var _gl_matrix_mat3_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./gl-matrix/mat3.js */ "./node_modules/gl-matrix/src/gl-matrix/mat3.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return _gl_matrix_mat3_js__WEBPACK_IMPORTED_MODULE_3__; });
+/* harmony import */ var _gl_matrix_mat4_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gl-matrix/mat4.js */ "./node_modules/gl-matrix/src/gl-matrix/mat4.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return _gl_matrix_mat4_js__WEBPACK_IMPORTED_MODULE_4__; });
+/* harmony import */ var _gl_matrix_quat_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gl-matrix/quat.js */ "./node_modules/gl-matrix/src/gl-matrix/quat.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return _gl_matrix_quat_js__WEBPACK_IMPORTED_MODULE_5__; });
+/* harmony import */ var _gl_matrix_quat2_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gl-matrix/quat2.js */ "./node_modules/gl-matrix/src/gl-matrix/quat2.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "quat2", function() { return _gl_matrix_quat2_js__WEBPACK_IMPORTED_MODULE_6__; });
+/* harmony import */ var _gl_matrix_vec2_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gl-matrix/vec2.js */ "./node_modules/gl-matrix/src/gl-matrix/vec2.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return _gl_matrix_vec2_js__WEBPACK_IMPORTED_MODULE_7__; });
+/* harmony import */ var _gl_matrix_vec3_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./gl-matrix/vec3.js */ "./node_modules/gl-matrix/src/gl-matrix/vec3.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return _gl_matrix_vec3_js__WEBPACK_IMPORTED_MODULE_8__; });
+/* harmony import */ var _gl_matrix_vec4_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./gl-matrix/vec4.js */ "./node_modules/gl-matrix/src/gl-matrix/vec4.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return _gl_matrix_vec4_js__WEBPACK_IMPORTED_MODULE_9__; });
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
-// END HEADER
 
 
 
@@ -163,25 +155,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setMatrixArrayType", function() { return setMatrixArrayType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toRadian", function() { return toRadian; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
 /**
  * Common utilities
  * @module glMatrix
@@ -258,26 +231,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 2x2 Matrix
@@ -289,7 +243,7 @@ THE SOFTWARE. */
  * @returns {mat2} a new 2x2 matrix
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -303,7 +257,7 @@ function create() {
  * @returns {mat2} a new 2x2 matrix
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -347,7 +301,7 @@ function identity(out) {
  * @returns {mat2} out A new 2x2 matrix
  */
 function fromValues(m00, m01, m10, m11) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = m00;
     out[1] = m01;
     out[2] = m10;
@@ -612,10 +566,10 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
     var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-        Math.abs(a3 - b3) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)));
 }
 /**
  * Multiply each element of the matrix by a scalar.
@@ -696,26 +650,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 2x3 Matrix
@@ -741,7 +676,7 @@ THE SOFTWARE. */
  * @returns {mat2d} a new 2x3 matrix
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -757,7 +692,7 @@ function create() {
  * @returns {mat2d} a new 2x3 matrix
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -809,7 +744,7 @@ function identity(out) {
  * @returns {mat2d} A new mat2d
  */
 function fromValues(a, b, c, d, tx, ty) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](6);
     out[0] = a;
     out[1] = b;
     out[2] = c;
@@ -1117,12 +1052,12 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
     var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-        Math.abs(a3 - b3) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-        Math.abs(a4 - b4) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-        Math.abs(a5 - b5) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+        Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+        Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)));
 }
 /**
  * Alias for {@link mat2d.multiply}
@@ -1179,26 +1114,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 3x3 Matrix
@@ -1210,7 +1126,7 @@ THE SOFTWARE. */
  * @returns {mat3} a new 3x3 matrix
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -1248,7 +1164,7 @@ function fromMat4(out, a) {
  * @returns {mat3} a new 3x3 matrix
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -1294,7 +1210,7 @@ function copy(out, a) {
  * @returns {mat3} A new mat3
  */
 function fromValues(m00, m01, m02, m10, m11, m12, m20, m21, m22) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](9);
     out[0] = m00;
     out[1] = m01;
     out[2] = m02;
@@ -1844,15 +1760,15 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5], a6 = a[6], a7 = a[7], a8 = a[8];
     var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7], b8 = b[8];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-        Math.abs(a3 - b3) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-        Math.abs(a4 - b4) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-        Math.abs(a5 - b5) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
-        Math.abs(a6 - b6) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
-        Math.abs(a7 - b7) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
-        Math.abs(a8 - b8) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+        Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+        Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+        Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+        Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+        Math.abs(a8 - b8) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8)));
 }
 /**
  * Alias for {@link mat3.multiply}
@@ -1872,7 +1788,7 @@ var sub = subtract;
 /*!******************************************************!*\
   !*** ./node_modules/gl-matrix/src/gl-matrix/mat4.js ***!
   \******************************************************/
-/*! exports provided: create, clone, copy, fromValues, set, identity, transpose, invert, adjoint, determinant, multiply, translate, scale, rotate, rotateX, rotateY, rotateZ, fromTranslation, fromScaling, fromRotation, fromXRotation, fromYRotation, fromZRotation, fromRotationTranslation, getTranslation, getScaling, getRotation, fromRotationTranslationScale, fromRotationTranslationScaleOrigin, fromQuat, frustum, perspective, perspectiveFromFieldOfView, ortho, lookAt, targetTo, str, frob, add, subtract, multiplyScalar, multiplyScalarAndAdd, exactEquals, equals, mul, sub */
+/*! exports provided: create, clone, copy, fromValues, set, identity, transpose, invert, adjoint, determinant, multiply, translate, scale, rotate, rotateX, rotateY, rotateZ, fromTranslation, fromScaling, fromRotation, fromXRotation, fromYRotation, fromZRotation, fromRotationTranslation, fromQuat2, getTranslation, getScaling, getRotation, fromRotationTranslationScale, fromRotationTranslationScaleOrigin, fromQuat, frustum, perspective, perspectiveFromFieldOfView, ortho, lookAt, targetTo, str, frob, add, subtract, multiplyScalar, multiplyScalarAndAdd, exactEquals, equals, mul, sub */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1901,6 +1817,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromYRotation", function() { return fromYRotation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromZRotation", function() { return fromZRotation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslation", function() { return fromRotationTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromQuat2", function() { return fromQuat2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTranslation", function() { return getTranslation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScaling", function() { return getScaling; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRotation", function() { return getRotation; });
@@ -1923,29 +1840,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sub", function() { return sub; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
- * 4x4 Matrix
+ * 4x4 Matrix<br>Format: column-major, when typed out it looks like row-major<br>The matrices are being post multiplied.
  * @module mat4
  */
 /**
@@ -1954,7 +1852,7 @@ THE SOFTWARE. */
  * @returns {mat4} a new 4x4 matrix
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -1980,7 +1878,7 @@ function create() {
  * @returns {mat4} a new 4x4 matrix
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -2047,7 +1945,7 @@ function copy(out, a) {
  * @returns {mat4} A new mat4
  */
 function fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](16);
     out[0] = m00;
     out[1] = m01;
     out[2] = m02;
@@ -2425,7 +2323,7 @@ function rotate(out, a, rad, axis) {
     var b00, b01, b02;
     var b10, b11, b12;
     var b20, b21, b22;
-    if (Math.abs(len) < _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
+    if (len < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
         return null;
     }
     len = 1 / len;
@@ -2674,7 +2572,7 @@ function fromRotation(out, rad, axis) {
     var x = axis[0], y = axis[1], z = axis[2];
     var len = Math.sqrt(x * x + y * y + z * z);
     var s, c, t;
-    if (Math.abs(len) < _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
+    if (len < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
         return null;
     }
     len = 1 / len;
@@ -2851,6 +2749,31 @@ function fromRotationTranslation(out, q, v) {
     return out;
 }
 /**
+ * Creates a new mat4 from a dual quat.
+ *
+ * @param {mat4} out Matrix
+ * @param {quat2} a Dual Quaternion
+ * @returns {mat4} mat4 receiving operation result
+ */
+function fromQuat2(out, a) {
+    var translation = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+    var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7];
+    var magnitude = bx * bx + by * by + bz * bz + bw * bw;
+    //Only scale if it makes sense
+    if (magnitude > 0) {
+        translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2 / magnitude;
+        translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2 / magnitude;
+        translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2 / magnitude;
+    }
+    else {
+        translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+        translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+        translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+    }
+    fromRotationTranslation(out, a, translation);
+    return out;
+}
+/**
  * Returns the translation vector component of a transformation
  *  matrix. If a matrix is built with fromRotationTranslation,
  *  the returned vector will be the same as the translation vector
@@ -2910,7 +2833,7 @@ function getRotation(out, mat) {
         out[1] = (mat[8] - mat[2]) / S;
         out[2] = (mat[1] - mat[4]) / S;
     }
-    else if ((mat[0] > mat[5]) & (mat[0] > mat[10])) {
+    else if ((mat[0] > mat[5]) && (mat[0] > mat[10])) {
         S = Math.sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2;
         out[3] = (mat[6] - mat[9]) / S;
         out[0] = 0.25 * S;
@@ -3027,21 +2950,30 @@ function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
     var ox = o[0];
     var oy = o[1];
     var oz = o[2];
-    out[0] = (1 - (yy + zz)) * sx;
-    out[1] = (xy + wz) * sx;
-    out[2] = (xz - wy) * sx;
+    var out0 = (1 - (yy + zz)) * sx;
+    var out1 = (xy + wz) * sx;
+    var out2 = (xz - wy) * sx;
+    var out4 = (xy - wz) * sy;
+    var out5 = (1 - (xx + zz)) * sy;
+    var out6 = (yz + wx) * sy;
+    var out8 = (xz + wy) * sz;
+    var out9 = (yz - wx) * sz;
+    var out10 = (1 - (xx + yy)) * sz;
+    out[0] = out0;
+    out[1] = out1;
+    out[2] = out2;
     out[3] = 0;
-    out[4] = (xy - wz) * sy;
-    out[5] = (1 - (xx + zz)) * sy;
-    out[6] = (yz + wx) * sy;
+    out[4] = out4;
+    out[5] = out5;
+    out[6] = out6;
     out[7] = 0;
-    out[8] = (xz + wy) * sz;
-    out[9] = (yz - wx) * sz;
-    out[10] = (1 - (xx + yy)) * sz;
+    out[8] = out8;
+    out[9] = out9;
+    out[10] = out10;
     out[11] = 0;
-    out[12] = v[0] + ox - (out[0] * ox + out[4] * oy + out[8] * oz);
-    out[13] = v[1] + oy - (out[1] * ox + out[5] * oy + out[9] * oz);
-    out[14] = v[2] + oz - (out[2] * ox + out[6] * oy + out[10] * oz);
+    out[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
+    out[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
+    out[14] = v[2] + oz - (out2 * ox + out6 * oy + out10 * oz);
     out[15] = 1;
     return out;
 }
@@ -3221,7 +3153,8 @@ function ortho(out, left, right, bottom, top, near, far) {
     return out;
 }
 /**
- * Generates a look-at matrix with the given eye position, focal point, and up axis
+ * Generates a look-at matrix with the given eye position, focal point, and up axis.
+ * If you want a matrix that actually makes an object look at another object, you should use targetTo instead.
  *
  * @param {mat4} out mat4 frustum matrix will be written into
  * @param {vec3} eye Position of the viewer
@@ -3240,10 +3173,10 @@ function lookAt(out, eye, center, up) {
     var centerx = center[0];
     var centery = center[1];
     var centerz = center[2];
-    if (Math.abs(eyex - centerx) < _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] &&
-        Math.abs(eyey - centery) < _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] &&
-        Math.abs(eyez - centerz) < _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
-        return mat4.identity(out);
+    if (Math.abs(eyex - centerx) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] &&
+        Math.abs(eyey - centery) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] &&
+        Math.abs(eyez - centerz) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
+        return identity(out);
     }
     z0 = eyex - centerx;
     z1 = eyey - centery;
@@ -3320,6 +3253,13 @@ function targetTo(out, eye, target, up) {
         z2 *= len;
     }
     var x0 = upy * z2 - upz * z1, x1 = upz * z0 - upx * z2, x2 = upx * z1 - upy * z0;
+    len = x0 * x0 + x1 * x1 + x2 * x2;
+    if (len > 0) {
+        len = 1 / Math.sqrt(len);
+        x0 *= len;
+        x1 *= len;
+        x2 *= len;
+    }
     out[0] = x0;
     out[1] = x1;
     out[2] = x2;
@@ -3498,22 +3438,22 @@ function equals(a, b) {
     var b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7];
     var b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11];
     var b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-        Math.abs(a3 - b3) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
-        Math.abs(a4 - b4) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
-        Math.abs(a5 - b5) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
-        Math.abs(a6 - b6) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
-        Math.abs(a7 - b7) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
-        Math.abs(a8 - b8) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8)) &&
-        Math.abs(a9 - b9) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a9), Math.abs(b9)) &&
-        Math.abs(a10 - b10) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a10), Math.abs(b10)) &&
-        Math.abs(a11 - b11) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a11), Math.abs(b11)) &&
-        Math.abs(a12 - b12) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a12), Math.abs(b12)) &&
-        Math.abs(a13 - b13) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a13), Math.abs(b13)) &&
-        Math.abs(a14 - b14) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a14), Math.abs(b14)) &&
-        Math.abs(a15 - b15) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a15), Math.abs(b15)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+        Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+        Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+        Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+        Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+        Math.abs(a8 - b8) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a8), Math.abs(b8)) &&
+        Math.abs(a9 - b9) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a9), Math.abs(b9)) &&
+        Math.abs(a10 - b10) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a10), Math.abs(b10)) &&
+        Math.abs(a11 - b11) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a11), Math.abs(b11)) &&
+        Math.abs(a12 - b12) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a12), Math.abs(b12)) &&
+        Math.abs(a13 - b13) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a13), Math.abs(b13)) &&
+        Math.abs(a14 - b14) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a14), Math.abs(b14)) &&
+        Math.abs(a15 - b15) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a15), Math.abs(b15)));
 }
 /**
  * Alias for {@link mat4.multiply}
@@ -3572,29 +3512,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotationTo", function() { return rotationTo; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqlerp", function() { return sqlerp; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setAxes", function() { return setAxes; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* harmony import */ var _mat3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mat3 */ "./node_modules/gl-matrix/src/gl-matrix/mat3.js");
-/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./vec3 */ "./node_modules/gl-matrix/src/gl-matrix/vec3.js");
-/* harmony import */ var _vec4__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./vec4 */ "./node_modules/gl-matrix/src/gl-matrix/vec4.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
+/* harmony import */ var _mat3_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mat3.js */ "./node_modules/gl-matrix/src/gl-matrix/mat3.js");
+/* harmony import */ var _vec3_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./vec3.js */ "./node_modules/gl-matrix/src/gl-matrix/vec3.js");
+/* harmony import */ var _vec4_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./vec4.js */ "./node_modules/gl-matrix/src/gl-matrix/vec4.js");
 
 
 
@@ -3609,7 +3530,7 @@ THE SOFTWARE. */
  * @returns {quat} a new quaternion
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -3770,7 +3691,7 @@ function calculateW(out, a) {
  * @param {quat} out the receiving quaternion
  * @param {quat} a the first operand
  * @param {quat} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  */
 function slerp(out, a, b, t) {
@@ -3929,7 +3850,7 @@ function str(a) {
  * @returns {quat} a new quaternion
  * @function
  */
-var clone = _vec4__WEBPACK_IMPORTED_MODULE_3__["clone"];
+var clone = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["clone"];
 /**
  * Creates a new quat initialized with the given values
  *
@@ -3940,7 +3861,7 @@ var clone = _vec4__WEBPACK_IMPORTED_MODULE_3__["clone"];
  * @returns {quat} a new quaternion
  * @function
  */
-var fromValues = _vec4__WEBPACK_IMPORTED_MODULE_3__["fromValues"];
+var fromValues = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["fromValues"];
 /**
  * Copy the values from one quat to another
  *
@@ -3949,7 +3870,7 @@ var fromValues = _vec4__WEBPACK_IMPORTED_MODULE_3__["fromValues"];
  * @returns {quat} out
  * @function
  */
-var copy = _vec4__WEBPACK_IMPORTED_MODULE_3__["copy"];
+var copy = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["copy"];
 /**
  * Set the components of a quat to the given values
  *
@@ -3961,7 +3882,7 @@ var copy = _vec4__WEBPACK_IMPORTED_MODULE_3__["copy"];
  * @returns {quat} out
  * @function
  */
-var set = _vec4__WEBPACK_IMPORTED_MODULE_3__["set"];
+var set = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["set"];
 /**
  * Adds two quat's
  *
@@ -3971,7 +3892,7 @@ var set = _vec4__WEBPACK_IMPORTED_MODULE_3__["set"];
  * @returns {quat} out
  * @function
  */
-var add = _vec4__WEBPACK_IMPORTED_MODULE_3__["add"];
+var add = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["add"];
 /**
  * Alias for {@link quat.multiply}
  * @function
@@ -3986,7 +3907,7 @@ var mul = multiply;
  * @returns {quat} out
  * @function
  */
-var scale = _vec4__WEBPACK_IMPORTED_MODULE_3__["scale"];
+var scale = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["scale"];
 /**
  * Calculates the dot product of two quat's
  *
@@ -3995,25 +3916,25 @@ var scale = _vec4__WEBPACK_IMPORTED_MODULE_3__["scale"];
  * @returns {Number} dot product of a and b
  * @function
  */
-var dot = _vec4__WEBPACK_IMPORTED_MODULE_3__["dot"];
+var dot = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["dot"];
 /**
  * Performs a linear interpolation between two quat's
  *
  * @param {quat} out the receiving quaternion
  * @param {quat} a the first operand
  * @param {quat} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  * @function
  */
-var lerp = _vec4__WEBPACK_IMPORTED_MODULE_3__["lerp"];
+var lerp = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["lerp"];
 /**
  * Calculates the length of a quat
  *
  * @param {quat} a vector to calculate length of
  * @returns {Number} length of a
  */
-var length = _vec4__WEBPACK_IMPORTED_MODULE_3__["length"];
+var length = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["length"];
 /**
  * Alias for {@link quat.length}
  * @function
@@ -4026,7 +3947,7 @@ var len = length;
  * @returns {Number} squared length of a
  * @function
  */
-var squaredLength = _vec4__WEBPACK_IMPORTED_MODULE_3__["squaredLength"];
+var squaredLength = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["squaredLength"];
 /**
  * Alias for {@link quat.squaredLength}
  * @function
@@ -4040,7 +3961,7 @@ var sqrLen = squaredLength;
  * @returns {quat} out
  * @function
  */
-var normalize = _vec4__WEBPACK_IMPORTED_MODULE_3__["normalize"];
+var normalize = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["normalize"];
 /**
  * Returns whether or not the quaternions have exactly the same elements in the same position (when compared with ===)
  *
@@ -4048,7 +3969,7 @@ var normalize = _vec4__WEBPACK_IMPORTED_MODULE_3__["normalize"];
  * @param {quat} b The second quaternion.
  * @returns {Boolean} True if the vectors are equal, false otherwise.
  */
-var exactEquals = _vec4__WEBPACK_IMPORTED_MODULE_3__["exactEquals"];
+var exactEquals = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["exactEquals"];
 /**
  * Returns whether or not the quaternions have approximately the same elements in the same position.
  *
@@ -4056,7 +3977,7 @@ var exactEquals = _vec4__WEBPACK_IMPORTED_MODULE_3__["exactEquals"];
  * @param {quat} b The second vector.
  * @returns {Boolean} True if the vectors are equal, false otherwise.
  */
-var equals = _vec4__WEBPACK_IMPORTED_MODULE_3__["equals"];
+var equals = _vec4_js__WEBPACK_IMPORTED_MODULE_3__["equals"];
 /**
  * Sets a quaternion to represent the shortest rotation from one
  * vector to another.
@@ -4069,16 +3990,16 @@ var equals = _vec4__WEBPACK_IMPORTED_MODULE_3__["equals"];
  * @returns {quat} out
  */
 var rotationTo = (function () {
-    var tmpvec3 = _vec3__WEBPACK_IMPORTED_MODULE_2__["create"]();
-    var xUnitVec3 = _vec3__WEBPACK_IMPORTED_MODULE_2__["fromValues"](1, 0, 0);
-    var yUnitVec3 = _vec3__WEBPACK_IMPORTED_MODULE_2__["fromValues"](0, 1, 0);
+    var tmpvec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["create"]();
+    var xUnitVec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["fromValues"](1, 0, 0);
+    var yUnitVec3 = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["fromValues"](0, 1, 0);
     return function (out, a, b) {
-        var dot = _vec3__WEBPACK_IMPORTED_MODULE_2__["dot"](a, b);
+        var dot = _vec3_js__WEBPACK_IMPORTED_MODULE_2__["dot"](a, b);
         if (dot < -0.999999) {
-            _vec3__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, xUnitVec3, a);
-            if (_vec3__WEBPACK_IMPORTED_MODULE_2__["len"](tmpvec3) < 0.000001)
-                _vec3__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, yUnitVec3, a);
-            _vec3__WEBPACK_IMPORTED_MODULE_2__["normalize"](tmpvec3, tmpvec3);
+            _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, xUnitVec3, a);
+            if (_vec3_js__WEBPACK_IMPORTED_MODULE_2__["len"](tmpvec3) < 0.000001)
+                _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, yUnitVec3, a);
+            _vec3_js__WEBPACK_IMPORTED_MODULE_2__["normalize"](tmpvec3, tmpvec3);
             setAxisAngle(out, tmpvec3, Math.PI);
             return out;
         }
@@ -4090,7 +4011,7 @@ var rotationTo = (function () {
             return out;
         }
         else {
-            _vec3__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, a, b);
+            _vec3_js__WEBPACK_IMPORTED_MODULE_2__["cross"](tmpvec3, a, b);
             out[0] = tmpvec3[0];
             out[1] = tmpvec3[1];
             out[2] = tmpvec3[2];
@@ -4107,7 +4028,7 @@ var rotationTo = (function () {
  * @param {quat} b the second operand
  * @param {quat} c the third operand
  * @param {quat} d the fourth operand
- * @param {Number} t interpolation amount
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {quat} out
  */
 var sqlerp = (function () {
@@ -4131,7 +4052,7 @@ var sqlerp = (function () {
  * @returns {quat} out
  */
 var setAxes = (function () {
-    var matr = _mat3__WEBPACK_IMPORTED_MODULE_1__["create"]();
+    var matr = _mat3_js__WEBPACK_IMPORTED_MODULE_1__["create"]();
     return function (out, view, right, up) {
         matr[0] = right[0];
         matr[3] = right[1];
@@ -4149,11 +4070,748 @@ var setAxes = (function () {
 
 /***/ }),
 
+/***/ "./node_modules/gl-matrix/src/gl-matrix/quat2.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/gl-matrix/src/gl-matrix/quat2.js ***!
+  \*******************************************************/
+/*! exports provided: create, clone, fromValues, fromRotationTranslationValues, fromRotationTranslation, fromTranslation, fromRotation, fromMat4, copy, identity, set, getReal, getDual, setReal, setDual, getTranslation, translate, rotateX, rotateY, rotateZ, rotateByQuatAppend, rotateByQuatPrepend, rotateAroundAxis, add, multiply, mul, scale, dot, lerp, invert, conjugate, length, len, squaredLength, sqrLen, normalize, str, exactEquals, equals */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clone", function() { return clone; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromValues", function() { return fromValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslationValues", function() { return fromRotationTranslationValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotationTranslation", function() { return fromRotationTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromTranslation", function() { return fromTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromRotation", function() { return fromRotation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromMat4", function() { return fromMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "copy", function() { return copy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identity", function() { return identity; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReal", function() { return getReal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDual", function() { return getDual; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setReal", function() { return setReal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setDual", function() { return setDual; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTranslation", function() { return getTranslation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "translate", function() { return translate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateX", function() { return rotateX; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateY", function() { return rotateY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateZ", function() { return rotateZ; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateByQuatAppend", function() { return rotateByQuatAppend; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateByQuatPrepend", function() { return rotateByQuatPrepend; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotateAroundAxis", function() { return rotateAroundAxis; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "multiply", function() { return multiply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mul", function() { return mul; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scale", function() { return scale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dot", function() { return dot; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lerp", function() { return lerp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "invert", function() { return invert; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "conjugate", function() { return conjugate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "length", function() { return length; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "squaredLength", function() { return squaredLength; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
+/* harmony import */ var _quat_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./quat.js */ "./node_modules/gl-matrix/src/gl-matrix/quat.js");
+/* harmony import */ var _mat4_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mat4.js */ "./node_modules/gl-matrix/src/gl-matrix/mat4.js");
+
+
+
+/**
+ * Dual Quaternion<br>
+ * Format: [real, dual]<br>
+ * Quaternion format: XYZW<br>
+ * Make sure to have normalized dual quaternions, otherwise the functions may not work as intended.<br>
+ * @module quat2
+ */
+/**
+ * Creates a new identity dual quat
+ *
+ * @returns {quat2} a new dual quaternion [real -> rotation, dual -> translation]
+ */
+function create() {
+    var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
+    dq[0] = 0;
+    dq[1] = 0;
+    dq[2] = 0;
+    dq[3] = 1;
+    dq[4] = 0;
+    dq[5] = 0;
+    dq[6] = 0;
+    dq[7] = 0;
+    return dq;
+}
+/**
+ * Creates a new quat initialized with values from an existing quaternion
+ *
+ * @param {quat2} a dual quaternion to clone
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function clone(a) {
+    var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
+    dq[0] = a[0];
+    dq[1] = a[1];
+    dq[2] = a[2];
+    dq[3] = a[3];
+    dq[4] = a[4];
+    dq[5] = a[5];
+    dq[6] = a[6];
+    dq[7] = a[7];
+    return dq;
+}
+/**
+ * Creates a new dual quat initialized with the given values
+ *
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component
+ * @param {Number} y2 Y component
+ * @param {Number} z2 Z component
+ * @param {Number} w2 W component
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function fromValues(x1, y1, z1, w1, x2, y2, z2, w2) {
+    var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
+    dq[0] = x1;
+    dq[1] = y1;
+    dq[2] = z1;
+    dq[3] = w1;
+    dq[4] = x2;
+    dq[5] = y2;
+    dq[6] = z2;
+    dq[7] = w2;
+    return dq;
+}
+/**
+ * Creates a new dual quat from the given values (quat and translation)
+ *
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component (translation)
+ * @param {Number} y2 Y component (translation)
+ * @param {Number} z2 Z component (translation)
+ * @returns {quat2} new dual quaternion
+ * @function
+ */
+function fromRotationTranslationValues(x1, y1, z1, w1, x2, y2, z2) {
+    var dq = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](8);
+    dq[0] = x1;
+    dq[1] = y1;
+    dq[2] = z1;
+    dq[3] = w1;
+    var ax = x2 * 0.5, ay = y2 * 0.5, az = z2 * 0.5;
+    dq[4] = ax * w1 + ay * z1 - az * y1;
+    dq[5] = ay * w1 + az * x1 - ax * z1;
+    dq[6] = az * w1 + ax * y1 - ay * x1;
+    dq[7] = -ax * x1 - ay * y1 - az * z1;
+    return dq;
+}
+/**
+ * Creates a dual quat from a quaternion and a translation
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {quat} q quaternion
+ * @param {vec3} t tranlation vector
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function fromRotationTranslation(out, q, t) {
+    var ax = t[0] * 0.5, ay = t[1] * 0.5, az = t[2] * 0.5, bx = q[0], by = q[1], bz = q[2], bw = q[3];
+    out[0] = bx;
+    out[1] = by;
+    out[2] = bz;
+    out[3] = bw;
+    out[4] = ax * bw + ay * bz - az * by;
+    out[5] = ay * bw + az * bx - ax * bz;
+    out[6] = az * bw + ax * by - ay * bx;
+    out[7] = -ax * bx - ay * by - az * bz;
+    return out;
+}
+/**
+ * Creates a dual quat from a translation
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {vec3} t translation vector
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function fromTranslation(out, t) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 1;
+    out[4] = t[0] * 0.5;
+    out[5] = t[1] * 0.5;
+    out[6] = t[2] * 0.5;
+    out[7] = 0;
+    return out;
+}
+/**
+ * Creates a dual quat from a quaternion
+ *
+ * @param {quat2} dual quaternion receiving operation result
+ * @param {quat} q the quaternion
+ * @returns {quat2} dual quaternion receiving operation result
+ * @function
+ */
+function fromRotation(out, q) {
+    out[0] = q[0];
+    out[1] = q[1];
+    out[2] = q[2];
+    out[3] = q[3];
+    out[4] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    return out;
+}
+/**
+ * Creates a new dual quat from a matrix (4x4)
+ *
+ * @param {quat2} out the dual quaternion
+ * @param {mat4} a the matrix
+ * @returns {quat2} dual quat receiving operation result
+ * @function
+ */
+function fromMat4(out, a) {
+    //TODO Optimize this
+    var outer = _quat_js__WEBPACK_IMPORTED_MODULE_1__["create"]();
+    _mat4_js__WEBPACK_IMPORTED_MODULE_2__["getRotation"](outer, a);
+    var t = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+    _mat4_js__WEBPACK_IMPORTED_MODULE_2__["getTranslation"](t, a);
+    fromRotationTranslation(out, outer, t);
+    return out;
+}
+/**
+ * Copy the values from one dual quat to another
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the source dual quaternion
+ * @returns {quat2} out
+ * @function
+ */
+function copy(out, a) {
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
+    out[6] = a[6];
+    out[7] = a[7];
+    return out;
+}
+/**
+ * Set a dual quat to the identity dual quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @returns {quat2} out
+ */
+function identity(out) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 1;
+    out[4] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    return out;
+}
+/**
+ * Set the components of a dual quat to the given values
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {Number} x1 X component
+ * @param {Number} y1 Y component
+ * @param {Number} z1 Z component
+ * @param {Number} w1 W component
+ * @param {Number} x2 X component
+ * @param {Number} y2 Y component
+ * @param {Number} z2 Z component
+ * @param {Number} w2 W component
+ * @returns {quat2} out
+ * @function
+ */
+function set(out, x1, y1, z1, w1, x2, y2, z2, w2) {
+    out[0] = x1;
+    out[1] = y1;
+    out[2] = z1;
+    out[3] = w1;
+    out[4] = x2;
+    out[5] = y2;
+    out[6] = z2;
+    out[7] = w2;
+    return out;
+}
+/**
+ * Gets the real part of a dual quat
+ * @param  {quat} out real part
+ * @param  {quat2} a Dual Quaternion
+ * @return {quat} real part
+ */
+var getReal = _quat_js__WEBPACK_IMPORTED_MODULE_1__["copy"];
+/**
+ * Gets the dual part of a dual quat
+ * @param  {quat} out dual part
+ * @param  {quat2} a Dual Quaternion
+ * @return {quat} dual part
+ */
+function getDual(out, a) {
+    out[0] = a[4];
+    out[1] = a[5];
+    out[2] = a[6];
+    out[3] = a[7];
+    return out;
+}
+/**
+ * Set the real component of a dual quat to the given quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat} q a quaternion representing the real part
+ * @returns {quat2} out
+ * @function
+ */
+var setReal = _quat_js__WEBPACK_IMPORTED_MODULE_1__["copy"];
+/**
+ * Set the dual component of a dual quat to the given quaternion
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat} q a quaternion representing the dual part
+ * @returns {quat2} out
+ * @function
+ */
+function setDual(out, q) {
+    out[4] = q[0];
+    out[5] = q[1];
+    out[6] = q[2];
+    out[7] = q[3];
+    return out;
+}
+/**
+ * Gets the translation of a normalized dual quat
+ * @param  {vec3} out translation
+ * @param  {quat2} a Dual Quaternion to be decomposed
+ * @return {vec3} translation
+ */
+function getTranslation(out, a) {
+    var ax = a[4], ay = a[5], az = a[6], aw = a[7], bx = -a[0], by = -a[1], bz = -a[2], bw = a[3];
+    out[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+    out[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+    out[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+    return out;
+}
+/**
+ * Translates a dual quat by the given vector
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to translate
+ * @param {vec3} v vector to translate by
+ * @returns {quat2} out
+ */
+function translate(out, a, v) {
+    var ax1 = a[0], ay1 = a[1], az1 = a[2], aw1 = a[3], bx1 = v[0] * 0.5, by1 = v[1] * 0.5, bz1 = v[2] * 0.5, ax2 = a[4], ay2 = a[5], az2 = a[6], aw2 = a[7];
+    out[0] = ax1;
+    out[1] = ay1;
+    out[2] = az1;
+    out[3] = aw1;
+    out[4] = aw1 * bx1 + ay1 * bz1 - az1 * by1 + ax2;
+    out[5] = aw1 * by1 + az1 * bx1 - ax1 * bz1 + ay2;
+    out[6] = aw1 * bz1 + ax1 * by1 - ay1 * bx1 + az2;
+    out[7] = -ax1 * bx1 - ay1 * by1 - az1 * bz1 + aw2;
+    return out;
+}
+/**
+ * Rotates a dual quat around the X axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function rotateX(out, a, rad) {
+    var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7], ax1 = ax * bw + aw * bx + ay * bz - az * by, ay1 = ay * bw + aw * by + az * bx - ax * bz, az1 = az * bw + aw * bz + ax * by - ay * bx, aw1 = aw * bw - ax * bx - ay * by - az * bz;
+    _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateX"](out, a, rad);
+    bx = out[0];
+    by = out[1];
+    bz = out[2];
+    bw = out[3];
+    out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+    out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+    out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+    out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+    return out;
+}
+/**
+ * Rotates a dual quat around the Y axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function rotateY(out, a, rad) {
+    var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7], ax1 = ax * bw + aw * bx + ay * bz - az * by, ay1 = ay * bw + aw * by + az * bx - ax * bz, az1 = az * bw + aw * bz + ax * by - ay * bx, aw1 = aw * bw - ax * bx - ay * by - az * bz;
+    _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateY"](out, a, rad);
+    bx = out[0];
+    by = out[1];
+    bz = out[2];
+    bw = out[3];
+    out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+    out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+    out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+    out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+    return out;
+}
+/**
+ * Rotates a dual quat around the Z axis
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {number} rad how far should the rotation be
+ * @returns {quat2} out
+ */
+function rotateZ(out, a, rad) {
+    var bx = -a[0], by = -a[1], bz = -a[2], bw = a[3], ax = a[4], ay = a[5], az = a[6], aw = a[7], ax1 = ax * bw + aw * bx + ay * bz - az * by, ay1 = ay * bw + aw * by + az * bx - ax * bz, az1 = az * bw + aw * bz + ax * by - ay * bx, aw1 = aw * bw - ax * bx - ay * by - az * bz;
+    _quat_js__WEBPACK_IMPORTED_MODULE_1__["rotateZ"](out, a, rad);
+    bx = out[0];
+    by = out[1];
+    bz = out[2];
+    bw = out[3];
+    out[4] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+    out[5] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+    out[6] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+    out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+    return out;
+}
+/**
+ * Rotates a dual quat by a given quaternion (a * q)
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {quat} q quaternion to rotate by
+ * @returns {quat2} out
+ */
+function rotateByQuatAppend(out, a, q) {
+    var qx = q[0], qy = q[1], qz = q[2], qw = q[3], ax = a[0], ay = a[1], az = a[2], aw = a[3];
+    out[0] = ax * qw + aw * qx + ay * qz - az * qy;
+    out[1] = ay * qw + aw * qy + az * qx - ax * qz;
+    out[2] = az * qw + aw * qz + ax * qy - ay * qx;
+    out[3] = aw * qw - ax * qx - ay * qy - az * qz;
+    ax = a[4];
+    ay = a[5];
+    az = a[6];
+    aw = a[7];
+    out[4] = ax * qw + aw * qx + ay * qz - az * qy;
+    out[5] = ay * qw + aw * qy + az * qx - ax * qz;
+    out[6] = az * qw + aw * qz + ax * qy - ay * qx;
+    out[7] = aw * qw - ax * qx - ay * qy - az * qz;
+    return out;
+}
+/**
+ * Rotates a dual quat by a given quaternion (q * a)
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat} q quaternion to rotate by
+ * @param {quat2} a the dual quaternion to rotate
+ * @returns {quat2} out
+ */
+function rotateByQuatPrepend(out, q, a) {
+    var qx = q[0], qy = q[1], qz = q[2], qw = q[3], bx = a[0], by = a[1], bz = a[2], bw = a[3];
+    out[0] = qx * bw + qw * bx + qy * bz - qz * by;
+    out[1] = qy * bw + qw * by + qz * bx - qx * bz;
+    out[2] = qz * bw + qw * bz + qx * by - qy * bx;
+    out[3] = qw * bw - qx * bx - qy * by - qz * bz;
+    bx = a[4];
+    by = a[5];
+    bz = a[6];
+    bw = a[7];
+    out[4] = qx * bw + qw * bx + qy * bz - qz * by;
+    out[5] = qy * bw + qw * by + qz * bx - qx * bz;
+    out[6] = qz * bw + qw * bz + qx * by - qy * bx;
+    out[7] = qw * bw - qx * bx - qy * by - qz * bz;
+    return out;
+}
+/**
+ * Rotates a dual quat around a given axis. Does the normalisation automatically
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the dual quaternion to rotate
+ * @param {vec3} axis the axis to rotate around
+ * @param {Number} rad how far the rotation should be
+ * @returns {quat2} out
+ */
+function rotateAroundAxis(out, a, axis, rad) {
+    //Special case for rad = 0
+    if (Math.abs(rad) < _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"]) {
+        return copy(out, a);
+    }
+    var axisLength = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+    rad = rad * 0.5;
+    var s = Math.sin(rad);
+    var bx = s * axis[0] / axisLength;
+    var by = s * axis[1] / axisLength;
+    var bz = s * axis[2] / axisLength;
+    var bw = Math.cos(rad);
+    var ax1 = a[0], ay1 = a[1], az1 = a[2], aw1 = a[3];
+    out[0] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
+    out[1] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
+    out[2] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
+    out[3] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
+    var ax = a[4], ay = a[5], az = a[6], aw = a[7];
+    out[4] = ax * bw + aw * bx + ay * bz - az * by;
+    out[5] = ay * bw + aw * by + az * bx - ax * bz;
+    out[6] = az * bw + aw * bz + ax * by - ay * bx;
+    out[7] = aw * bw - ax * bx - ay * by - az * bz;
+    return out;
+}
+/**
+ * Adds two dual quat's
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {quat2} out
+ * @function
+ */
+function add(out, a, b) {
+    out[0] = a[0] + b[0];
+    out[1] = a[1] + b[1];
+    out[2] = a[2] + b[2];
+    out[3] = a[3] + b[3];
+    out[4] = a[4] + b[4];
+    out[5] = a[5] + b[5];
+    out[6] = a[6] + b[6];
+    out[7] = a[7] + b[7];
+    return out;
+}
+/**
+ * Multiplies two dual quat's
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {quat2} out
+ */
+function multiply(out, a, b) {
+    var ax0 = a[0], ay0 = a[1], az0 = a[2], aw0 = a[3], bx1 = b[4], by1 = b[5], bz1 = b[6], bw1 = b[7], ax1 = a[4], ay1 = a[5], az1 = a[6], aw1 = a[7], bx0 = b[0], by0 = b[1], bz0 = b[2], bw0 = b[3];
+    out[0] = ax0 * bw0 + aw0 * bx0 + ay0 * bz0 - az0 * by0;
+    out[1] = ay0 * bw0 + aw0 * by0 + az0 * bx0 - ax0 * bz0;
+    out[2] = az0 * bw0 + aw0 * bz0 + ax0 * by0 - ay0 * bx0;
+    out[3] = aw0 * bw0 - ax0 * bx0 - ay0 * by0 - az0 * bz0;
+    out[4] = ax0 * bw1 + aw0 * bx1 + ay0 * bz1 - az0 * by1 + ax1 * bw0 + aw1 * bx0 + ay1 * bz0 - az1 * by0;
+    out[5] = ay0 * bw1 + aw0 * by1 + az0 * bx1 - ax0 * bz1 + ay1 * bw0 + aw1 * by0 + az1 * bx0 - ax1 * bz0;
+    out[6] = az0 * bw1 + aw0 * bz1 + ax0 * by1 - ay0 * bx1 + az1 * bw0 + aw1 * bz0 + ax1 * by0 - ay1 * bx0;
+    out[7] = aw0 * bw1 - ax0 * bx1 - ay0 * by1 - az0 * bz1 + aw1 * bw0 - ax1 * bx0 - ay1 * by0 - az1 * bz0;
+    return out;
+}
+/**
+ * Alias for {@link quat2.multiply}
+ * @function
+ */
+var mul = multiply;
+/**
+ * Scales a dual quat by a scalar number
+ *
+ * @param {quat2} out the receiving dual quat
+ * @param {quat2} a the dual quat to scale
+ * @param {Number} b amount to scale the dual quat by
+ * @returns {quat2} out
+ * @function
+ */
+function scale(out, a, b) {
+    out[0] = a[0] * b;
+    out[1] = a[1] * b;
+    out[2] = a[2] * b;
+    out[3] = a[3] * b;
+    out[4] = a[4] * b;
+    out[5] = a[5] * b;
+    out[6] = a[6] * b;
+    out[7] = a[7] * b;
+    return out;
+}
+/**
+ * Calculates the dot product of two dual quat's (The dot product of the real parts)
+ *
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @returns {Number} dot product of a and b
+ * @function
+ */
+var dot = _quat_js__WEBPACK_IMPORTED_MODULE_1__["dot"];
+/**
+ * Performs a linear interpolation between two dual quats's
+ * NOTE: The resulting dual quaternions won't always be normalized (The error is most noticeable when t = 0.5)
+ *
+ * @param {quat2} out the receiving dual quat
+ * @param {quat2} a the first operand
+ * @param {quat2} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {quat2} out
+ */
+function lerp(out, a, b, t) {
+    var mt = 1 - t;
+    if (dot(a, b) < 0)
+        t = -t;
+    out[0] = a[0] * mt + b[0] * t;
+    out[1] = a[1] * mt + b[1] * t;
+    out[2] = a[2] * mt + b[2] * t;
+    out[3] = a[3] * mt + b[3] * t;
+    out[4] = a[4] * mt + b[4] * t;
+    out[5] = a[5] * mt + b[5] * t;
+    out[6] = a[6] * mt + b[6] * t;
+    out[7] = a[7] * mt + b[7] * t;
+    return out;
+}
+/**
+ * Calculates the inverse of a dual quat. If they are normalized, conjugate is cheaper
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a dual quat to calculate inverse of
+ * @returns {quat2} out
+ */
+function invert(out, a) {
+    var sqlen = squaredLength(a);
+    out[0] = -a[0] / sqlen;
+    out[1] = -a[1] / sqlen;
+    out[2] = -a[2] / sqlen;
+    out[3] = a[3] / sqlen;
+    out[4] = -a[4] / sqlen;
+    out[5] = -a[5] / sqlen;
+    out[6] = -a[6] / sqlen;
+    out[7] = a[7] / sqlen;
+    return out;
+}
+/**
+ * Calculates the conjugate of a dual quat
+ * If the dual quaternion is normalized, this function is faster than quat2.inverse and produces the same result.
+ *
+ * @param {quat2} out the receiving quaternion
+ * @param {quat2} a quat to calculate conjugate of
+ * @returns {quat2} out
+ */
+function conjugate(out, a) {
+    out[0] = -a[0];
+    out[1] = -a[1];
+    out[2] = -a[2];
+    out[3] = a[3];
+    out[4] = -a[4];
+    out[5] = -a[5];
+    out[6] = -a[6];
+    out[7] = a[7];
+    return out;
+}
+/**
+ * Calculates the length of a dual quat
+ *
+ * @param {quat2} a dual quat to calculate length of
+ * @returns {Number} length of a
+ * @function
+ */
+var length = _quat_js__WEBPACK_IMPORTED_MODULE_1__["length"];
+/**
+ * Alias for {@link quat2.length}
+ * @function
+ */
+var len = length;
+/**
+ * Calculates the squared length of a dual quat
+ *
+ * @param {quat2} a dual quat to calculate squared length of
+ * @returns {Number} squared length of a
+ * @function
+ */
+var squaredLength = _quat_js__WEBPACK_IMPORTED_MODULE_1__["squaredLength"];
+/**
+ * Alias for {@link quat2.squaredLength}
+ * @function
+ */
+var sqrLen = squaredLength;
+/**
+ * Normalize a dual quat
+ *
+ * @param {quat2} out the receiving dual quaternion
+ * @param {quat2} a dual quaternion to normalize
+ * @returns {quat2} out
+ * @function
+ */
+function normalize(out, a) {
+    var magnitude = squaredLength(a);
+    if (magnitude > 0) {
+        magnitude = Math.sqrt(magnitude);
+        out[0] = a[0] / magnitude;
+        out[1] = a[1] / magnitude;
+        out[2] = a[2] / magnitude;
+        out[3] = a[3] / magnitude;
+        out[4] = a[4] / magnitude;
+        out[5] = a[5] / magnitude;
+        out[6] = a[6] / magnitude;
+        out[7] = a[7] / magnitude;
+    }
+    return out;
+}
+/**
+ * Returns a string representation of a dual quatenion
+ *
+ * @param {quat2} a dual quaternion to represent as a string
+ * @returns {String} string representation of the dual quat
+ */
+function str(a) {
+    return 'quat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' +
+        a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ')';
+}
+/**
+ * Returns whether or not the dual quaternions have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {quat2} a the first dual quaternion.
+ * @param {quat2} b the second dual quaternion.
+ * @returns {Boolean} true if the dual quaternions are equal, false otherwise.
+ */
+function exactEquals(a, b) {
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] &&
+        a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7];
+}
+/**
+ * Returns whether or not the dual quaternions have approximately the same elements in the same position.
+ *
+ * @param {quat2} a the first dual quat.
+ * @param {quat2} b the second dual quat.
+ * @returns {Boolean} true if the dual quats are equal, false otherwise.
+ */
+function equals(a, b) {
+    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5], a6 = a[6], a7 = a[7];
+    var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7];
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+        Math.abs(a4 - b4) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+        Math.abs(a5 - b5) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+        Math.abs(a6 - b6) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+        Math.abs(a7 - b7) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a7), Math.abs(b7)));
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/gl-matrix/src/gl-matrix/vec2.js":
 /*!******************************************************!*\
   !*** ./node_modules/gl-matrix/src/gl-matrix/vec2.js ***!
   \******************************************************/
-/*! exports provided: create, clone, fromValues, copy, set, add, subtract, multiply, divide, ceil, floor, min, max, round, scale, scaleAndAdd, distance, squaredDistance, length, squaredLength, negate, inverse, normalize, dot, cross, lerp, random, transformMat2, transformMat2d, transformMat3, transformMat4, str, exactEquals, equals, len, sub, mul, div, dist, sqrDist, sqrLen, forEach */
+/*! exports provided: create, clone, fromValues, copy, set, add, subtract, multiply, divide, ceil, floor, min, max, round, scale, scaleAndAdd, distance, squaredDistance, length, squaredLength, negate, inverse, normalize, dot, cross, lerp, random, transformMat2, transformMat2d, transformMat3, transformMat4, rotate, angle, str, exactEquals, equals, len, sub, mul, div, dist, sqrDist, sqrLen, forEach */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4189,6 +4847,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat2d", function() { return transformMat2d; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat3", function() { return transformMat3; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformMat4", function() { return transformMat4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rotate", function() { return rotate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "angle", function() { return angle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "str", function() { return str; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "exactEquals", function() { return exactEquals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
@@ -4200,26 +4860,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrDist", function() { return sqrDist; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 2 Dimensional Vector
@@ -4231,7 +4872,7 @@ THE SOFTWARE. */
  * @returns {vec2} a new 2D vector
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
     out[0] = 0;
     out[1] = 0;
     return out;
@@ -4243,7 +4884,7 @@ function create() {
  * @returns {vec2} a new 2D vector
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
     out[0] = a[0];
     out[1] = a[1];
     return out;
@@ -4256,7 +4897,7 @@ function clone(a) {
  * @returns {vec2} a new 2D vector
  */
 function fromValues(x, y) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](2);
     out[0] = x;
     out[1] = y;
     return out;
@@ -4325,7 +4966,6 @@ function multiply(out, a, b) {
     out[1] = a[1] * b[1];
     return out;
 }
-;
 /**
  * Divides two vec2's
  *
@@ -4339,7 +4979,6 @@ function divide(out, a, b) {
     out[1] = a[1] / b[1];
     return out;
 }
-;
 /**
  * Math.ceil the components of a vec2
  *
@@ -4352,7 +4991,6 @@ function ceil(out, a) {
     out[1] = Math.ceil(a[1]);
     return out;
 }
-;
 /**
  * Math.floor the components of a vec2
  *
@@ -4365,7 +5003,6 @@ function floor(out, a) {
     out[1] = Math.floor(a[1]);
     return out;
 }
-;
 /**
  * Returns the minimum of two vec2's
  *
@@ -4379,7 +5016,6 @@ function min(out, a, b) {
     out[1] = Math.min(a[1], b[1]);
     return out;
 }
-;
 /**
  * Returns the maximum of two vec2's
  *
@@ -4393,7 +5029,6 @@ function max(out, a, b) {
     out[1] = Math.max(a[1], b[1]);
     return out;
 }
-;
 /**
  * Math.round the components of a vec2
  *
@@ -4406,7 +5041,6 @@ function round(out, a) {
     out[1] = Math.round(a[1]);
     return out;
 }
-;
 /**
  * Scales a vec2 by a scalar number
  *
@@ -4420,7 +5054,6 @@ function scale(out, a, b) {
     out[1] = a[1] * b;
     return out;
 }
-;
 /**
  * Adds two vec2's after scaling the second operand by a scalar value
  *
@@ -4435,7 +5068,6 @@ function scaleAndAdd(out, a, b, scale) {
     out[1] = a[1] + (b[1] * scale);
     return out;
 }
-;
 /**
  * Calculates the euclidian distance between two vec2's
  *
@@ -4447,7 +5079,6 @@ function distance(a, b) {
     var x = b[0] - a[0], y = b[1] - a[1];
     return Math.sqrt(x * x + y * y);
 }
-;
 /**
  * Calculates the squared euclidian distance between two vec2's
  *
@@ -4459,7 +5090,6 @@ function squaredDistance(a, b) {
     var x = b[0] - a[0], y = b[1] - a[1];
     return x * x + y * y;
 }
-;
 /**
  * Calculates the length of a vec2
  *
@@ -4470,7 +5100,6 @@ function length(a) {
     var x = a[0], y = a[1];
     return Math.sqrt(x * x + y * y);
 }
-;
 /**
  * Calculates the squared length of a vec2
  *
@@ -4481,7 +5110,6 @@ function squaredLength(a) {
     var x = a[0], y = a[1];
     return x * x + y * y;
 }
-;
 /**
  * Negates the components of a vec2
  *
@@ -4494,7 +5122,6 @@ function negate(out, a) {
     out[1] = -a[1];
     return out;
 }
-;
 /**
  * Returns the inverse of the components of a vec2
  *
@@ -4507,7 +5134,6 @@ function inverse(out, a) {
     out[1] = 1.0 / a[1];
     return out;
 }
-;
 /**
  * Normalize a vec2
  *
@@ -4526,7 +5152,6 @@ function normalize(out, a) {
     }
     return out;
 }
-;
 /**
  * Calculates the dot product of two vec2's
  *
@@ -4537,7 +5162,6 @@ function normalize(out, a) {
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1];
 }
-;
 /**
  * Computes the cross product of two vec2's
  * Note that the cross product must by definition produce a 3D vector
@@ -4553,14 +5177,13 @@ function cross(out, a, b) {
     out[2] = z;
     return out;
 }
-;
 /**
  * Performs a linear interpolation between two vec2's
  *
  * @param {vec2} out the receiving vector
  * @param {vec2} a the first operand
  * @param {vec2} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec2} out
  */
 function lerp(out, a, b, t) {
@@ -4569,7 +5192,6 @@ function lerp(out, a, b, t) {
     out[1] = ay + t * (b[1] - ay);
     return out;
 }
-;
 /**
  * Generates a random vector with the given scale
  *
@@ -4579,12 +5201,11 @@ function lerp(out, a, b, t) {
  */
 function random(out, scale) {
     scale = scale || 1.0;
-    var r = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
+    var r = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
     out[0] = Math.cos(r) * scale;
     out[1] = Math.sin(r) * scale;
     return out;
 }
-;
 /**
  * Transforms the vec2 with a mat2
  *
@@ -4599,7 +5220,6 @@ function transformMat2(out, a, m) {
     out[1] = m[1] * x + m[3] * y;
     return out;
 }
-;
 /**
  * Transforms the vec2 with a mat2d
  *
@@ -4614,7 +5234,6 @@ function transformMat2d(out, a, m) {
     out[1] = m[1] * x + m[3] * y + m[5];
     return out;
 }
-;
 /**
  * Transforms the vec2 with a mat3
  * 3rd vector component is implicitly '1'
@@ -4630,7 +5249,6 @@ function transformMat3(out, a, m) {
     out[1] = m[1] * x + m[4] * y + m[7];
     return out;
 }
-;
 /**
  * Transforms the vec2 with a mat4
  * 3rd vector component is implicitly '0'
@@ -4647,6 +5265,51 @@ function transformMat4(out, a, m) {
     out[0] = m[0] * x + m[4] * y + m[12];
     out[1] = m[1] * x + m[5] * y + m[13];
     return out;
+}
+/**
+ * Rotate a 2D vector
+ * @param {vec2} out The receiving vec2
+ * @param {vec2} a The vec2 point to rotate
+ * @param {vec2} b The origin of the rotation
+ * @param {Number} c The angle of rotation
+ * @returns {vec2} out
+ */
+function rotate(out, a, b, c) {
+    //Translate point to the origin
+    var p0 = a[0] - b[0], p1 = a[1] - b[1], sinC = Math.sin(c), cosC = Math.cos(c);
+    //perform rotation and translate to correct position
+    out[0] = p0 * cosC - p1 * sinC + b[0];
+    out[1] = p0 * sinC + p1 * cosC + b[1];
+    return out;
+}
+/**
+ * Get the angle between two 2D vectors
+ * @param {vec2} a The first operand
+ * @param {vec2} b The second operand
+ * @returns {Number} The angle in radians
+ */
+function angle(a, b) {
+    var x1 = a[0], y1 = a[1], x2 = b[0], y2 = b[1];
+    var len1 = x1 * x1 + y1 * y1;
+    if (len1 > 0) {
+        //TODO: evaluate use of glm_invsqrt here?
+        len1 = 1 / Math.sqrt(len1);
+    }
+    var len2 = x2 * x2 + y2 * y2;
+    if (len2 > 0) {
+        //TODO: evaluate use of glm_invsqrt here?
+        len2 = 1 / Math.sqrt(len2);
+    }
+    var cosine = (x1 * x2 + y1 * y2) * len1 * len2;
+    if (cosine > 1.0) {
+        return 0;
+    }
+    else if (cosine < -1.0) {
+        return Math.PI;
+    }
+    else {
+        return Math.acos(cosine);
+    }
 }
 /**
  * Returns a string representation of a vector
@@ -4677,8 +5340,8 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1];
     var b0 = b[0], b1 = b[1];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)));
 }
 /**
  * Alias for {@link vec2.length}
@@ -4813,26 +5476,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 3 Dimensional Vector
@@ -4844,7 +5488,7 @@ THE SOFTWARE. */
  * @returns {vec3} a new 3D vector
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -4857,7 +5501,7 @@ function create() {
  * @returns {vec3} a new 3D vector
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -4884,7 +5528,7 @@ function length(a) {
  * @returns {vec3} a new 3D vector
  */
 function fromValues(x, y, z) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](3);
     out[0] = x;
     out[1] = y;
     out[2] = z;
@@ -5187,7 +5831,7 @@ function cross(out, a, b) {
  * @param {vec3} out the receiving vector
  * @param {vec3} a the first operand
  * @param {vec3} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
 function lerp(out, a, b, t) {
@@ -5207,7 +5851,7 @@ function lerp(out, a, b, t) {
  * @param {vec3} b the second operand
  * @param {vec3} c the third operand
  * @param {vec3} d the fourth operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
 function hermite(out, a, b, c, d, t) {
@@ -5229,7 +5873,7 @@ function hermite(out, a, b, c, d, t) {
  * @param {vec3} b the second operand
  * @param {vec3} c the third operand
  * @param {vec3} d the fourth operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec3} out
  */
 function bezier(out, a, b, c, d, t) {
@@ -5254,8 +5898,8 @@ function bezier(out, a, b, c, d, t) {
  */
 function random(out, scale) {
     scale = scale || 1.0;
-    var r = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
-    var z = (_common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0) - 1.0;
+    var r = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0 * Math.PI;
+    var z = (_common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2.0) - 1.0;
     var zScale = Math.sqrt(1.0 - z * z) * scale;
     out[0] = Math.cos(r) * zScale;
     out[1] = Math.sin(r) * zScale;
@@ -5297,6 +5941,7 @@ function transformMat3(out, a, m) {
 }
 /**
  * Transforms the vec3 with a quat
+ * Can also be used for dual quaternions. (Multiply it with the real part)
  *
  * @param {vec3} out the receiving vector
  * @param {vec3} a the vector to transform
@@ -5304,18 +5949,27 @@ function transformMat3(out, a, m) {
  * @returns {vec3} out
  */
 function transformQuat(out, a, q) {
-    // benchmarks: http://jsperf.com/quaternion-transform-vec3-implementations
-    var x = a[0], y = a[1], z = a[2];
+    // benchmarks: https://jsperf.com/quaternion-transform-vec3-implementations-fixed
     var qx = q[0], qy = q[1], qz = q[2], qw = q[3];
-    // calculate quat * vec
-    var ix = qw * x + qy * z - qz * y;
-    var iy = qw * y + qz * x - qx * z;
-    var iz = qw * z + qx * y - qy * x;
-    var iw = -qx * x - qy * y - qz * z;
-    // calculate result * inverse quat
-    out[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-    out[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-    out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+    var x = a[0], y = a[1], z = a[2];
+    // var qvec = [qx, qy, qz];
+    // var uv = vec3.cross([], qvec, a);
+    var uvx = qy * z - qz * y, uvy = qz * x - qx * z, uvz = qx * y - qy * x;
+    // var uuv = vec3.cross([], qvec, uv);
+    var uuvx = qy * uvz - qz * uvy, uuvy = qz * uvx - qx * uvz, uuvz = qx * uvy - qy * uvx;
+    // vec3.scale(uv, uv, 2 * w);
+    var w2 = qw * 2;
+    uvx *= w2;
+    uvy *= w2;
+    uvz *= w2;
+    // vec3.scale(uuv, uuv, 2);
+    uuvx *= 2;
+    uuvy *= 2;
+    uuvz *= 2;
+    // return vec3.add(out, a, vec3.add(out, uv, uuv));
+    out[0] = x + uvx + uuvx;
+    out[1] = y + uvy + uuvy;
+    out[2] = z + uvz + uuvz;
     return out;
 }
 /**
@@ -5441,9 +6095,9 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1], a2 = a[2];
     var b0 = b[0], b1 = b[1], b2 = b[2];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)));
 }
 /**
  * Alias for {@link vec3.subtract}
@@ -5572,26 +6226,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "len", function() { return len; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sqrLen", function() { return sqrLen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return forEach; });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
-/* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE. */
+/* harmony import */ var _common_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./common.js */ "./node_modules/gl-matrix/src/gl-matrix/common.js");
 
 /**
  * 4 Dimensional Vector
@@ -5603,7 +6238,7 @@ THE SOFTWARE. */
  * @returns {vec4} a new 4D vector
  */
 function create() {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -5617,7 +6252,7 @@ function create() {
  * @returns {vec4} a new 4D vector
  */
 function clone(a) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -5634,7 +6269,7 @@ function clone(a) {
  * @returns {vec4} a new 4D vector
  */
 function fromValues(x, y, z, w) {
-    var out = new _common__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
+    var out = new _common_js__WEBPACK_IMPORTED_MODULE_0__["ARRAY_TYPE"](4);
     out[0] = x;
     out[1] = y;
     out[2] = z;
@@ -5955,7 +6590,7 @@ function dot(a, b) {
  * @param {vec4} out the receiving vector
  * @param {vec4} a the first operand
  * @param {vec4} b the second operand
- * @param {Number} t interpolation amount between the two inputs
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
  * @returns {vec4} out
  */
 function lerp(out, a, b, t) {
@@ -5978,13 +6613,26 @@ function lerp(out, a, b, t) {
  */
 function random(out, vectorScale) {
     vectorScale = vectorScale || 1.0;
-    //TODO: This is a pretty awful way of doing this. Find something better.
-    out[0] = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
-    out[1] = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
-    out[2] = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
-    out[3] = _common__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]();
-    normalize(out, out);
-    scale(out, out, vectorScale);
+    // Marsaglia, George. Choosing a Point from the Surface of a
+    // Sphere. Ann. Math. Statist. 43 (1972), no. 2, 645--646.
+    // http://projecteuclid.org/euclid.aoms/1177692644;
+    var v1, v2, v3, v4;
+    var s1, s2;
+    do {
+        v1 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+        v2 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+        s1 = v1 * v1 + v2 * v2;
+    } while (s1 >= 1);
+    do {
+        v3 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+        v4 = _common_js__WEBPACK_IMPORTED_MODULE_0__["RANDOM"]() * 2 - 1;
+        s2 = v3 * v3 + v4 * v4;
+    } while (s2 >= 1);
+    var d = Math.sqrt((1 - s1) / s2);
+    out[0] = scale * v1;
+    out[1] = scale * v2;
+    out[2] = scale * v3 * d;
+    out[3] = scale * v4 * d;
     return out;
 }
 /**
@@ -6055,10 +6703,10 @@ function exactEquals(a, b) {
 function equals(a, b) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
     var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-    return (Math.abs(a0 - b0) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
-        Math.abs(a3 - b3) <= _common__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)));
+    return (Math.abs(a0 - b0) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+        Math.abs(a1 - b1) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+        Math.abs(a2 - b2) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+        Math.abs(a3 - b3) <= _common_js__WEBPACK_IMPORTED_MODULE_0__["EPSILON"] * Math.max(1.0, Math.abs(a3), Math.abs(b3)));
 }
 /**
  * Alias for {@link vec4.subtract}
@@ -7792,10 +8440,12 @@ var ForwardRenderer = /** @class */ (function () {
     function ForwardRenderer() {
         this.defaultCamera = new _camera__WEBPACK_IMPORTED_MODULE_3__["Camera"];
         this.renderGroups = new _renderGroups__WEBPACK_IMPORTED_MODULE_2__["RenderGroups"]();
+        this.hdr = {
+            material: new _Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_7__["HDRMaterial"]()
+        };
         this._configureHDR();
-        var hdrMaterial = new _Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_7__["HDRMaterial"]();
         var quad = _Geometry_geometry__WEBPACK_IMPORTED_MODULE_6__["Geometry"].Quad(2.0);
-        this.screenQuad = new _Components_meshRenderer__WEBPACK_IMPORTED_MODULE_1__["MeshRenderer"](quad, hdrMaterial);
+        this.screenQuad = new _Components_meshRenderer__WEBPACK_IMPORTED_MODULE_1__["MeshRenderer"](quad, this.hdr.material);
         this.msaa = {
             enabled: false,
             samples: 4,
@@ -7879,8 +8529,8 @@ var ForwardRenderer = /** @class */ (function () {
         _webgl__WEBPACK_IMPORTED_MODULE_0__["gl"].disable(_webgl__WEBPACK_IMPORTED_MODULE_0__["gl"].BLEND);
         _webgl__WEBPACK_IMPORTED_MODULE_0__["webgl"].setClearColor(1.0, 1.0, 1.0, 1.0);
         _webgl__WEBPACK_IMPORTED_MODULE_0__["gl"].clear(_webgl__WEBPACK_IMPORTED_MODULE_0__["gl"].COLOR_BUFFER_BIT | _webgl__WEBPACK_IMPORTED_MODULE_0__["gl"].DEPTH_BUFFER_BIT);
-        this.screenQuad.material.exposure = camera.exposure;
-        this._useMaterial(this.screenQuad.material);
+        this.hdr.material.exposure = camera.exposure;
+        this._useMaterial(this.hdr.material);
         this.hdr.fbo.attachments.color[0].use(0);
         this.screenQuad.render();
     };
@@ -7899,7 +8549,7 @@ var ForwardRenderer = /** @class */ (function () {
             if (this.hdr.fbo)
                 this.hdr.fbo.dispose();
         }
-        this.hdr = { fbo: new _Textures_framebuffer__WEBPACK_IMPORTED_MODULE_5__["Framebuffer"](_webgl__WEBPACK_IMPORTED_MODULE_0__["webgl"].viewport.width, _webgl__WEBPACK_IMPORTED_MODULE_0__["webgl"].viewport.height) };
+        this.hdr.fbo = new _Textures_framebuffer__WEBPACK_IMPORTED_MODULE_5__["Framebuffer"](_webgl__WEBPACK_IMPORTED_MODULE_0__["webgl"].viewport.width, _webgl__WEBPACK_IMPORTED_MODULE_0__["webgl"].viewport.height);
         this.hdr.fbo.addColor(_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_5__["AttachmentType"].TEXTURE, fbFormat);
         this.hdr.fbo.addDepth(_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_5__["AttachmentType"].TEXTURE);
     };
