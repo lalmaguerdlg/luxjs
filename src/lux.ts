@@ -1,8 +1,9 @@
 // --------------------------------- Core
 
 export { 
+    LoopCallback,
     core, simulation, renderer,
-    useScene, swapScene, run, loop, 
+    useScene, swapScene, run, loop, fixedLoop,
 } from './Core/core';
 
 

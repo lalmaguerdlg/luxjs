@@ -2,22 +2,36 @@ import { ForwardRenderer } from '../Graphics/Renderers/forwardRenderer'
 import { Scene } from './scene';
 import { BehaviourComponent, PhysicsComponent, RenderComponent } from './component';
 import { PhysicsSimulation } from '../Physics/physicsSimulation';
+import { ITime } from './time';
+
+
+export interface LoopCallback {
+	(time: ITime): void;
+}
 
 class Core {
 	simulation: PhysicsSimulation;
 	renderer: ForwardRenderer;
 	currentScene: Scene;
-	time: {deltaTime: number, elapsedTime: number};
+	time: ITime;
 	running: boolean;
+	acumulator: number = 0;
+
+	loopCallbacks: LoopCallback[] = [];
+	fixedLoopCallbacks: LoopCallback[] = [];
+
 	constructor() {
 		this.simulation =  new PhysicsSimulation();
 		this.renderer = new ForwardRenderer();
 		this.time = {
 			deltaTime: 0,
 			elapsedTime: 0,
+			fixedTime: 1 / 60
 		}
 		this.running = false;
 	}
+
+
 
 	useScene(scene: Scene): void {
 		this.currentScene = scene;
@@ -28,6 +42,12 @@ class Core {
 		this.currentScene.isPlaying = false;
 		this.useScene(scene);
 		this.coreStart();
+	}
+
+	fixedUpdate(behaviours: BehaviourComponent[]): void {
+		for(let b of behaviours) {
+			b.fixedUpdate(this.time);
+		}
 	}
 
 	update(behaviours: BehaviourComponent[]): void {
@@ -51,27 +71,45 @@ class Core {
 
 	coreLoop(dt: number): void {
 		this.time.deltaTime = dt;
-		this.time.elapsedTime += dt;
+		
 		if(this.currentScene){
-			let physics: PhysicsComponent[] = [];
+			let physicBodies: PhysicsComponent[] = [];
 			let behaviours: BehaviourComponent[] = [];
 
 			for (let go of this.currentScene.gameObjects) {
 				let components = go.getComponentsList([PhysicsComponent, BehaviourComponent]);
 				for(let c of components) {
 					if(c.active) {
-						if (c instanceof PhysicsComponent) physics.push(c);
+						if (c instanceof PhysicsComponent) physicBodies.push(c);
 						else if (c instanceof BehaviourComponent) behaviours.push(c);
 					}
 				}
 			}
+			
+			this.acumulator += dt;
 
 			// Physics
-			this.simulation.simulate(this.time, physics);
+			while(this.acumulator >= this.time.fixedTime) {
 
+				for(let cb of this.fixedLoopCallbacks){
+					cb(this.time);
+				}
+
+				this.fixedUpdate(behaviours);
+				this.simulation.simulate(this.time, physicBodies);
+				
+				this.acumulator -= this.time.fixedTime;
+				this.time.elapsedTime += this.time.fixedTime;
+
+			}
 			// Behaviours
 			this.update(behaviours);
 			this.lateUpdate(behaviours);
+
+
+			for(let cb of this.loopCallbacks){
+				cb(this.time);
+			}
 
 			// Rendering
 			this.renderer.render(this.currentScene);
@@ -91,6 +129,21 @@ class Core {
 		}
 		requestAnimationFrame(_loop);
 	}
+
+	addLoopCallback(cb : LoopCallback) {
+		let index = this.loopCallbacks.indexOf(cb);
+		if(index < 0){
+			this.loopCallbacks.push(cb);
+		}
+	}
+
+	addfixedLoopCallback(cb : LoopCallback) {
+		let index = this.fixedLoopCallbacks.indexOf(cb);
+		if(index < 0){
+			this.fixedLoopCallbacks.push(cb);
+		}
+	}
+	
 }
 
 export let core = new Core();
@@ -109,6 +162,16 @@ export function run(): void {
 	core.run();
 }
 
+export function fixedLoop(callback: LoopCallback) {
+	core.addfixedLoopCallback(callback);
+}
+
+export function loop(callback: LoopCallback) {
+	core.addLoopCallback(callback);
+}
+
+
+/*
 export function loop(callback: (dt: number) => void) {
 	let lastTime = 0;
 	function _loop(nowTime) {
@@ -120,3 +183,4 @@ export function loop(callback: (dt: number) => void) {
 	}
 	requestAnimationFrame(_loop);
 }
+*/

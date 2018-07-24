@@ -54,7 +54,8 @@ export class BehaviourComponent extends Component {
     constructor(){
         super();
     }
-    
+
+    fixedUpdate(time: ITime) : void {}
     update(time: ITime) : void {}
     lateUpdate(time: ITime) : void {}
 }

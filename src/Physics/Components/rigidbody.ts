@@ -38,8 +38,8 @@ export class Rigidbody extends PhysicsComponent {
     }
 
     simulate(time: ITime) : void {
-        vec3.scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.deltaTime);
-        vec3.scaleAndAdd(this.transform!.position, this.transform!.position, this.velocity, time.deltaTime);
+        vec3.scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.fixedTime);
+        vec3.scaleAndAdd(this.transform!.position, this.transform!.position, this.velocity, time.fixedTime);
         vec3.set(this.aceleration, 0, 0, 0);
     }
 }

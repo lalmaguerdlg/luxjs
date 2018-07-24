@@ -6860,6 +6860,7 @@ var BehaviourComponent = /** @class */ (function (_super) {
     function BehaviourComponent() {
         return _super.call(this) || this;
     }
+    BehaviourComponent.prototype.fixedUpdate = function (time) { };
     BehaviourComponent.prototype.update = function (time) { };
     BehaviourComponent.prototype.lateUpdate = function (time) { };
     return BehaviourComponent;
@@ -6882,7 +6883,7 @@ var RenderComponent = /** @class */ (function (_super) {
 /*!**************************!*\
   !*** ./src/Core/core.ts ***!
   \**************************/
-/*! exports provided: core, simulation, renderer, useScene, swapScene, run, loop */
+/*! exports provided: core, simulation, renderer, useScene, swapScene, run, fixedLoop, loop */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6893,6 +6894,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useScene", function() { return useScene; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "swapScene", function() { return swapScene; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "run", function() { return run; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fixedLoop", function() { return fixedLoop; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loop", function() { return loop; });
 /* harmony import */ var _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Graphics/Renderers/forwardRenderer */ "./src/Graphics/Renderers/forwardRenderer.ts");
 /* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./component */ "./src/Core/component.ts");
@@ -6902,11 +6904,15 @@ __webpack_require__.r(__webpack_exports__);
 
 var Core = /** @class */ (function () {
     function Core() {
+        this.acumulator = 0;
+        this.loopCallbacks = [];
+        this.fixedLoopCallbacks = [];
         this.simulation = new _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_2__["PhysicsSimulation"]();
         this.renderer = new _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_0__["ForwardRenderer"]();
         this.time = {
             deltaTime: 0,
             elapsedTime: 0,
+            fixedTime: 1 / 60
         };
         this.running = false;
     }
@@ -6919,15 +6925,21 @@ var Core = /** @class */ (function () {
         this.useScene(scene);
         this.coreStart();
     };
-    Core.prototype.update = function (behaviours) {
+    Core.prototype.fixedUpdate = function (behaviours) {
         for (var _i = 0, behaviours_1 = behaviours; _i < behaviours_1.length; _i++) {
             var b = behaviours_1[_i];
+            b.fixedUpdate(this.time);
+        }
+    };
+    Core.prototype.update = function (behaviours) {
+        for (var _i = 0, behaviours_2 = behaviours; _i < behaviours_2.length; _i++) {
+            var b = behaviours_2[_i];
             b.update(this.time);
         }
     };
     Core.prototype.lateUpdate = function (behaviours) {
-        for (var _i = 0, behaviours_2 = behaviours; _i < behaviours_2.length; _i++) {
-            var b = behaviours_2[_i];
+        for (var _i = 0, behaviours_3 = behaviours; _i < behaviours_3.length; _i++) {
+            var b = behaviours_3[_i];
             b.lateUpdate(this.time);
         }
     };
@@ -6940,9 +6952,8 @@ var Core = /** @class */ (function () {
     };
     Core.prototype.coreLoop = function (dt) {
         this.time.deltaTime = dt;
-        this.time.elapsedTime += dt;
         if (this.currentScene) {
-            var physics = [];
+            var physicBodies = [];
             var behaviours = [];
             for (var _i = 0, _a = this.currentScene.gameObjects; _i < _a.length; _i++) {
                 var go = _a[_i];
@@ -6951,17 +6962,31 @@ var Core = /** @class */ (function () {
                     var c = components_1[_b];
                     if (c.active) {
                         if (c instanceof _component__WEBPACK_IMPORTED_MODULE_1__["PhysicsComponent"])
-                            physics.push(c);
+                            physicBodies.push(c);
                         else if (c instanceof _component__WEBPACK_IMPORTED_MODULE_1__["BehaviourComponent"])
                             behaviours.push(c);
                     }
                 }
             }
+            this.acumulator += dt;
             // Physics
-            this.simulation.simulate(this.time, physics);
+            while (this.acumulator >= this.time.fixedTime) {
+                for (var _c = 0, _d = this.fixedLoopCallbacks; _c < _d.length; _c++) {
+                    var cb = _d[_c];
+                    cb(this.time);
+                }
+                this.fixedUpdate(behaviours);
+                this.simulation.simulate(this.time, physicBodies);
+                this.acumulator -= this.time.fixedTime;
+                this.time.elapsedTime += this.time.fixedTime;
+            }
             // Behaviours
             this.update(behaviours);
             this.lateUpdate(behaviours);
+            for (var _e = 0, _f = this.loopCallbacks; _e < _f.length; _e++) {
+                var cb = _f[_e];
+                cb(this.time);
+            }
             // Rendering
             this.renderer.render(this.currentScene);
         }
@@ -6979,6 +7004,18 @@ var Core = /** @class */ (function () {
         }
         requestAnimationFrame(_loop);
     };
+    Core.prototype.addLoopCallback = function (cb) {
+        var index = this.loopCallbacks.indexOf(cb);
+        if (index < 0) {
+            this.loopCallbacks.push(cb);
+        }
+    };
+    Core.prototype.addfixedLoopCallback = function (cb) {
+        var index = this.fixedLoopCallbacks.indexOf(cb);
+        if (index < 0) {
+            this.fixedLoopCallbacks.push(cb);
+        }
+    };
     return Core;
 }());
 var core = new Core();
@@ -6993,17 +7030,25 @@ function swapScene(scene) {
 function run() {
     core.run();
 }
+function fixedLoop(callback) {
+    core.addfixedLoopCallback(callback);
+}
 function loop(callback) {
-    var lastTime = 0;
+    core.addLoopCallback(callback);
+}
+/*
+export function loop(callback: (dt: number) => void) {
+    let lastTime = 0;
     function _loop(nowTime) {
         nowTime *= 0.001; // Convert time to seconds
-        var deltaTime = nowTime - lastTime;
+        let deltaTime = nowTime - lastTime;
         callback(deltaTime);
         lastTime = nowTime;
         requestAnimationFrame(_loop);
     }
     requestAnimationFrame(_loop);
 }
+*/
 
 
 /***/ }),
@@ -9468,8 +9513,8 @@ var Rigidbody = /** @class */ (function (_super) {
         gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].add(this.aceleration, this.aceleration, force);
     };
     Rigidbody.prototype.simulate = function (time) {
-        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.deltaTime);
-        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.deltaTime);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.fixedTime);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.fixedTime);
         gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.aceleration, 0, 0, 0);
     };
     return Rigidbody;
@@ -9518,7 +9563,7 @@ var PhysicsSimulation = /** @class */ (function () {
 /*!********************!*\
   !*** ./src/lux.ts ***!
   \********************/
-/*! exports provided: core, simulation, renderer, useScene, swapScene, run, loop, RM, Transform, GameObject, Component, PhysicsComponent, BehaviourComponent, RenderComponent, Scene, glMatrix, vec2, vec3, vec4, quat, mat2, mat2d, mat3, mat4, PhysicsSimulation, Rigidbody, webgl, gl, AttributePointer, Vertex, VERTEX_LAYOUT, VertexArray, Mesh, Geometry, Texture, TextureFormat, TexturePresets, RenderBuffer, RenderBufferFormat, Framebuffer, AttachmentType, Shader, BaseMaterial, MaterialTag, BasicMaterial, NormalMaterial, LambertMaterial, PhongMaterial, HDRMaterial, PointLight, Camera, MeshRenderer, RenderGroups, ForwardRenderer */
+/*! exports provided: core, simulation, renderer, useScene, swapScene, run, loop, fixedLoop, RM, Transform, GameObject, Component, PhysicsComponent, BehaviourComponent, RenderComponent, Scene, glMatrix, vec2, vec3, vec4, quat, mat2, mat2d, mat3, mat4, PhysicsSimulation, Rigidbody, webgl, gl, AttributePointer, Vertex, VERTEX_LAYOUT, VertexArray, Mesh, Geometry, Texture, TextureFormat, TexturePresets, RenderBuffer, RenderBufferFormat, Framebuffer, AttachmentType, Shader, BaseMaterial, MaterialTag, BasicMaterial, NormalMaterial, LambertMaterial, PhongMaterial, HDRMaterial, PointLight, Camera, MeshRenderer, RenderGroups, ForwardRenderer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9537,6 +9582,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "run", function() { return _Core_core__WEBPACK_IMPORTED_MODULE_0__["run"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "loop", function() { return _Core_core__WEBPACK_IMPORTED_MODULE_0__["loop"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "fixedLoop", function() { return _Core_core__WEBPACK_IMPORTED_MODULE_0__["fixedLoop"]; });
 
 /* harmony import */ var _Core_resourceManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Core/resourceManager */ "./src/Core/resourceManager.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM", function() { return _Core_resourceManager__WEBPACK_IMPORTED_MODULE_1__["RM"]; });

@@ -73,14 +73,14 @@ function main() {
     lux.useScene(scene);
     lux.simulation.useGravity = false;
     lux.run();
-    lux.loop(render);
+    lux.fixedLoop(render);
     lux.renderer.setMSAA(4);
 }
 
 let t = 0;
 
 function render(dt){
-    t += dt;
+    t += dt.fixedTime;
 
     let cube = scene.findObjectWithName('cube');
     let cube2 = scene.findObjectWithName('cube2');

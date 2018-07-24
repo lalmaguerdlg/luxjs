@@ -180,7 +180,7 @@ let mNormal = lux.mat4.create();
 let cameraPos = lux.vec3.create();
 
 function render(dt){
-    t += dt;
+    t += dt.deltaTime;
 
     lux.mat4.identity(camera.mView);
     lux.mat4.perspective(camera.mPerspective, 45, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
