@@ -296,18 +296,6 @@ export class Shader{
         }
 
         return result;
-
-        /*
-        if(!this.uniforms[name] && this.uniforms[name] !== null ){
-            let uniform = this._getUniformLocation(name);
-            this.uniforms = Object.assign(this.uniforms, uniform);
-            if (uniform[name] === null){
-                console.warn(this.name + ": No uniform with name " + name + " was found.");
-            }
-        }
-        
-        return this.uniforms[name];
-        */
     }
 
     

@@ -33,7 +33,7 @@ export type Attribute = {
 let attributes: Attribute[] = [
     {name: "a_position", elements: 3 },
     {name: "a_normal", elements: 3 },
-    {name: "a_texCoords", elements: 2 }
+    {name: "a_texCoords", elements: 2 },
 ]
 
 let bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
