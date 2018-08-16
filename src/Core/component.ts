@@ -1,6 +1,7 @@
 import { Transform } from './transform'
 import { GameObject } from './gameObject';
 import { ITime } from './time';
+import { Integrator } from '../Physics/physicsSimulation';
 
 export class Component {
     gameObject ?: GameObject;
@@ -47,7 +48,7 @@ export class PhysicsComponent extends Component {
         super();
         this.kinematic = false;
     }
-    simulate(time: ITime) : void { }
+    simulate(time: ITime, integrator : Integrator) : void { }
 }
 
 export class BehaviourComponent extends Component {

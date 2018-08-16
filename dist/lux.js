@@ -6851,7 +6851,7 @@ var PhysicsComponent = /** @class */ (function (_super) {
         _this.kinematic = false;
         return _this;
     }
-    PhysicsComponent.prototype.simulate = function (time) { };
+    PhysicsComponent.prototype.simulate = function (time, integrator) { };
     return PhysicsComponent;
 }(Component));
 
@@ -6899,6 +6899,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Graphics/Renderers/forwardRenderer */ "./src/Graphics/Renderers/forwardRenderer.ts");
 /* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./component */ "./src/Core/component.ts");
 /* harmony import */ var _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Physics/physicsSimulation */ "./src/Physics/physicsSimulation.ts");
+/* harmony import */ var _profiler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../profiler */ "./src/profiler.ts");
+
 
 
 
@@ -6907,7 +6909,7 @@ var Core = /** @class */ (function () {
         this.acumulator = 0;
         this.loopCallbacks = [];
         this.fixedLoopCallbacks = [];
-        this.simulation = new _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_2__["PhysicsSimulation"]();
+        this.simulation = new _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_2__["PhysicsSimulation"](_Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_2__["Integrators"].ModifiedEuler);
         this.renderer = new _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_0__["ForwardRenderer"]();
         this.time = {
             deltaTime: 0,
@@ -6951,10 +6953,12 @@ var Core = /** @class */ (function () {
         }
     };
     Core.prototype.coreLoop = function (dt) {
+        _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].start('coreLoop');
         this.time.deltaTime = dt;
         if (this.currentScene) {
             var physicBodies = [];
             var behaviours = [];
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].start('fetchComponents');
             for (var _i = 0, _a = this.currentScene.gameObjects; _i < _a.length; _i++) {
                 var go = _a[_i];
                 var components = go.getComponentsList([_component__WEBPACK_IMPORTED_MODULE_1__["PhysicsComponent"], _component__WEBPACK_IMPORTED_MODULE_1__["BehaviourComponent"]]);
@@ -6968,7 +6972,9 @@ var Core = /** @class */ (function () {
                     }
                 }
             }
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].end('fetchComponents');
             this.acumulator += dt;
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].start('PhysicsLoop');
             // Physics
             while (this.acumulator >= this.time.fixedTime) {
                 for (var _c = 0, _d = this.fixedLoopCallbacks; _c < _d.length; _c++) {
@@ -6980,6 +6986,7 @@ var Core = /** @class */ (function () {
                 this.acumulator -= this.time.fixedTime;
                 this.time.elapsedTime += this.time.fixedTime;
             }
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].end('PhysicsLoop');
             // Behaviours
             this.update(behaviours);
             this.lateUpdate(behaviours);
@@ -6988,7 +6995,11 @@ var Core = /** @class */ (function () {
                 cb(this.time);
             }
             // Rendering
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].start('Renderer');
             this.renderer.render(this.currentScene);
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].end('Renderer');
+            _profiler__WEBPACK_IMPORTED_MODULE_3__["global_profiler"].end('coreLoop');
+            //global_profiler.log();
         }
     };
     Core.prototype.run = function () {
@@ -7960,7 +7971,7 @@ var Vertex = /** @class */ (function () {
 var attributes = [
     { name: "a_position", elements: 3 },
     { name: "a_normal", elements: 3 },
-    { name: "a_texCoords", elements: 2 }
+    { name: "a_texCoords", elements: 2 },
 ];
 var bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
 function calculateElements(attribs) {
@@ -9325,17 +9336,6 @@ var Shader = /** @class */ (function () {
             result = search;
         }
         return result;
-        /*
-        if(!this.uniforms[name] && this.uniforms[name] !== null ){
-            let uniform = this._getUniformLocation(name);
-            this.uniforms = Object.assign(this.uniforms, uniform);
-            if (uniform[name] === null){
-                console.warn(this.name + ": No uniform with name " + name + " was found.");
-            }
-        }
-        
-        return this.uniforms[name];
-        */
     };
     Shader.prototype._getLocation = function (type, name) {
         var result = { name: name, location: null };
@@ -9512,9 +9512,8 @@ var Rigidbody = /** @class */ (function (_super) {
     Rigidbody.prototype.applyForce = function (force) {
         gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].add(this.aceleration, this.aceleration, force);
     };
-    Rigidbody.prototype.simulate = function (time) {
-        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.velocity, this.velocity, this.aceleration, time.fixedTime);
-        gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.transform.position, this.transform.position, this.velocity, time.fixedTime);
+    Rigidbody.prototype.simulate = function (time, integrator) {
+        integrator(this.transform.position, this.velocity, this.aceleration, time.fixedTime);
         gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.aceleration, 0, 0, 0);
     };
     return Rigidbody;
@@ -9528,18 +9527,51 @@ var Rigidbody = /** @class */ (function (_super) {
 /*!******************************************!*\
   !*** ./src/Physics/physicsSimulation.ts ***!
   \******************************************/
-/*! exports provided: PhysicsSimulation */
+/*! exports provided: Integrators, PhysicsSimulation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Integrators", function() { return Integrators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PhysicsSimulation", function() { return PhysicsSimulation; });
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gl-matrix */ "./node_modules/gl-matrix/src/gl-matrix.js");
 
+var Integrators = {
+    Euler: function (position, velocity, aceleration, deltaTime) {
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(position, position, velocity, deltaTime);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(velocity, velocity, aceleration, deltaTime);
+    },
+    ModifiedEuler: function (position, velocity, aceleration, deltaTime) {
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(velocity, velocity, aceleration, deltaTime);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(position, position, velocity, deltaTime);
+    },
+    Verlet: function (position, velocity, aceleration, deltaTime) {
+        var halfDelta = deltaTime * 0.5;
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(position, position, velocity, halfDelta);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(velocity, velocity, aceleration, deltaTime);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(position, position, velocity, halfDelta);
+    },
+    VelocityVerlet: function (position, velocity, aceleration, deltaTime) {
+        var halfDelta = deltaTime * 0.5;
+        var oldVelocity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].clone(velocity);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(velocity, velocity, aceleration, deltaTime);
+        var sum = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(sum, oldVelocity, velocity);
+        gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(position, position, sum, halfDelta);
+    },
+    ForestRuth: function (position, velocity, aceleration, deltaTime) {
+        var frCoefficient = 1.0 / (2.0 - Math.pow(2.0, 1.0 / 3.0));
+        var frComplement = 1.0 - 2.0 * frCoefficient;
+        Integrators.Verlet(position, velocity, aceleration, deltaTime * frCoefficient);
+        Integrators.Verlet(position, velocity, aceleration, deltaTime * frComplement);
+        Integrators.Verlet(position, velocity, aceleration, deltaTime * frCoefficient);
+    }
+};
 var PhysicsSimulation = /** @class */ (function () {
-    function PhysicsSimulation() {
+    function PhysicsSimulation(integrator) {
         this.useGravity = true;
         this.gravity = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+        this.integrator = integrator;
         gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(this.gravity, 0.0, -9.8, 0.0);
     }
     PhysicsSimulation.prototype.simulate = function (time, bodies) {
@@ -9548,7 +9580,7 @@ var PhysicsSimulation = /** @class */ (function () {
             if (this.useGravity) {
                 b.applyGravity(this.gravity);
             }
-            b.simulate(time);
+            b.simulate(time, this.integrator);
         }
         // Do Collision Checks
     };
@@ -9563,7 +9595,7 @@ var PhysicsSimulation = /** @class */ (function () {
 /*!********************!*\
   !*** ./src/lux.ts ***!
   \********************/
-/*! exports provided: core, simulation, renderer, useScene, swapScene, run, loop, fixedLoop, RM, Transform, GameObject, Component, PhysicsComponent, BehaviourComponent, RenderComponent, Scene, glMatrix, vec2, vec3, vec4, quat, mat2, mat2d, mat3, mat4, PhysicsSimulation, Rigidbody, webgl, gl, AttributePointer, Vertex, VERTEX_LAYOUT, VertexArray, Mesh, Geometry, Texture, TextureFormat, TexturePresets, RenderBuffer, RenderBufferFormat, Framebuffer, AttachmentType, Shader, BaseMaterial, MaterialTag, BasicMaterial, NormalMaterial, LambertMaterial, PhongMaterial, HDRMaterial, PointLight, Camera, MeshRenderer, RenderGroups, ForwardRenderer */
+/*! exports provided: core, simulation, renderer, useScene, swapScene, run, loop, fixedLoop, Profiler, global_profiler, RM, Transform, GameObject, Component, PhysicsComponent, BehaviourComponent, RenderComponent, Scene, glMatrix, vec2, vec3, vec4, quat, mat2, mat2d, mat3, mat4, PhysicsSimulation, Integrators, Rigidbody, webgl, gl, AttributePointer, Vertex, VERTEX_LAYOUT, VertexArray, Mesh, Geometry, Texture, TextureFormat, TexturePresets, RenderBuffer, RenderBufferFormat, Framebuffer, AttachmentType, Shader, BaseMaterial, MaterialTag, BasicMaterial, NormalMaterial, LambertMaterial, PhongMaterial, HDRMaterial, PointLight, Camera, MeshRenderer, RenderGroups, ForwardRenderer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9585,131 +9617,139 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "fixedLoop", function() { return _Core_core__WEBPACK_IMPORTED_MODULE_0__["fixedLoop"]; });
 
-/* harmony import */ var _Core_resourceManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Core/resourceManager */ "./src/Core/resourceManager.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM", function() { return _Core_resourceManager__WEBPACK_IMPORTED_MODULE_1__["RM"]; });
+/* harmony import */ var _profiler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./profiler */ "./src/profiler.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Profiler", function() { return _profiler__WEBPACK_IMPORTED_MODULE_1__["Profiler"]; });
 
-/* harmony import */ var _Core_transform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Core/transform */ "./src/Core/transform.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Transform", function() { return _Core_transform__WEBPACK_IMPORTED_MODULE_2__["Transform"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "global_profiler", function() { return _profiler__WEBPACK_IMPORTED_MODULE_1__["global_profiler"]; });
 
-/* harmony import */ var _Core_gameObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Core/gameObject */ "./src/Core/gameObject.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GameObject", function() { return _Core_gameObject__WEBPACK_IMPORTED_MODULE_3__["GameObject"]; });
+/* harmony import */ var _Core_resourceManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Core/resourceManager */ "./src/Core/resourceManager.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM", function() { return _Core_resourceManager__WEBPACK_IMPORTED_MODULE_2__["RM"]; });
 
-/* harmony import */ var _Core_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Core/component */ "./src/Core/component.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Component", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_4__["Component"]; });
+/* harmony import */ var _Core_transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Core/transform */ "./src/Core/transform.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Transform", function() { return _Core_transform__WEBPACK_IMPORTED_MODULE_3__["Transform"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhysicsComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_4__["PhysicsComponent"]; });
+/* harmony import */ var _Core_gameObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Core/gameObject */ "./src/Core/gameObject.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GameObject", function() { return _Core_gameObject__WEBPACK_IMPORTED_MODULE_4__["GameObject"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BehaviourComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_4__["BehaviourComponent"]; });
+/* harmony import */ var _Core_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Core/component */ "./src/Core/component.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Component", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_5__["Component"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_4__["RenderComponent"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhysicsComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_5__["PhysicsComponent"]; });
 
-/* harmony import */ var _Core_scene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Core/scene */ "./src/Core/scene.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Scene", function() { return _Core_scene__WEBPACK_IMPORTED_MODULE_5__["Scene"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BehaviourComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_5__["BehaviourComponent"]; });
 
-/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gl-matrix */ "./node_modules/gl-matrix/src/gl-matrix.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["glMatrix"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderComponent", function() { return _Core_component__WEBPACK_IMPORTED_MODULE_5__["RenderComponent"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["vec2"]; });
+/* harmony import */ var _Core_scene__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Core/scene */ "./src/Core/scene.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Scene", function() { return _Core_scene__WEBPACK_IMPORTED_MODULE_6__["Scene"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["vec3"]; });
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gl-matrix */ "./node_modules/gl-matrix/src/gl-matrix.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "glMatrix", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["glMatrix"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["vec4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["vec2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["quat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["vec3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["mat2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["vec4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["mat2d"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["quat"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["mat3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat2", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["mat2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_6__["mat4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat2d", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["mat2d"]; });
 
-/* harmony import */ var _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Physics/physicsSimulation */ "./src/Physics/physicsSimulation.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhysicsSimulation", function() { return _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_7__["PhysicsSimulation"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["mat3"]; });
 
-/* harmony import */ var _Physics_Components_rigidbody__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Physics/Components/rigidbody */ "./src/Physics/Components/rigidbody.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Rigidbody", function() { return _Physics_Components_rigidbody__WEBPACK_IMPORTED_MODULE_8__["Rigidbody"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_7__["mat4"]; });
 
-/* harmony import */ var _Graphics_webgl__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Graphics/webgl */ "./src/Graphics/webgl.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "webgl", function() { return _Graphics_webgl__WEBPACK_IMPORTED_MODULE_9__["webgl"]; });
+/* harmony import */ var _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Physics/physicsSimulation */ "./src/Physics/physicsSimulation.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhysicsSimulation", function() { return _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_8__["PhysicsSimulation"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "gl", function() { return _Graphics_webgl__WEBPACK_IMPORTED_MODULE_9__["gl"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Integrators", function() { return _Physics_physicsSimulation__WEBPACK_IMPORTED_MODULE_8__["Integrators"]; });
 
-/* harmony import */ var _Graphics_Geometry_attributePointer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Graphics/Geometry/attributePointer */ "./src/Graphics/Geometry/attributePointer.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return _Graphics_Geometry_attributePointer__WEBPACK_IMPORTED_MODULE_10__["AttributePointer"]; });
+/* harmony import */ var _Physics_Components_rigidbody__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Physics/Components/rigidbody */ "./src/Physics/Components/rigidbody.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Rigidbody", function() { return _Physics_Components_rigidbody__WEBPACK_IMPORTED_MODULE_9__["Rigidbody"]; });
 
-/* harmony import */ var _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Graphics/Geometry/vertex */ "./src/Graphics/Geometry/vertex.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Vertex", function() { return _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_11__["Vertex"]; });
+/* harmony import */ var _Graphics_webgl__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Graphics/webgl */ "./src/Graphics/webgl.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "webgl", function() { return _Graphics_webgl__WEBPACK_IMPORTED_MODULE_10__["webgl"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_11__["VERTEX_LAYOUT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "gl", function() { return _Graphics_webgl__WEBPACK_IMPORTED_MODULE_10__["gl"]; });
 
-/* harmony import */ var _Graphics_Geometry_vertexArray__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Graphics/Geometry/vertexArray */ "./src/Graphics/Geometry/vertexArray.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VertexArray", function() { return _Graphics_Geometry_vertexArray__WEBPACK_IMPORTED_MODULE_12__["VertexArray"]; });
+/* harmony import */ var _Graphics_Geometry_attributePointer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Graphics/Geometry/attributePointer */ "./src/Graphics/Geometry/attributePointer.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttributePointer", function() { return _Graphics_Geometry_attributePointer__WEBPACK_IMPORTED_MODULE_11__["AttributePointer"]; });
 
-/* harmony import */ var _Graphics_Geometry_mesh__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Graphics/Geometry/mesh */ "./src/Graphics/Geometry/mesh.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Mesh", function() { return _Graphics_Geometry_mesh__WEBPACK_IMPORTED_MODULE_13__["Mesh"]; });
+/* harmony import */ var _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Graphics/Geometry/vertex */ "./src/Graphics/Geometry/vertex.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Vertex", function() { return _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_12__["Vertex"]; });
 
-/* harmony import */ var _Graphics_Geometry_geometry__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Graphics/Geometry/geometry */ "./src/Graphics/Geometry/geometry.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Geometry", function() { return _Graphics_Geometry_geometry__WEBPACK_IMPORTED_MODULE_14__["Geometry"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VERTEX_LAYOUT", function() { return _Graphics_Geometry_vertex__WEBPACK_IMPORTED_MODULE_12__["VERTEX_LAYOUT"]; });
 
-/* harmony import */ var _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Graphics/Textures/texture */ "./src/Graphics/Textures/texture.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Texture", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_15__["Texture"]; });
+/* harmony import */ var _Graphics_Geometry_vertexArray__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Graphics/Geometry/vertexArray */ "./src/Graphics/Geometry/vertexArray.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VertexArray", function() { return _Graphics_Geometry_vertexArray__WEBPACK_IMPORTED_MODULE_13__["VertexArray"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureFormat", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_15__["TextureFormat"]; });
+/* harmony import */ var _Graphics_Geometry_mesh__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Graphics/Geometry/mesh */ "./src/Graphics/Geometry/mesh.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Mesh", function() { return _Graphics_Geometry_mesh__WEBPACK_IMPORTED_MODULE_14__["Mesh"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TexturePresets", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_15__["TexturePresets"]; });
+/* harmony import */ var _Graphics_Geometry_geometry__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Graphics/Geometry/geometry */ "./src/Graphics/Geometry/geometry.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Geometry", function() { return _Graphics_Geometry_geometry__WEBPACK_IMPORTED_MODULE_15__["Geometry"]; });
 
-/* harmony import */ var _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Graphics/Textures/renderbuffer */ "./src/Graphics/Textures/renderbuffer.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderBuffer", function() { return _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_16__["RenderBuffer"]; });
+/* harmony import */ var _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Graphics/Textures/texture */ "./src/Graphics/Textures/texture.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Texture", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_16__["Texture"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderBufferFormat", function() { return _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_16__["RenderBufferFormat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureFormat", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_16__["TextureFormat"]; });
 
-/* harmony import */ var _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Graphics/Textures/framebuffer */ "./src/Graphics/Textures/framebuffer.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Framebuffer", function() { return _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_17__["Framebuffer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TexturePresets", function() { return _Graphics_Textures_texture__WEBPACK_IMPORTED_MODULE_16__["TexturePresets"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_17__["AttachmentType"]; });
+/* harmony import */ var _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Graphics/Textures/renderbuffer */ "./src/Graphics/Textures/renderbuffer.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderBuffer", function() { return _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_17__["RenderBuffer"]; });
 
-/* harmony import */ var _Graphics_shader__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Graphics/shader */ "./src/Graphics/shader.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Shader", function() { return _Graphics_shader__WEBPACK_IMPORTED_MODULE_18__["Shader"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderBufferFormat", function() { return _Graphics_Textures_renderbuffer__WEBPACK_IMPORTED_MODULE_17__["RenderBufferFormat"]; });
 
-/* harmony import */ var _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Graphics/Materials/baseMaterial */ "./src/Graphics/Materials/baseMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_19__["BaseMaterial"]; });
+/* harmony import */ var _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Graphics/Textures/framebuffer */ "./src/Graphics/Textures/framebuffer.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Framebuffer", function() { return _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_18__["Framebuffer"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_19__["MaterialTag"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Graphics_Textures_framebuffer__WEBPACK_IMPORTED_MODULE_18__["AttachmentType"]; });
 
-/* harmony import */ var _Graphics_Materials_basicMaterial__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Graphics/Materials/basicMaterial */ "./src/Graphics/Materials/basicMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BasicMaterial", function() { return _Graphics_Materials_basicMaterial__WEBPACK_IMPORTED_MODULE_20__["BasicMaterial"]; });
+/* harmony import */ var _Graphics_shader__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Graphics/shader */ "./src/Graphics/shader.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Shader", function() { return _Graphics_shader__WEBPACK_IMPORTED_MODULE_19__["Shader"]; });
 
-/* harmony import */ var _Graphics_Materials_normalMaterial__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Graphics/Materials/normalMaterial */ "./src/Graphics/Materials/normalMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return _Graphics_Materials_normalMaterial__WEBPACK_IMPORTED_MODULE_21__["NormalMaterial"]; });
+/* harmony import */ var _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Graphics/Materials/baseMaterial */ "./src/Graphics/Materials/baseMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BaseMaterial", function() { return _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_20__["BaseMaterial"]; });
 
-/* harmony import */ var _Graphics_Materials_lambertMaterial__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Graphics/Materials/lambertMaterial */ "./src/Graphics/Materials/lambertMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return _Graphics_Materials_lambertMaterial__WEBPACK_IMPORTED_MODULE_22__["LambertMaterial"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MaterialTag", function() { return _Graphics_Materials_baseMaterial__WEBPACK_IMPORTED_MODULE_20__["MaterialTag"]; });
 
-/* harmony import */ var _Graphics_Materials_phongMaterial__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Graphics/Materials/phongMaterial */ "./src/Graphics/Materials/phongMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhongMaterial", function() { return _Graphics_Materials_phongMaterial__WEBPACK_IMPORTED_MODULE_23__["PhongMaterial"]; });
+/* harmony import */ var _Graphics_Materials_basicMaterial__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Graphics/Materials/basicMaterial */ "./src/Graphics/Materials/basicMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BasicMaterial", function() { return _Graphics_Materials_basicMaterial__WEBPACK_IMPORTED_MODULE_21__["BasicMaterial"]; });
 
-/* harmony import */ var _Graphics_Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Graphics/Materials/Post Process/hdrMaterial */ "./src/Graphics/Materials/Post Process/hdrMaterial.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HDRMaterial", function() { return _Graphics_Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_24__["HDRMaterial"]; });
+/* harmony import */ var _Graphics_Materials_normalMaterial__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Graphics/Materials/normalMaterial */ "./src/Graphics/Materials/normalMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NormalMaterial", function() { return _Graphics_Materials_normalMaterial__WEBPACK_IMPORTED_MODULE_22__["NormalMaterial"]; });
 
-/* harmony import */ var _Graphics_Lights_pointLight__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Graphics/Lights/pointLight */ "./src/Graphics/Lights/pointLight.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PointLight", function() { return _Graphics_Lights_pointLight__WEBPACK_IMPORTED_MODULE_25__["PointLight"]; });
+/* harmony import */ var _Graphics_Materials_lambertMaterial__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Graphics/Materials/lambertMaterial */ "./src/Graphics/Materials/lambertMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LambertMaterial", function() { return _Graphics_Materials_lambertMaterial__WEBPACK_IMPORTED_MODULE_23__["LambertMaterial"]; });
 
-/* harmony import */ var _Graphics_camera__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./Graphics/camera */ "./src/Graphics/camera.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Camera", function() { return _Graphics_camera__WEBPACK_IMPORTED_MODULE_26__["Camera"]; });
+/* harmony import */ var _Graphics_Materials_phongMaterial__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Graphics/Materials/phongMaterial */ "./src/Graphics/Materials/phongMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PhongMaterial", function() { return _Graphics_Materials_phongMaterial__WEBPACK_IMPORTED_MODULE_24__["PhongMaterial"]; });
 
-/* harmony import */ var _Graphics_Components_meshRenderer__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./Graphics/Components/meshRenderer */ "./src/Graphics/Components/meshRenderer.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MeshRenderer", function() { return _Graphics_Components_meshRenderer__WEBPACK_IMPORTED_MODULE_27__["MeshRenderer"]; });
+/* harmony import */ var _Graphics_Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Graphics/Materials/Post Process/hdrMaterial */ "./src/Graphics/Materials/Post Process/hdrMaterial.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "HDRMaterial", function() { return _Graphics_Materials_Post_Process_hdrMaterial__WEBPACK_IMPORTED_MODULE_25__["HDRMaterial"]; });
 
-/* harmony import */ var _Graphics_Renderers_renderGroups__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./Graphics/Renderers/renderGroups */ "./src/Graphics/Renderers/renderGroups.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderGroups", function() { return _Graphics_Renderers_renderGroups__WEBPACK_IMPORTED_MODULE_28__["RenderGroups"]; });
+/* harmony import */ var _Graphics_Lights_pointLight__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./Graphics/Lights/pointLight */ "./src/Graphics/Lights/pointLight.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "PointLight", function() { return _Graphics_Lights_pointLight__WEBPACK_IMPORTED_MODULE_26__["PointLight"]; });
 
-/* harmony import */ var _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./Graphics/Renderers/forwardRenderer */ "./src/Graphics/Renderers/forwardRenderer.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ForwardRenderer", function() { return _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_29__["ForwardRenderer"]; });
+/* harmony import */ var _Graphics_camera__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./Graphics/camera */ "./src/Graphics/camera.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Camera", function() { return _Graphics_camera__WEBPACK_IMPORTED_MODULE_27__["Camera"]; });
+
+/* harmony import */ var _Graphics_Components_meshRenderer__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./Graphics/Components/meshRenderer */ "./src/Graphics/Components/meshRenderer.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MeshRenderer", function() { return _Graphics_Components_meshRenderer__WEBPACK_IMPORTED_MODULE_28__["MeshRenderer"]; });
+
+/* harmony import */ var _Graphics_Renderers_renderGroups__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./Graphics/Renderers/renderGroups */ "./src/Graphics/Renderers/renderGroups.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RenderGroups", function() { return _Graphics_Renderers_renderGroups__WEBPACK_IMPORTED_MODULE_29__["RenderGroups"]; });
+
+/* harmony import */ var _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./Graphics/Renderers/forwardRenderer */ "./src/Graphics/Renderers/forwardRenderer.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ForwardRenderer", function() { return _Graphics_Renderers_forwardRenderer__WEBPACK_IMPORTED_MODULE_30__["ForwardRenderer"]; });
 
 // --------------------------------- Core
 
+ // TEST
  // this is sort of a hack for some things.
 
 
@@ -9741,6 +9781,43 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+/***/ }),
+
+/***/ "./src/profiler.ts":
+/*!*************************!*\
+  !*** ./src/profiler.ts ***!
+  \*************************/
+/*! exports provided: Profiler, global_profiler */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Profiler", function() { return Profiler; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "global_profiler", function() { return global_profiler; });
+//TODO: Improve this profiler
+var Profiler = /** @class */ (function () {
+    function Profiler() {
+        this.elements = {};
+    }
+    Profiler.prototype.start = function (fnName) {
+        this.elements[fnName] = {};
+        this.elements[fnName].startT = performance.now();
+    };
+    Profiler.prototype.end = function (fnName) {
+        this.elements[fnName].endT = performance.now();
+        this.elements[fnName].total = this.elements[fnName].endT - this.elements[fnName].startT;
+    };
+    Profiler.prototype.log = function () {
+        for (var elemName in this.elements) {
+            console.log(elemName + ': ' + this.elements[elemName].total + 'ms');
+        }
+    };
+    return Profiler;
+}());
+
+var global_profiler = new Profiler();
 
 
 /***/ })

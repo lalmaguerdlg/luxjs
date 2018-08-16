@@ -1,9 +1,9 @@
 import { ForwardRenderer } from '../Graphics/Renderers/forwardRenderer'
 import { Scene } from './scene';
 import { BehaviourComponent, PhysicsComponent, RenderComponent } from './component';
-import { PhysicsSimulation } from '../Physics/physicsSimulation';
+import { PhysicsSimulation, Integrators } from '../Physics/physicsSimulation';
 import { ITime } from './time';
-
+import { global_profiler } from '../profiler'
 
 export interface LoopCallback {
 	(time: ITime): void;
@@ -21,7 +21,7 @@ class Core {
 	fixedLoopCallbacks: LoopCallback[] = [];
 
 	constructor() {
-		this.simulation =  new PhysicsSimulation();
+		this.simulation =  new PhysicsSimulation( Integrators.ModifiedEuler );
 		this.renderer = new ForwardRenderer();
 		this.time = {
 			deltaTime: 0,
@@ -70,12 +70,13 @@ class Core {
 	}
 
 	coreLoop(dt: number): void {
+		global_profiler.start('coreLoop');
 		this.time.deltaTime = dt;
-		
+
 		if(this.currentScene){
 			let physicBodies: PhysicsComponent[] = [];
 			let behaviours: BehaviourComponent[] = [];
-
+			global_profiler.start('fetchComponents');
 			for (let go of this.currentScene.gameObjects) {
 				let components = go.getComponentsList([PhysicsComponent, BehaviourComponent]);
 				for(let c of components) {
@@ -85,9 +86,10 @@ class Core {
 					}
 				}
 			}
-			
+			global_profiler.end('fetchComponents');
 			this.acumulator += dt;
 
+			global_profiler.start('PhysicsLoop');
 			// Physics
 			while(this.acumulator >= this.time.fixedTime) {
 
@@ -102,6 +104,7 @@ class Core {
 				this.time.elapsedTime += this.time.fixedTime;
 
 			}
+			global_profiler.end('PhysicsLoop');
 			// Behaviours
 			this.update(behaviours);
 			this.lateUpdate(behaviours);
@@ -111,8 +114,13 @@ class Core {
 				cb(this.time);
 			}
 
+			
 			// Rendering
+			global_profiler.start('Renderer');
 			this.renderer.render(this.currentScene);
+			global_profiler.end('Renderer');
+			global_profiler.end('coreLoop');
+			//global_profiler.log();
 		}
 	}
 

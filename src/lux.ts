@@ -6,6 +6,7 @@ export {
     useScene, swapScene, run, loop, fixedLoop,
 } from './Core/core';
 
+export { Profiler, global_profiler } from './profiler' // TEST
 
 export { RM } from './Core/resourceManager' // this is sort of a hack for some things.
 
@@ -28,7 +29,7 @@ export {
 
 // -------------------------------- Physics
 
-export { PhysicsSimulation } from './Physics/physicsSimulation'
+export { PhysicsSimulation, Integrator, Integrators } from './Physics/physicsSimulation'
 export { Rigidbody } from './Physics/Components/rigidbody'
 
 // ----------------------------------------------- Rendering
