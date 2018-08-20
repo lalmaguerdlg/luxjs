@@ -1,6 +1,7 @@
 import { GameObject } from './gameObject'
 import { PointLight } from "../Graphics/Lights/pointLight";
 import { Camera } from "../Graphics/camera";
+import { Component } from './component';
 
 
 export class Scene {
@@ -31,6 +32,22 @@ export class Scene {
         }
         else if ( object instanceof PointLight) this.lights.push(object);
         else if ( object instanceof Camera)     this.cameras.push(object);
+    }
+
+    findComponents<T extends Component>( type: {new(...args: any[]):T}) : T[] {
+        let result : T[] = [];
+        for(let go of this.gameObjects){
+            result = result.concat(go.getComponents(type));
+        }
+        return result;
+    }
+
+    findComponentsList(typeList: any[]) : Component[] {
+        let result : Component[] = [];
+        for(let go of this.gameObjects){
+            result = result.concat(go.getComponentsList(typeList));
+        }
+        return result;
     }
 
     findObjectWithName(name: string): GameObject | null {

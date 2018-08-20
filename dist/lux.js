@@ -7281,8 +7281,10 @@ var GameObject = /** @class */ (function () {
             this.components.push(component);
             component.onAttach();
             if (component instanceof _component__WEBPACK_IMPORTED_MODULE_1__["BehaviourComponent"]) {
-                component.awake();
-                component.start();
+                if (this.scene && this.scene.isPlaying) {
+                    component.awake();
+                    component.start();
+                }
             }
         }
     };
@@ -7391,6 +7393,22 @@ var Scene = /** @class */ (function () {
             this.lights.push(object);
         else if (object instanceof _Graphics_camera__WEBPACK_IMPORTED_MODULE_2__["Camera"])
             this.cameras.push(object);
+    };
+    Scene.prototype.findComponents = function (type) {
+        var result = [];
+        for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
+            var go = _a[_i];
+            result = result.concat(go.getComponents(type));
+        }
+        return result;
+    };
+    Scene.prototype.findComponentsList = function (typeList) {
+        var result = [];
+        for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
+            var go = _a[_i];
+            result = result.concat(go.getComponentsList(typeList));
+        }
+        return result;
     };
     Scene.prototype.findObjectWithName = function (name) {
         var result = null;
@@ -9489,6 +9507,7 @@ var Rigidbody = /** @class */ (function (_super) {
         _this.gravityMultiplier = 1.0;
         _this.velocity = gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
         _this.aceleration = gl_matrix__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+        _this.mass = 1.0;
         return _this;
     }
     Rigidbody.prototype.clone = function () {

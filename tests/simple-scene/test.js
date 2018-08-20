@@ -28,16 +28,23 @@ function main() {
     cube.name = 'cube';
     cube.attach(new lux.MeshRenderer(cubeMesh, lambertMaterial));
     cube.attach(new lux.Rigidbody());
+    cube.attach(new gravitation());
 
     let sphereMesh = new lux.Geometry.Sphere(1, 16, 16);
     let sphere = new lux.GameObject();
     sphere.attach(new lux.MeshRenderer(sphereMesh, lambertMaterial2));
     sphere.transform.position[0] = 3.0;
     sphere.name = 'sphere';
+    sphere.attach(new lux.Rigidbody());
+    sphere.attach(new gravitation());
+    sphere.getComponent(lux.Rigidbody).mass = 50;
 
 
     let cube2 = cube.clone();
+    let cube3 = cube.clone();
     cube2.name = 'cube2';
+    cube3.transform.position[0] = -3.0;
+    cube3.transform.position[1] = -2.0;
 
     lux.vec3.set(cube.transform.position, 0, 0, 0);
     lux.vec3.set(cube2.transform.position, 0, 1.0, 0.5);
@@ -65,6 +72,7 @@ function main() {
 
     scene.add(cube);
     scene.add(cube2);
+    scene.add(cube3);
     scene.add(sphere);
     scene.add(light);
     scene.add(light2);
@@ -77,27 +85,32 @@ function main() {
     lux.renderer.setMSAA(4);
 }
 
-let t = 0;
-
-function render(dt){
-    t += dt.fixedTime;
-
-    let cube = scene.findObjectWithName('cube');
-    let cube2 = scene.findObjectWithName('cube2');
-    let sphere = scene.findObjectWithName('sphere');
-    
-    if(cube && cube2){
-        let distance = lux.vec3.create();
-        lux.vec3.sub(distance, cube2.transform.position, cube.transform.position);
-        cube.getComponent(lux.Rigidbody).applyForce(distance);
-
-        lux.vec3.sub(distance, cube.transform.position,cube2.transform.position);
-        cube2.getComponent(lux.Rigidbody).applyForce(distance);
-        
-    }
-    sphere.transform.setEuler(0, t * 90, 0);
-    lux.vec3.set(sphere.transform.position, Math.sin(t) + 2, 0, 0);
+function constrain(input, min, max){
+    if(input < min) return min;
+    else if(input > max ) return max;
+    else return input;
 }
 
+class gravitation extends lux.BehaviourComponent {
+    start() {
+        this.rb = this.getComponent(lux.Rigidbody);
+        this.otherObjects = this.gameObject.scene.findComponents(lux.Rigidbody);
+    }
+
+    fixedUpdate(time) {
+        let force = lux.vec3.create();
+        for(let other of this.otherObjects) {
+            if(other.gameObject != this.gameObject){
+                lux.vec3.sub(force, other.transform.position, this.transform.position);
+                let len = lux.vec3.len(force);
+                len = constrain(len, 1.0, 50.0);
+                lux.vec3.normalize(force, force);
+                let strength =  (0.4*this.rb.mass * other.mass) / (len * len);
+                lux.vec3.scale(force, force, strength);
+                this.rb.applyForce(force);
+            }
+        }
+    }
+}
 
 $(document).ready(main);

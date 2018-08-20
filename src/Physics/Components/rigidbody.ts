@@ -8,6 +8,7 @@ export class Rigidbody extends PhysicsComponent {
     gravityMultiplier : number = 1.0;
     velocity : vec3 = vec3.create();
     aceleration : vec3 = vec3.create();
+    mass : number = 1.0;
 
     constructor(){
         super();

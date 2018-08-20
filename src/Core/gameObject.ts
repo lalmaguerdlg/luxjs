@@ -211,9 +211,11 @@ export class GameObject{
             component.setOwner(this);
             this.components.push(component);
             component.onAttach();
-            if(component instanceof BehaviourComponent){
-                component.awake();
-                component.start();
+            if(component instanceof BehaviourComponent) {
+                if(this.scene && this.scene.isPlaying) {
+                    component.awake();
+                    component.start();
+                }
             }
         }
     }
