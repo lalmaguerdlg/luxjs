@@ -2,7 +2,7 @@ import { gl, webgl, Viewport } from '../webgl'
 import { MeshRenderer } from '../Components/meshRenderer'
 import { RenderGroups } from './renderGroups'
 import { Camera } from '../camera';
-import { TexturePresets } from '../Textures/texture'
+import { TexturePresets, Texture } from '../Textures/texture'
 import { Framebuffer, AttachmentType } from '../Textures/framebuffer';
 import { Geometry } from '../Geometry/geometry';
 import { HDRMaterial } from '../Materials/Post Process/hdrMaterial';
@@ -12,7 +12,10 @@ import { Shader } from '../shader';
 import { Scene } from '../../Core/scene';
 import { PointLight } from '../Lights/pointLight';
 import { PhongMaterial } from '../Materials/phongMaterial';
+//import { global_profiler } from '../../profiler';
 
+
+const divider = 1;
 
 export class ForwardRenderer {
 
@@ -75,7 +78,14 @@ export class ForwardRenderer {
         if (scene.cameras.length > 0)
             camera = scene.cameras[0];
         
+        //global_profiler.start('render_setup_groups');
+
         this._setupGroups(scene);
+
+        //global_profiler.end('render_setup_groups');
+
+
+        gl.viewport(0, 0, webgl.viewport.width * divider, webgl.viewport.height * divider);
 
         if(this.msaa.enabled){
             this.msaa.fbo!.bind();
@@ -93,12 +103,17 @@ export class ForwardRenderer {
         gl.depthFunc(gl.LESS);
         gl.disable(gl.BLEND);
 
+        //global_profiler.start('render_unlit');
+
         for (let mr of this.renderGroups.unlit) {
             if(mr.gameObject!.active && mr.active) {
                 this._renderUnlit(mr, camera);
             }
         }
 
+        //global_profiler.end('render_unlit');
+
+        //global_profiler.start('render_lit');
         for(let light of scene.lights) {
 
             if(!firstPass){
@@ -123,6 +138,9 @@ export class ForwardRenderer {
             if(firstPass) firstPass = false;
         }
 
+        //global_profiler.end('render_lit');
+
+
         if (this.msaa.enabled) {
             this.msaa.fbo!.unbind();
             this.msaa.fbo!.blit(this.hdr.fbo, gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT, gl.NEAREST);    
@@ -138,10 +156,11 @@ export class ForwardRenderer {
         webgl.setClearColor(1.0, 1.0, 1.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        gl.viewport(0, 0, webgl.viewport.width, webgl.viewport.height);
 
         this.hdr.material.exposure = camera.exposure;
         this._useMaterial(this.hdr.material);
-        this.hdr.fbo!.attachments.color[0].use(0);
+        (<Texture>this.hdr.fbo!.attachments.color[0]).use(0);
         this.screenQuad.render();
 
     }
@@ -149,7 +168,7 @@ export class ForwardRenderer {
     private _configureMSAA() : void {
         if (this.msaa.enabled) {
             if (this.msaa.fbo) this.msaa.fbo.dispose();
-            this.msaa.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+            this.msaa.fbo = new Framebuffer(webgl.viewport.width * divider, webgl.viewport.height * divider);
             this.msaa.fbo.addColor(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.RGBA16F, true, this.msaa.samples));
             this.msaa.fbo.addDepth(AttachmentType.RENDERBUFFER, new RenderBufferFormat(gl.DEPTH_COMPONENT24, true, this.msaa.samples))
         }
@@ -161,7 +180,7 @@ export class ForwardRenderer {
         if(this.hdr) {
             if (this.hdr.fbo) this.hdr.fbo.dispose();
         }
-        this.hdr.fbo = new Framebuffer(webgl.viewport.width, webgl.viewport.height);
+        this.hdr.fbo = new Framebuffer(webgl.viewport.width * divider, webgl.viewport.height * divider);
         this.hdr.fbo.addColor(AttachmentType.TEXTURE, fbFormat);
         this.hdr.fbo.addDepth(AttachmentType.TEXTURE);
     }
