@@ -133,7 +133,7 @@ function main() {
         specular: [1.0, 1.0, 1.0],
         shininess: 16,
         light: light,
-        influenceRange: 4.0
+        influenceRange: 10.0
     });
 
     let cubeMesh = new lux.Geometry.Box(1.0, 1.0, 1.0);
@@ -143,9 +143,11 @@ function main() {
 
     for(let j = 0; j < 10; j++) {
         for(let i = 0; i < 10; i++) {
-            let go = cubeGo.clone();
-            go.transform.position = [j, i, 0.0];
-            scene.add(go);
+            for(let k = 0; k < 10; k++) {
+                let go = cubeGo.clone();
+                go.transform.position = [j, i,k];
+                scene.add(go);
+            }
         }
     }
     
@@ -167,7 +169,7 @@ function main() {
     lux.simulation.useGravity = false;
     lux.run();
     lux.loop(render);
-    lux.renderer.setMSAA(4);
+    lux.renderer.setMSAA(0);    
 }
 
 let t = 0;
