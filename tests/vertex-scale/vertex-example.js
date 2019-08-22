@@ -121,7 +121,7 @@ function main() {
     scene = new lux.Scene();
 
     light = new lux.PointLight({
-        position: [0.0, 2.0, 0.0],
+        position: [0.0, 0.0, 0.0],
         color: [1.0, 1.0, 1.0],
         intensity: 10.0
     });
@@ -145,7 +145,7 @@ function main() {
         for(let i = 0; i < 10; i++) {
             for(let k = 0; k < 10; k++) {
                 let go = cubeGo.clone();
-                go.transform.position = [j, i,k];
+                go.transform.position = [j - 5, i - 5 ,k - 5];
                 scene.add(go);
             }
         }
@@ -186,14 +186,14 @@ function render(dt){
 
     lux.mat4.identity(camera.mView);
     lux.mat4.perspective(camera.mPerspective, 45, gl.canvas.width / gl.canvas.height, 0.1, 100.0);
-    lux.vec3.set(camera.transform.position, Math.sin(t*0.5) * 20.0 + 5.0, 5.0, Math.cos(t*0.5) * 20.0);
-    lux.mat4.lookAt(camera.mView, camera.transform.position, [5.0,5.0,0.0], [0.0, 1.0, 0.0]);
+    lux.vec3.set(camera.transform.position, Math.sin(t*0.5) * 20.0, 5.0, Math.cos(t*0.5) * 20.0);
+    lux.mat4.lookAt(camera.mView, camera.transform.position, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
 
     
-    let lightTravel = 3.0;
+    let lightTravel = 15.0;
     let absSinT = Math.abs(Math.sin(t)) * lightTravel;
     let absCosT = Math.abs(Math.cos(t)) * lightTravel;
-    lux.vec3.set(light.position, Math.cos(t) * lightTravel + 5.0, Math.sin(t) * lightTravel + 5.0, 2.0);//Math.sin(t*2.0)*5.0);
+    lux.vec3.set(light.position, Math.cos(t * 0.5) * lightTravel, 0.0, 0.0);
        
 }
 
